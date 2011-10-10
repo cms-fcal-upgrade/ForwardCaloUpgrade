@@ -63,10 +63,13 @@
  -----------------
 
   a) source /afs/cern.ch/sw/lcg/external/gcc/4.3.2/x86_64-slc5/setup.csh
+  a_bash) source /afs/cern.ch/sw/lcg/external/gcc/4.3.2/x86_64-slc5/setup.sh
 
   b) setenv G4BASE /afs/cern.ch/sw/lcg/external/geant4
+  b_bash) export G4BASE=/afs/cern.ch/sw/lcg/external/geant4
 
   c) source $G4BASE/9.4.p02/x86_64-slc5-gcc43/setup.csh
+  c_bash) source $G4BASE/9.4.p02/x86_64-slc5-gcc43/setup.sh
 
   d) gmake 
 
