@@ -13,7 +13,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id$
+// $Id: CaloAnalyzer.cc,v 1.1 2011/10/19 15:13:52 mgouzevi Exp $
 //
 //
 
@@ -21,6 +21,9 @@
 
 // user include files
 #include "ForwardCaloUpgrade/FastSim/interface/CaloAnalyzer.h"
+
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -50,24 +53,7 @@ CaloAnalyzer::CaloAnalyzer(const edm::ParameterSet& iConfig)
 CaloAnalyzer::~CaloAnalyzer()
 {
 
-  /*
-   // Reco hits
-   Handle<EcalRecHitCollection> EERecHits;
-   iEvent.getByLabel("reducedEcalRecHitsEE","", EERecHits);
-   h002->Fill(EERecHits->size());
 
-   for (EcalRecHitCollection::const_iterator hit = EERecHits->begin(); hit!=EERecHits->end(); ++hit) {
-
-     int ix = EEDetId((*hit).id()).ix();
-     int iy = EEDetId((*hit).id()).iy();
-     int iz = EEDetId((*hit).id()).zside();
-
-     double ene = hit->energy();
-
-   }
-  */
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
 
 }
 
@@ -80,20 +66,36 @@ CaloAnalyzer::~CaloAnalyzer()
 void
 CaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
 
+  
+   // Reco hits
+   Handle<EcalRecHitCollection> EERecHits;
+   iEvent.getByLabel("ecalRecHit","EcalRecHitsEE", EERecHits);
+   hMap["caloEE_size"]->Fill(EERecHits->size());
 
-   /*
-#ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
-#endif
-   
-#ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
-#endif
-   */
+   double totalEne = 0;
+
+   for (EcalRecHitCollection::const_iterator hit = EERecHits->begin(); hit!=EERecHits->end(); ++hit) {
+     /*
+     int ix = EEDetId((*hit).id()).ix();
+     int iy = EEDetId((*hit).id()).iy();
+     int iz = EEDetId((*hit).id()).zside();
+     */
+     double ene = hit->energy();
+     //     hMap["caloEE_radius"]->Fill(ene);
+     hMap["caloEE_energy"]->Fill(ene);
+     hMap["caloEE_energy_zoom"]->Fill(ene);
+     hMap["caloEE_energy_zoom_zoom"]->Fill(ene);
+     
+     totalEne += ene;
+
+   }
+  
+    hMap["caloEE_totenergy_zoom"]->Fill(totalEne);
+
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+ 
 
 }
 
@@ -129,8 +131,19 @@ CaloAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
 {
   
   hMap["caloEB_size"] = new TH1F("caloEB_size", "N hits in ECAL barrel", 100, 0, 1000);
-  hMap["caloEE_size"] = new TH1F("caloEE_size", "N hits in ECAL barrel", 100, 0, 1000);
-  
+  hMap["caloEE_size"] = new TH1F("caloEE_size", "N hits in ECAL endcap", 100, 0, 1000);
+    
+  hMap["caloEB_energy"] = new TH1F("caloEB_energy", "Hits energy in ECAL barrel", 100, 0, 100);
+  hMap["caloEE_energy"] = new TH1F("caloEE_energy", "Hits energy in ECAL endcap", 100, 0, 100);
+
+  hMap["caloEB_energy_zoom"] = new TH1F("caloEB_energy_zoom", "Hits energy in ECAL barrel zoom to 10 GeV", 100, 0, 10);
+  hMap["caloEE_energy_zoom"] = new TH1F("caloEE_energy_zoom", "Hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 10);
+
+  hMap["caloEB_energy_zoom_zoom"] = new TH1F("caloEB_energy_zoom_zoom", "Hits energy in ECAL barrel zoom to 1 GeV", 100, 0, 1);
+  hMap["caloEE_energy_zoom_zoom"] = new TH1F("caloEE_energy_zoom_zoom", "Hits energy in ECAL endcap zoom to 1 GeV", 100, 0, 1);
+
+  hMap["caloEB_totenergy_zoom"] = new TH1F("caloEB_totenergy_zoom", "Total Hits energy in ECAL barrel zoom to 10 GeV", 100, 0, 10);
+  hMap["caloEE_totenergy_zoom"] = new TH1F("caloEE_totenergy_zoom", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 10);
 }
 
 // ------------ method called when ending the processing of a run  ------------
