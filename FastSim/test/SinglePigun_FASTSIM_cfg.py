@@ -45,7 +45,7 @@ process.configurationMetadata = cms.untracked.PSet(
 process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.RECOSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('SinglePigun_FASTSIM.root'),
+    fileName = cms.untracked.string('/tmp/mgouzevi/SinglePigun_FASTSIM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RECO')
@@ -65,7 +65,8 @@ process.HLTEndSequence = cms.Sequence(process.reconstructionWithFamos)
 process.Realistic7TeVCollisionVtxSmearingParameters.type = cms.string("BetaFunc")
 process.famosSimHits.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
 process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
-process.GlobalTag.globaltag = 'MC_311_V2::All'
+process.GlobalTag.globaltag = 'MC_42_V15A::All'
+#'MC_311_V2::All'
 
 process.generator = cms.EDProducer("FlatRandomPtGunProducer",
     PGunParameters = cms.PSet(
@@ -82,6 +83,35 @@ process.generator = cms.EDProducer("FlatRandomPtGunProducer",
     AddAntiParticle = cms.bool(True),
     firstRun = cms.untracked.uint32(1)
 )
+
+
+# Switch off different noises
+process.ecalRecHit.doMiscalib = True
+
+process.ecalRecHit.RecHitsFactory.ECALBarrel.Noise = cms.double(0)
+process.ecalRecHit.RecHitsFactory.ECALBarrel.Threshold = cms.double(0.001)
+process.ecalRecHit.RecHitsFactory.ECALBarrel.SRThreshold = cms.double(0.0)
+process.ecalRecHit.RecHitsFactory.ECALBarrel.HighNoiseParameters = cms.vdouble()
+
+process.ecalRecHit.RecHitsFactory.ECALEndcap.Noise = cms.double(0)
+process.ecalRecHit.RecHitsFactory.ECALEndcap.Threshold = cms.double(0.001)
+process.ecalRecHit.RecHitsFactory.ECALEndcap.SRThreshold = cms.double(0.0)
+process.ecalRecHit.RecHitsFactory.ECALEndcap.HighNoiseParameters = cms.vdouble()
+
+process.ecalPreshowerRecHit.RecHitsFactory.Noise = cms.double(0.000001)
+process.ecalPreshowerRecHit.RecHitsFactory.Threshold = cms.double(4.5e-10)
+
+process.hbhereco.doMiscalib = True
+process.horeco.doMiscalib = True
+process.hfreco.doMiscalib = True
+
+process.hbhereco.RecHitsFactory.Noise = cms.vdouble(0, 0)
+process.horeco.RecHitsFactory.Noise = cms.vdouble(0)
+process.hfreco.RecHitsFactory.Noise = cms.vdouble(0)
+
+
+
+
 
 
 # Path and EndPath definitions
