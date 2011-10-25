@@ -16,7 +16,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id$
+// $Id: CaloAnalyzer.h,v 1.1 2011/10/19 15:13:48 mgouzevi Exp $
 //
 //
 
@@ -30,6 +30,7 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -42,6 +43,8 @@
 
 class TH1F;
 class TH2F;
+
+class CaloGeometry;
 
 class CaloAnalyzer : public edm::EDAnalyzer {
    public:
@@ -65,6 +68,9 @@ class CaloAnalyzer : public edm::EDAnalyzer {
 
       std::map<TString, TH1F*> hMap;
       std::map<TString, TH2F*> hMap2D;
+
+      edm::ESHandle<CaloGeometry> geometry;
+
       TString outfilename;
 };
 
