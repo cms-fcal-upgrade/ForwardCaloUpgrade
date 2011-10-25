@@ -23,7 +23,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(2000)
 )
 
 # Input source
@@ -35,7 +35,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -45,7 +45,7 @@ process.configurationMetadata = cms.untracked.PSet(
 process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.RECOSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('/tmp/mgouzevi/SinglePigun_FASTSIM.root'),
+    fileName = cms.untracked.string('SinglePigun_FASTSIM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RECO')
@@ -70,12 +70,13 @@ process.GlobalTag.globaltag = 'MC_42_V15A::All'
 
 process.generator = cms.EDProducer("FlatRandomPtGunProducer",
     PGunParameters = cms.PSet(
-        MaxPt = cms.double(1.01),
-        MinPt = cms.double(0.99),
+        MaxPt = cms.double(10.01),
+        MinPt = cms.double(9.99),
+	# Pion = 211, nu_e = 12
         PartID = cms.vint32(211),
         MaxEta = cms.double(2.5),
         MaxPhi = cms.double(3.14159265359),
-        MinEta = cms.double(-2.5),
+        MinEta = cms.double(1.5),
         MinPhi = cms.double(-3.14159265359)
     ),
     Verbosity = cms.untracked.int32(0),
