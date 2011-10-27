@@ -13,7 +13,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id: CaloAnalyzer.cc,v 1.2 2011/10/19 16:19:10 mgouzevi Exp $
+// $Id: CaloAnalyzer.cc,v 1.3 2011/10/25 20:36:16 mgouzevi Exp $
 //
 //
 
@@ -36,6 +36,7 @@
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 
 //
+#include "TString.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFile.h"
@@ -95,36 +96,36 @@ CaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool bEB = iEvent.getByLabel("ecalRecHit","EcalRecHitsEB", EBRecHits);
   if (bEB) hMap["caloEB_size"]->Fill(EBRecHits->size());
    
-  double totalEne = 0, fV2_X = 0, fMean_X = 0, fV2_Y = 0, fMean_Y = 0;
+  double totalEneEB = 0, totalEneEE = 0;
    
   
-  if (bEB){
+  if (bEB) totalEneEB = fillEB(EBRecHits);
+  if (bEB) totalEneEE = fillEE(EERecHits);
     
-    for (EcalRecHitCollection::const_iterator hit = EBRecHits->begin(); hit!=EBRecHits->end(); ++hit) {
-      
 
-      
-      
-
-      double ene = hit->energy();
-      //     hMap["caloEB_radius"]->Fill(ene);
-      hMap["caloEB_energy"]->Fill(ene);
-      hMap["caloEB_energy_zoom"]->Fill(ene);
-      hMap["caloEB_energy_zoom_zoom"]->Fill(ene);
-      
-      totalEne += ene;
-
-    }
+  double totalEneE = totalEneEB + totalEneEE;
   
-    hMap["caloEB_totenergy_zoom"]->Fill(totalEne);
-   
+  hMap["caloE_totenergy"]->Fill(totalEneE);
+  hMap["caloE_totenergy_zoom"]->Fill(totalEneE);
 
-   }
 
-   
-   if (bEE){
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+ 
 
-     for (EcalRecHitCollection::const_iterator hit = EERecHits->begin(); hit!=EERecHits->end(); ++hit) {
+}
+
+
+
+
+
+
+double
+CaloAnalyzer::fillEE(Handle<EcalRecHitCollection> EERecHits){
+
+  double totalEneEE = 0, fV2_X = 0, fMean_X = 0, fV2_Y = 0, fMean_Y = 0;
+
+   for (EcalRecHitCollection::const_iterator hit = EERecHits->begin(); hit!=EERecHits->end(); ++hit) {
        /*
        int ix = EEDetId((*hit).id()).ix();
        int iy = EEDetId((*hit).id()).iy();
@@ -147,27 +148,60 @@ CaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        fV2_Y += fY*fY*ene;
        fMean_Y += fY*ene;
 
-       totalEne += ene;
+       totalEneEE += ene;
        
-     }
-     
-     hMap["caloEE_totenergy_zoom"]->Fill(totalEne);
- 
-
-     double fSigma_X = sqrt(fV2_X - fMean_X*fMean_X)/totalEne;
-     double fSigma_Y = sqrt(fV2_Y - fMean_Y*fMean_Y)/totalEne;
-
-     if (fSigma_X > 1e-4) hMap2D["caloEE_xsize"]->Fill(fSigma_X, totalEne);
-     if (fSigma_Y > 1e-4) hMap2D["caloEE_ysize"]->Fill(fSigma_Y, totalEne);
-
    }
-   
-   
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
+     
+   hMap["caloEE_totenergy"]->Fill(totalEneEE);
+   hMap["caloEE_totenergy_zoom"]->Fill(totalEneEE);
  
+
+   double fSigma_X = sqrt(fV2_X - fMean_X*fMean_X)/totalEneEE;
+   double fSigma_Y = sqrt(fV2_Y - fMean_Y*fMean_Y)/totalEneEE;
+
+   if (fSigma_X > 1e-4) hMap2D["caloEE_xsize"]->Fill(fSigma_X, totalEneEE);
+   if (fSigma_Y > 1e-4) hMap2D["caloEE_ysize"]->Fill(fSigma_Y, totalEneEE);
+
+   return totalEneEE;
+
 
 }
+
+double
+CaloAnalyzer::fillEB(Handle<EcalRecHitCollection> EBRecHits){
+
+
+  double totalEneEB = 0;
+
+  for (EcalRecHitCollection::const_iterator hit = EBRecHits->begin(); hit!=EBRecHits->end(); ++hit) {
+            
+    double ene = hit->energy();
+    //     hMap["caloEB_radius"]->Fill(ene);
+    hMap["caloEB_energy"]->Fill(ene);
+    hMap["caloEB_energy_zoom"]->Fill(ene);
+    hMap["caloEB_energy_zoom_zoom"]->Fill(ene);
+    
+    totalEneEB += ene;
+      
+  }
+  
+  hMap["caloEB_totenergy"]->Fill(totalEneEB);
+  hMap["caloEB_totenergy_zoom"]->Fill(totalEneEB);
+
+  return totalEneEB;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -212,8 +246,14 @@ CaloAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
   hMap["caloEB_energy_zoom_zoom"] = new TH1F("caloEB_energy_zoom_zoom", "Hits energy in ECAL barrel zoom to 1 GeV", 100, 0, 1);
   hMap["caloEE_energy_zoom_zoom"] = new TH1F("caloEE_energy_zoom_zoom", "Hits energy in ECAL endcap zoom to 1 GeV", 100, 0, 1);
 
+  hMap["caloEB_totenergy"] = new TH1F("caloEB_totenergy", "Total Hits energy in ECAL barrel zoom to 10 GeV", 100, 0, 100);
+  hMap["caloEE_totenergy"] = new TH1F("caloEE_totenergy", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 100);
+
   hMap["caloEB_totenergy_zoom"] = new TH1F("caloEB_totenergy_zoom", "Total Hits energy in ECAL barrel zoom to 10 GeV", 100, 0, 10);
   hMap["caloEE_totenergy_zoom"] = new TH1F("caloEE_totenergy_zoom", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 10);
+
+  hMap["caloE_totenergy"] = new TH1F("caloE_totenergy", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 100);
+  hMap["caloE_totenergy_zoom"] = new TH1F("caloE_totenergy_zoom", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 10);
 
   hMap2D["caloEE_xsize"] = new TH2F("caloEE_xsize", "Transverse x size (cm)", 20, 0, 20, 10, 0, 100); 
   hMap2D["caloEE_ysize"] = new TH2F("caloEE_ysize", "Transverse y size (cm)", 20, 0, 20, 10, 0, 100); 

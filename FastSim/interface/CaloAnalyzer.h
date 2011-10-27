@@ -16,7 +16,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id: CaloAnalyzer.h,v 1.1 2011/10/19 15:13:48 mgouzevi Exp $
+// $Id: CaloAnalyzer.h,v 1.2 2011/10/25 20:36:15 mgouzevi Exp $
 //
 //
 
@@ -35,14 +35,17 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 
+//Ecal Rec hits 
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+
 #include "TString.h"
 
 //
 // class declaration
 //
-
 class TH1F;
 class TH2F;
+
 
 class CaloGeometry;
 
@@ -63,6 +66,11 @@ class CaloAnalyzer : public edm::EDAnalyzer {
       virtual void endRun(edm::Run const&, edm::EventSetup const&);
       virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+
+      // --------
+
+      virtual double fillEB(edm::Handle<EcalRecHitCollection> EBRecHits);
+      virtual double fillEE(edm::Handle<EcalRecHitCollection> EERecHits);
 
       // ----------member data ---------------------------
 
