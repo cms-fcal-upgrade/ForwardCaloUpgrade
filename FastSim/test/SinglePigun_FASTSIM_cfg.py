@@ -35,7 +35,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.3 $'),
+    version = cms.untracked.string('$Revision: 1.4 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -45,7 +45,7 @@ process.configurationMetadata = cms.untracked.PSet(
 process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.RECOSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('SinglePigun_FASTSIM.root'),
+    fileName = cms.untracked.string('/tmp/mgouzevi/SinglePigun_FASTSIM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RECO')
@@ -84,7 +84,7 @@ process.generator = cms.EDProducer("FlatRandomEGunProducer",
     ),
     Verbosity = cms.untracked.int32(0),
     psethack = cms.string('single pi pt 1'),
-    AddAntiParticle = cms.bool(True),
+    AddAntiParticle = cms.bool(False),
     firstRun = cms.untracked.uint32(1)
 )
 
