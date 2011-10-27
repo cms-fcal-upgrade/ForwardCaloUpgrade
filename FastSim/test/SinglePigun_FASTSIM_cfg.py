@@ -35,7 +35,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
+    version = cms.untracked.string('$Revision: 1.3 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -68,16 +68,19 @@ process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingP
 process.GlobalTag.globaltag = 'MC_42_V15A::All'
 #'MC_311_V2::All'
 
-process.generator = cms.EDProducer("FlatRandomPtGunProducer",
+
+
+process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
-        MaxPt = cms.double(10.01),
-        MinPt = cms.double(9.99),
-	# Pion = 211, nu_e = 12
-        PartID = cms.vint32(211),
+        MaxE = cms.double(10.01),
+        MinE = cms.double(9.99),
+	# Pion = 211, nu_e = 12, e = 11
+        PartID = cms.vint32(11),
+	# Eta limits set up to be in the end-cap
+        MinEta = cms.double(1.6),
         MaxEta = cms.double(2.5),
-        MaxPhi = cms.double(3.14159265359),
-        MinEta = cms.double(1.5),
-        MinPhi = cms.double(-3.14159265359)
+	MinPhi = cms.double(-3.14159265359),
+        MaxPhi = cms.double(3.14159265359)
     ),
     Verbosity = cms.untracked.int32(0),
     psethack = cms.string('single pi pt 1'),
@@ -86,13 +89,19 @@ process.generator = cms.EDProducer("FlatRandomPtGunProducer",
 )
 
 
+# ---------------------------
 # Switch off different noises
-process.ecalRecHit.doMiscalib = True
+# ---------------------------
 
+# this is important for particle gun studies
+# you might like to change the noise parameters to those you expect from
+# your detector model and then study.
+
+process.ecalRecHit.doMiscalib = True
 process.ecalRecHit.RecHitsFactory.ECALBarrel.Noise = cms.double(0)
 process.ecalRecHit.RecHitsFactory.ECALBarrel.Threshold = cms.double(0.001)
-process.ecalRecHit.RecHitsFactory.ECALBarrel.SRThreshold = cms.double(0.0)
 process.ecalRecHit.RecHitsFactory.ECALBarrel.HighNoiseParameters = cms.vdouble()
+process.ecalRecHit.RecHitsFactory.ECALBarrel.SRThreshold = cms.double(0.0)
 
 process.ecalRecHit.RecHitsFactory.ECALEndcap.Noise = cms.double(0)
 process.ecalRecHit.RecHitsFactory.ECALEndcap.Threshold = cms.double(0.001)
@@ -110,8 +119,18 @@ process.hbhereco.RecHitsFactory.Noise = cms.vdouble(0, 0)
 process.horeco.RecHitsFactory.Noise = cms.vdouble(0)
 process.hfreco.RecHitsFactory.Noise = cms.vdouble(0)
 
+# -----------------------------------------------------------------------------
+# Switch off interactions in the CMS tracker
+# -----------------------------------------------------------------------------
 
+# this allow to have a more clean particles sample arriving to the calorimeters
+# for more "physics oriented studies" you would probably like to switch them back
 
+process.famosSimHits.MaterialEffects.PairProduction = False
+process.famosSimHits.MaterialEffects.Bremsstrahlung = False
+process.famosSimHits.MaterialEffects.EnergyLoss = False
+process.famosSimHits.MaterialEffects.MultipleScattering = False
+process.famosSimHits.MaterialEffects.NuclearInteraction = False
 
 
 
