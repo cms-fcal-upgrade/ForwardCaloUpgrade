@@ -13,7 +13,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id: CaloAnalyzer.cc,v 1.4 2011/10/27 17:58:20 mgouzevi Exp $
+// $Id: CaloAnalyzer.cc,v 1.5 2011/10/28 09:25:05 mgouzevi Exp $
 //
 //
 
@@ -218,7 +218,7 @@ CaloAnalyzer::beginJob()
 void 
 CaloAnalyzer::endJob() 
 {
-  outfilename = "toto.root";
+  outfilename = "calorimeter_histograms.root";
 
   TFile* outfile = new TFile(outfilename, "RECREATE");
   outfile->cd();
