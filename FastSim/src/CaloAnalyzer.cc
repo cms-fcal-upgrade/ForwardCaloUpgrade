@@ -13,7 +13,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id: CaloAnalyzer.cc,v 1.3 2011/10/25 20:36:16 mgouzevi Exp $
+// $Id: CaloAnalyzer.cc,v 1.4 2011/10/27 17:58:20 mgouzevi Exp $
 //
 //
 
@@ -155,9 +155,13 @@ CaloAnalyzer::fillEE(Handle<EcalRecHitCollection> EERecHits){
    hMap["caloEE_totenergy"]->Fill(totalEneEE);
    hMap["caloEE_totenergy_zoom"]->Fill(totalEneEE);
  
+   fV2_X /= totalEneEE;  fV2_Y /= totalEneEE;  
+   fMean_X /= totalEneEE;  fMean_Y /= totalEneEE;  
 
-   double fSigma_X = sqrt(fV2_X - fMean_X*fMean_X)/totalEneEE;
-   double fSigma_Y = sqrt(fV2_Y - fMean_Y*fMean_Y)/totalEneEE;
+
+   double fSigma_X = sqrt(fV2_X - fMean_X*fMean_X);
+   double fSigma_Y = sqrt(fV2_Y - fMean_Y*fMean_Y);
+
 
    if (fSigma_X > 1e-4) hMap2D["caloEE_xsize"]->Fill(fSigma_X, totalEneEE);
    if (fSigma_Y > 1e-4) hMap2D["caloEE_ysize"]->Fill(fSigma_Y, totalEneEE);
@@ -234,8 +238,8 @@ void
 CaloAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
 {
   
-  hMap["caloEB_size"] = new TH1F("caloEB_size", "N hits in ECAL barrel", 100, 0, 1000);
-  hMap["caloEE_size"] = new TH1F("caloEE_size", "N hits in ECAL endcap", 100, 0, 1000);
+  hMap["caloEB_size"] = new TH1F("caloEB_size", "N hits in ECAL barrel", 1000, 0, 1000);
+  hMap["caloEE_size"] = new TH1F("caloEE_size", "N hits in ECAL endcap", 1000, 0, 1000);
     
   hMap["caloEB_energy"] = new TH1F("caloEB_energy", "Hits energy in ECAL barrel", 100, 0, 100);
   hMap["caloEE_energy"] = new TH1F("caloEE_energy", "Hits energy in ECAL endcap", 100, 0, 100);
@@ -255,8 +259,8 @@ CaloAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
   hMap["caloE_totenergy"] = new TH1F("caloE_totenergy", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 100);
   hMap["caloE_totenergy_zoom"] = new TH1F("caloE_totenergy_zoom", "Total hits energy in ECAL endcap zoom to 10 GeV", 100, 0, 10);
 
-  hMap2D["caloEE_xsize"] = new TH2F("caloEE_xsize", "Transverse x size (cm)", 20, 0, 20, 10, 0, 100); 
-  hMap2D["caloEE_ysize"] = new TH2F("caloEE_ysize", "Transverse y size (cm)", 20, 0, 20, 10, 0, 100); 
+  hMap2D["caloEE_xsize"] = new TH2F("caloEE_xsize", "Transverse x size (cm)", 50, 0, 10, 100, 0, 100); 
+  hMap2D["caloEE_ysize"] = new TH2F("caloEE_ysize", "Transverse y size (cm)", 50, 0, 10, 100, 0, 100); 
 
 
 
