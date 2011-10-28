@@ -35,17 +35,18 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.4 $'),
+    version = cms.untracked.string('$Revision: 1.5 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
 
 # Output definition
 
+
 process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.RECOSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('/tmp/mgouzevi/SinglePigun_FASTSIM.root'),
+    fileName = cms.untracked.string('/tmp/SinglePigun_FASTSIM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RECO')
@@ -72,8 +73,8 @@ process.GlobalTag.globaltag = 'MC_42_V15A::All'
 
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
+	MinE = cms.double(9.99),
         MaxE = cms.double(10.01),
-        MinE = cms.double(9.99),
 	# Pion = 211, nu_e = 12, e = 11
         PartID = cms.vint32(11),
 	# Eta limits set up to be in the end-cap
@@ -148,3 +149,21 @@ process.schedule.extend([process.reconstruction,process.RECOSIMoutput_step])
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.generator * getattr(process,path)._seq 
+
+
+
+#--------------------------- Dont change those lines -----------------------------#
+#------- They are used by scripts to produce automatically large data samples ----#
+
+#FORWARD process.generator.PGunParameters.MinEta = cms.double(1.6)
+#FORWARD process.generator.PGunParameters.MinEta = cms.double(2.4)
+
+#CENTRAL process.generator.PGunParameters.MinEta = cms.double(-0.9)
+#CENTRAL process.generator.PGunParameters.MinEta = cms.double(0.9)
+
+#ENERGY process.generator.PGunParameters.MinE = cms.double(#MIN.99)
+#ENERGY process.generator.PGunParameters.MaxE = cms.double(#MAX.01)
+
+#PART process.generator.PGunParameters.PartID = cms.vint32(#PARTID)
+#MEVENTS process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(#NEVENTS))
+#FILENAME process.RECOSIMoutput.fileName = cms.untracked.string('SinglePigun_FASTSIM.root')
