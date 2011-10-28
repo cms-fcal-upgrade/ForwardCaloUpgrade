@@ -1,3 +1,9 @@
+#! /bin/sh
+
+# Done by Maxime Gouzevitch
+# mgouzevi@cern.ch
+# 2011/10/28
+
 REP=$1
 PART=$2
 ENERGY=$3
@@ -83,11 +89,9 @@ then
     
     cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -o OutResonance_$PTITLE_$ENERGY_$REGION -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
 else 
-    echo "All files"
-#    nsls -l /castor/cern.ch/user/m/mgouzevi/cmst3/JetAndMetAnalyses/$REP/$PROD/$TITLE
-#    echo "Only PFAnalysis Files"
-#    nsls -l /castor/cern.ch/user/m/mgouzevi/cmst3/JetAndMetAnalyses/$REP/$PROD/$TITLE | grep "diJetAnalysis_"
-#    cd $CMSSW_BASE/src/CMGTools/DiJetHighMass/prod
-#    ~/bin/importNewSource.py /$REP/$PROD --castorBaseDir ${castorBaseDir} -p "diJetAnalysis_"$TITLE"_([0-9]|[1-9][0-9]).*root" -f $TITLE
-#    cd -
+
+    nsls -l $OUT
+    ../scripts/massNsCheckFileValidity.sh  ${REP} ${PTITLE}/${ENERGY}'GEV'/${REGION} printGood tmp.py
+    mv tmp.py ../python/Samples/${PTITLE}'_'${ENERGY}'_'${REGION}.py
+
 fi
