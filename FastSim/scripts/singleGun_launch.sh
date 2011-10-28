@@ -37,7 +37,7 @@ case $i in
 7) ENERGY=640;;
 esac
 
-../scripts/cmgAnalysis_Analyser.sh $REP $PART $ENERGY $REGION $NFILES $NEVENTS $PRODUCE $QUEUE
+../scripts/singleGun_Analyser.sh $REP $PART $ENERGY $REGION $NFILES $NEVENTS $PRODUCE $QUEUE
 
 i=$[i+1]
 done
