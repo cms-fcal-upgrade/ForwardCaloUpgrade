@@ -65,20 +65,20 @@ echo "------------------------------------"
 MINE=$[ENERGY-1]
 
 
-sed s/'#PART '/''/ <SinglePigun_FASTSIM_cfg.py | 
-sed s/'#MIN'/${MINE}/ |
-sed s/'#MAX'/${ENERGY}/ | 
-sed s/'#'$REGION' '/''/ |
-sed s/'#ENERGY '/''/ |
-sed s/'#PARTID'/$PART/ |
-sed s/'#MEVENTS '/''/ |
-sed s/'#NEVENTS'/$NEVENTS/ |
-sed s/'#FILENAME '/''/ >SinglePigun_FASTSIM_launch_cfg.py
-
-
 
 if [ $PRODUCE -eq 1 ] 
 then
+
+	sed s/'#PART '/''/ <SinglePigun_FASTSIM_cfg.py | 
+	sed s/'#MIN'/${MINE}/ |
+	sed s/'#MAX'/${ENERGY}/ | 
+	sed s/'#'$REGION' '/''/ |
+	sed s/'#ENERGY '/''/ |
+	sed s/'#PARTID'/$PART/ |
+	sed s/'#MEVENTS '/''/ |
+	sed s/'#NEVENTS'/$NEVENTS/ |
+	sed s/'#FILENAME '/''/ >SinglePigun_FASTSIM_launch_cfg.py
+
     OUT=${REP}'/'${PTITLE}
     nsmkdir $OUT
     OUT=$OUT'/'${ENERGY}'GEV'
@@ -88,10 +88,22 @@ then
     echo "We are launching the production for "$OUT
     
     cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -o OutResonance_$PTITLE_$ENERGY_$REGION -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
-else 
-
+elif [ $PRODUCE -eq 0 ];
+then
     nsls -l $OUT
     ../scripts/massNsCheckFileValidity.sh  ${REP} ${PTITLE}/${ENERGY}'GEV'/${REGION} printGood tmp.py
     mv tmp.py ../python/Samples/${PTITLE}'_'${ENERGY}'_'${REGION}.py
+
+elif [ $PRODUCE -eq 2 ];
+then
+        mkdir HISTOGRAMS
+
+        SRC="ForwardCaloUpgrade.FastSim.Samples."${PTITLE}'_'${ENERGY}'_'${REGION}
+
+	sed s/'#SOURCE '/''/ <caloanalyzer_cfg.py | 
+        sed s/'#SRC'/${SRC}/ >caloanalyzer_launch_cfg.py
+
+	cmsRun caloanalyzer_launch_cfg.py
+	mv calorimeter_histograms.root HISTOGRAMS/calorimeter_histograms_${PTITLE}'_'${ENERGY}'_'${REGION}.root
 
 fi

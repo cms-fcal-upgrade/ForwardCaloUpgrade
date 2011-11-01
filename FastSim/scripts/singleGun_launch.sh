@@ -1,7 +1,7 @@
 #! /bin/sh
 
-# Done by Yuri Gouzevitch
-# ygouzevi@cern.ch
+# Done by Maxime Gouzevitch
+# mgouzevi@cern.ch
 # 2011/10/28
 
 # The root of the castor repertory where you want to store your data. This
@@ -18,13 +18,13 @@ REGION=FORWARD
 NFILES=10
 #Numer of events per file
 NEVENTS=2000
-# Produce those files (1) or create a source file (0)?
-PRODUCE=0
+# Produce those files (1) or create a source file (0) or produce histograms (2)?
+PRODUCE=2
 # Batch queue may be you need to change if long jobs 
 QUEUE=8nh
 
 
-i=7
+i=1
 while [ $i -le 7 ]; do
 
 case $i in
