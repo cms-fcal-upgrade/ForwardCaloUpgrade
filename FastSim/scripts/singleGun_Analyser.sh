@@ -12,6 +12,7 @@ NFILES=$5
 NEVENTS=$6
 PRODUCE=$7
 QUEUE=$8
+PROD=$9
 
 if [ $NFILES -le 0 ] 
 then
@@ -47,18 +48,20 @@ case $PART in
 	fi;;
 esac
 
-OUT=${REP}'/'${PTITLE}'/'${ENERGY}'GEV/'${REGION}
+
+OUT=${REP}'/'${PROD}'/'${PTITLE}'/'${ENERGY}'GEV/'${REGION}
 
 echo "------------------------------------"
 echo "------------------------------------"
-echo "CASTOR ROOT REPERTORY "$REP
-echo "FILES Store repertory "$OUT
-echo "Particle with PdgId ="$PART" is "$PTITLE
-echo "Energy ="$ENERGY
-echo "Calorimeter region = "$REGION
-echo "Number of files to produce "$NFILES
-echo "with "$NEVENTS" events"
-echo "have to be produced = "$PRODUCE
+echo "CASTOR ROOT REPERTORY "${REP}
+echo "PRODUCTION IS "${PROD}
+echo "FILES Store repertory "${OUT}
+echo "Particle with PdgId ="${PART}" is "${PTITLE}
+echo "Energy ="${ENERGY}
+echo "Calorimeter region = "${REGION}
+echo "Number of files to produce "${NFILES}
+echo "with "${NEVENTS}" events"
+echo "have to be produced = "${PRODUCE}
 echo "------------------------------------"
 echo "------------------------------------"
 
@@ -72,14 +75,16 @@ then
 	sed s/'#PART '/''/ <SinglePigun_FASTSIM_cfg.py | 
 	sed s/'#MIN'/${MINE}/ |
 	sed s/'#MAX'/${ENERGY}/ | 
-	sed s/'#'$REGION' '/''/ |
+	sed s/'#'${REGION}' '/''/ |
 	sed s/'#ENERGY '/''/ |
-	sed s/'#PARTID'/$PART/ |
+	sed s/'#PARTID'/${PART}/ |
 	sed s/'#MEVENTS '/''/ |
-	sed s/'#NEVENTS'/$NEVENTS/ |
+	sed s/'#NEVENTS'/${NEVENTS}/ |
 	sed s/'#FILENAME '/''/ >SinglePigun_FASTSIM_launch_cfg.py
 
-    OUT=${REP}'/'${PTITLE}
+    OUT=${REP}'/'$PROD
+    nsmkdir $OUT
+    OUT=${OUT}'/'${PTITLE}
     nsmkdir $OUT
     OUT=$OUT'/'${ENERGY}'GEV'
     nsmkdir $OUT
@@ -87,23 +92,23 @@ then
     nsmkdir $OUT
     echo "We are launching the production for "$OUT
     
-    cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -o OutResonance_$PTITLE_$ENERGY_$REGION -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
+    cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -o OutResonance_${PROD}_${PTITLE}_${ENERGY}_${REGION} -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
 elif [ $PRODUCE -eq 0 ];
 then
     nsls -l $OUT
-    ../scripts/massNsCheckFileValidity.sh  ${REP} ${PTITLE}/${ENERGY}'GEV'/${REGION} printGood tmp.py
-    mv tmp.py ../python/Samples/${PTITLE}'_'${ENERGY}'_'${REGION}.py
+    ../scripts/massNsCheckFileValidity.sh  ${REP} ${PROD}/${PTITLE}/${ENERGY}'GEV'/${REGION} printGood tmp.py
+    mv tmp.py ../python/Samples/${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.py
 
 elif [ $PRODUCE -eq 2 ];
 then
         mkdir HISTOGRAMS
 
-        SRC="ForwardCaloUpgrade.FastSim.Samples."${PTITLE}'_'${ENERGY}'_'${REGION}
+        SRC="ForwardCaloUpgrade.FastSim.Samples."${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}
 
 	sed s/'#SOURCE '/''/ <caloanalyzer_cfg.py | 
         sed s/'#SRC'/${SRC}/ >caloanalyzer_launch_cfg.py
 
 	cmsRun caloanalyzer_launch_cfg.py
-	mv calorimeter_histograms.root HISTOGRAMS/calorimeter_histograms_${PTITLE}'_'${ENERGY}'_'${REGION}.root
+	mv calorimeter_histograms.root HISTOGRAMS/calorimeter_histograms_${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.root
 
 fi
