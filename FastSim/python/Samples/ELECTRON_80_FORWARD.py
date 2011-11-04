@@ -13,10 +13,6 @@ fileName.extend([
     "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_0.root",
     "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_1.root",
     "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_2.root",
+    "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_3.root",
     "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_4.root",
-    "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_5.root",
-    "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_6.root",
-    "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_7.root",
-    "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_8.root",
-    "rfio:/castor/cern.ch/cms/store/cmst3/user/mgouzevi/FCAL_UPGRADE/ELECTRON/80GEV/FORWARD/SinglePigun_FASTSIM_9.root",
 ])
