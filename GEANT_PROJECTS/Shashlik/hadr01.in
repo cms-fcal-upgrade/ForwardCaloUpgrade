@@ -1,0 +1,48 @@
+#================================================
+#     Macro file for hadr01
+#================================================
+/control/verbose 2
+/run/verbose 1
+/tracking/verbose 0
+#
+# Set Ecal geometry (sampling calorimeter - Shashlyk)
+#----------------------------------------------------
+# total length of Ecal calorimeter L=(AbsThick+SensThick)*NbOfLayers
+# must be  <= 22.0 cm
+#
+# Absorber materials can be: Lead, Brass, Tungsten
+#
+# Sensitive materials are: LAG, YAG, LSO, LYSO PbWO, where:
+#----------------------------------------------------------
+# Sens1 = (LAG  = Lu3_Al5_O12  and density 6.7 g/cm3);
+# Sens2 = (YAG  = Y3_Al5_O12   and density 5.47 g/cm3);
+# Sens3 = (LSO  = Lu2_Si_O5    and density 7.34 g/cm3);
+# Sens4 = (LYSO = Lu2_Y2_Si_O5 and density 7.30 g/cm3);
+# PbWO  = (PbWO = Pb_W_O4      and density 8.30 g/cm3);
+#----------------------------------------------------------
+# There is possibility to apply uniform magnetic field 
+# along z-axis (1 Tesla = 10 kG)
+#
+/ecal/det/setNbOfLayers 110
+/ecal/det/setEcalAbsMat Lead
+/ecal/det/setEcalSensMat LSO
+/ecal/det/setEcalAbsThick   1.0 mm
+/ecal/det/setEcalSensThick  1.0 mm
+/ecal/det/setMagField 0.0 kG
+/ecal/det/update
+#
+# Set type of particle, energy and position. If position
+# of particle x = -10.0*cm then simulation carries out 
+# only for HE and if position x = -110.0*cm - simulation
+# provides full setup (SE + ECAL + HE + dead material)
+#
+/run/setCut 0.1 mm
+#/run/particle/setCut 0.1 mm
+##/gun/particle pi-
+/gun/particle e-
+/gun/position -110. 0. 0. cm
+/gun/energy 50. GeV
+#
+/run/initialize
+/run/beamOn 1
+#

@@ -1,0 +1,138 @@
+                            Example02
+                            ---------
+
+	This example simulates a Hadron Endcap (HE) calorimeter
+        with SE (photon preshower) and ECAL in front of
+        and some additional dead materials between ECAL and HE. 
+	(This setup is very close to the real geometry)
+	
+ 1- GEOMETRY DEFINITION
+ -----------------------
+
+ 	The HE calorimeter is a box (149.6) along X-axis made 
+        of 17 layers. The front of HE calorimeter starts from
+        x=0.0*cm and propagates to positive direction. The transverse
+        calorimeter dimension is 100.0*cm X 100.0*cm (Y and Z axis). 
+        Each layer (8.8*cm) consists of an absorber plate (79.0*mm Brass) 
+        and of an air gap (9.0*mm). Inside air gap the aluminium wrapper 
+        (7.0*mm) is placed. The sensitive plate of 3.9*mm thickness of 
+        scintillator is inside of aluminium wrapper. The layer is
+ 	replicated.
+ 	
+        In front of HE calorimeter the next materials are placed:
+
+          a) Zero layer of HE calorimeter (15.0*mm aluminium wrapper
+             and 9.0*mm sensitive scintillator material);
+
+          b) Cables from ECAL (1.5*mm of copper at x = -35.8*cm);
+
+          c) G10 plate behind ECAL and in front of HE (2.5*mm at x = -59.80*cm);
+
+          d) ECAL itself (22.0*cm box of PbWO4 material at x = -70.80*cm);
+
+          e) Aluminium support in front of ECAL (4.5*mm at x = -82.025*cm);
+
+          f) Aluminium part of SE (photon preshower) (3.0*cm at x = -98.3*cm);
+
+          g) Lead part of SE (photon preshower) (1.5*cm at x = 100.55*cm);
+
+          h) G10 plate in front of SE (2.5*mm at x = -101.425*cm). 	
+
+    1a. The new option is introduced for the ECAL geometry:
+    -------------------------------------------------------
+
+          a) as default geometry - ECAL consist of 22.0*cm box of PbWO4 material;
+          
+          b) second option - ECAL is a sampling calorimeter with the set of variable
+             parameters: number of calorimetr's layers, thickness of absorber and  
+             sensitive layers, different absorber and sensitive materials. All 
+             these parameters can be chosen by user in hadr01.in file; 
+
+          c) also there possibility to apply uniform magnetic field along z-axis; 
+ 
+          d) example how to set these parameters is presented below:
+
+# Set Ecal geometry (sampling calorimeter - "Shashlyk")
+#------------------------------------------------------
+# total length of Ecal calorimeter L=(AbsThick+SensThick)*NbOfLayers
+# must be  <= 22.0 cm
+#
+# Absorber materials are: Lead, Brass, Tungsten.
+# 
+# Sensitive materials are: LAG, YAG, LSO, LYSO PbWO, where:
+#----------------------------------------------------------
+# Sens1 = (LAG  = Lu3_Al5_O12  and density 6.70 g/cm3); 
+# Sens2 = (YAG  = Y3_Al5_O12   and density 5.47 g/cm3);  
+# Sens3 = (LSO  = Lu2_Si_O5    and density 7.34 g/cm3);
+# Sens4 = (LYSO = Lu2_Y2_Si_O5 and density 7.30 g/cm3);
+# PbWO  = (PbWO = Pb_W_O4      and density 8.30 g/cm3);
+#----------------------------------------------------------
+#
+# There is possibility to apply uniform magnetic field
+# along z-axis (1 Tesla = 10 kG)
+#
+
+/ecal/det/setNbOfLayers 110
+/ecal/det/setEcalAbsMat Lead
+/ecal/det/setEcalSensMat LYSO
+/ecal/det/setEcalAbsThick  1. mm
+/ecal/det/setEcalSensThick 1. mm
+/ecal/det/setMagField 0.0 kG
+/ecal/det/update
+# 
+
+ 2- HISTOGRAMs
+ --------------
+   
+      There are 3 TH1D-histos with deposited energies in the different
+      part of setup: 
+
+          a) Ecal - total deposited energy in sensitive ECAL (GeV scale);
+
+          b) Hcal - sum of deposited energy in all sensitive
+                    (scintillator) layers (MeV scale);
+
+          c) Zero - deposited energy in the scintillator of "zero"
+                    HE layer.
+
+      There are also ROOT "TTree" with different values:
+
+          a) ROOT 'TTree' "Total" presents deposited energy in sensitive
+             layers of ECAL, HCAL, Zero-layer and total range of charged 
+             particles in sensitive layers of HCAL.
+
+          b) ROOT 'TTree' "Vector" presents deposited energies for each
+             layer (17 entries) of HE calorimeter. 
+            
+          c) ROOT 'TTree' "Range" presents range of charged particles for 
+             each layer (17 entries) of HE calorimeter.
+          
+          d) ROOT 'TTree' "Cell" presents deposited energies for each
+             cell (1700 entries) of HE calorimeter. Cell contains deposited
+             energy for each HE layers as function of radius (100 bins with 
+             step 1.0*cm). Cell number is determined as:
+
+             i_cell =  int( sqrt(yhit*yhit+zhit*zhit) / 10. ) + 100*n_layer;
+
+      	
+ 3- HOW TO START ?
+ -----------------
+
+  a) source /afs/cern.ch/sw/lcg/external/gcc/4.3.2/x86_64-slc5/setup.csh
+
+  b) setenv G4BASE /afs/cern.ch/sw/lcg/external/geant4
+
+  c) source $G4BASE/9.4.p02/x86_64-slc5-gcc43/setup.csh
+
+  d) gmake 
+
+  e) Run program
+
+     ~/geant4/9.4.p02/x86_64-slc5-gcc43/bin/Linux-g++/fcalor hadr01.in > test_out01
+
+
+ 4- INPUT FILE
+ --------- ----
+
+    File hadr01.in contains example of some control lines for job running. 
+
