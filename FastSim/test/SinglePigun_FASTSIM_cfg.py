@@ -23,7 +23,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(20)
 )
 
 # Input source
@@ -35,7 +35,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.6 $'),
+    version = cms.untracked.string('$Revision: 1.7 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -133,6 +133,11 @@ process.famosSimHits.MaterialEffects.EnergyLoss = False
 process.famosSimHits.MaterialEffects.MultipleScattering = False
 process.famosSimHits.MaterialEffects.NuclearInteraction = False
 
+
+#-------------------------------------------------------------------------
+# Switch off the preshower
+# ------------------------------------------------------------------------
+process.famosSimHits.Calorimetry.ECAL.SimulatePreshower = cms.bool(False)
 
 
 # Path and EndPath definitions
