@@ -23,8 +23,11 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(1000)
 )
+
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+
 
 # Input source
 process.source = cms.Source("EmptySource")
@@ -35,7 +38,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.7 $'),
+    version = cms.untracked.string('$Revision: 1.8 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -138,6 +141,19 @@ process.famosSimHits.MaterialEffects.NuclearInteraction = False
 # Switch off the preshower
 # ------------------------------------------------------------------------
 process.famosSimHits.Calorimetry.ECAL.SimulatePreshower = cms.bool(False)
+
+#-------------------------------------------------------------------------
+# ECAL shower parameters
+# ------------------------------------------------------------------------
+#SpotFraction is the fraction of spots wrt. the Grindhammer parametrization
+#used for the shower simulation. SpotFraction=1 corresponds to the default parametrization.
+process.famosSimHits.Calorimetry.ECAL.SpotFraction = cms.double(1.0)
+process.famosSimHits.Calorimetry.ECAL.CoreIntervals = cms.vdouble(100.0, 1.0)
+process.famosSimHits.Calorimetry.ECAL.TailIntervals = cms.vdouble(100.0, 1.0)
+#Size of the longitudinal grid we use for simulation, doesn't seems to work since hard coded in
+#void EMShower::prepareSteps() from FastSimulation/ShowerDevelopment/src
+process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
+
 
 
 # Path and EndPath definitions
