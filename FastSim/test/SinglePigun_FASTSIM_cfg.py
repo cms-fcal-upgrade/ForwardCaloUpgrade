@@ -21,9 +21,11 @@ process.load('IOMC.EventVertexGenerators.VtxSmearedParameters_cfi')
 process.load('FastSimulation.Configuration.HLT_GRun_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
+process.load('DQMServices.Components.DQMFileSaver_cfi')
+
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10)
 )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -38,7 +40,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.8 $'),
+    version = cms.untracked.string('$Revision: 1.9 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -69,7 +71,8 @@ process.HLTEndSequence = cms.Sequence(process.reconstructionWithFamos)
 process.Realistic7TeVCollisionVtxSmearingParameters.type = cms.string("BetaFunc")
 process.famosSimHits.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
 process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
-process.GlobalTag.globaltag = 'MC_42_V15A::All'
+process.GlobalTag.globaltag = 'START50_V7::All'
+#process.GlobalTag.globaltag = 'MC_42_V15A::All'
 #'MC_311_V2::All'
 
 
@@ -156,16 +159,29 @@ process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
 
 
+
+#---------------------------------------------------------------
+# DQM
+#---------------------------------------------------------------
+# Switch on the simulation of the shower by steps of 1 X0 necessary
+# to fill the shower shape histograms
+process.famosSimHits.Calorimetry.ECAL.bFixedLength = cms.bool(True)
+# switch on the DQM histograms in FastSimulation/CalorimeterProperties and in FastSimulation/ShowerShapes
+process.famosSimHits.Calorimetry.CalorimeterProperties.useDQM = cms.bool(True)
+# DQM file saves customization
+process.dqmSaver.workflow = '/ParticleGun/FastSim/DQM'
+
+
+
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen_genonly)
 process.reconstruction = cms.Path(process.reconstructionWithFamos)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
-process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
+process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput*process.dqmSaver)
 process.sim = cms.Path(process.simulationWithFamos)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.sim)
-#process.schedule.extend(process.HLTSchedule)
 process.schedule.extend([process.reconstruction,process.RECOSIMoutput_step])
 # filter all path with the production filter sequence
 for path in process.paths:
