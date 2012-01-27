@@ -135,26 +135,18 @@ then
 
     echo "])" >>$outputFile
     
-    mv tmp.py ../python/Samples/${PTITLE}'_'${ENERGY}'_'${REGION}.py
-
-    SRC="ForwardCaloUpgrade.FastSim.Samples."${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}
-
-    sed s/'#SOURCE '/''/ <caloanalyzer_cfg.py | 
-    sed s/'#SRC'/${SRC}/ >caloanalyzer_launch_cfg.py
-
-    cmsRun caloanalyzer_launch_cfg.py
-    mv calorimeter_histograms.root HISTOGRAMS/calorimeter_histograms_${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.root
+    mv tmp.py ../python/Samples/${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.py
 
 
 else 
     rm /tmp/mgouzevi/*.*
     mkdir ${PTITLE}_${REGION}
     sed s@'#SOURCE '@''@ <caloanalyzer_cfg.py | 
-    sed s@'#SRC'@ForwardCaloUpgrade.FastSim.Samples.${PTITLE}'_'${ENERGY}'_'${REGION}@ >caloanalyzer_launch_cfg.py 
-    cmsRun caloanalyzer_launch_cfg.py 
-    cp calorimeter_histograms.root  ${PTITLE}'_'${REGION}/calorimeter_histograms_${PTITLE}_${ENERGY}_${REGION}.root
+    sed s@'#SRC'@ForwardCaloUpgrade.FastSim.Samples.${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}@ >caloanalyzer_launch_cfg.py 
+#    cmsRun caloanalyzer_launch_cfg.py 
+#    cp calorimeter_histograms.root  ${PTITLE}_${REGION}/calorimeter_histograms_${PROD}_${PTITLE}_${ENERGY}_${REGION}.root
 
-    hadd="hadd /tmp/mgouzevi/DQM_ShowerShape_"${PTITLE}_${ENERGY}_${REGION}".root "
+    hadd="hadd /tmp/mgouzevi/DQM_ShowerShape_"${PROD}"_"${PTITLE}"_"${ENERGY}_${REGION}".root "
 
     NINF=$[NFILES-1]
     i=0
@@ -172,6 +164,6 @@ else
 
     echo $hadd
     $hadd
-    cp /tmp/mgouzevi/DQM_ShowerShape_"${PTITLE}_${ENERGY}_${REGION}".root ELECTRON_FORWARD
+    cp /tmp/mgouzevi/DQM_ShowerShape_"${PROD}"_"${PTITLE}_${ENERGY}_${REGION}".root ELECTRON_FORWARD
     rm /tmp/mgouzevi/*.*
 fi

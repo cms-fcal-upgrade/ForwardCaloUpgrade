@@ -16,15 +16,15 @@ ENERGY=10
 # Region of the calorimeter where you want to fire your aprticle. 2 options possible: CENTRAL (-0.9 < eta < 0.9) or FORWARD (1.6 < eta < 2.4)
 REGION=FORWARD
 # ProdName to have a production with specific conditions
-PROD=STANDARD
+PROD=STANDARD1
 #Number of files you want to generate
 NFILES=5
 #Numer of events per file
 NEVENTS=4000
 # Produce those files (1) or create a source file (0) or launch the calo analyser (-1)?
-PRODUCE=1
+PRODUCE=-1
 # Production queue on CERN batch
-QUEUE=1nh
+QUEUE=1nd
 
 i=1
 
@@ -45,3 +45,9 @@ esac
 i=$[i+1]
 done
 
+if [ $PRODUCE -eq 0 ] 
+then
+    cd ..
+    scramv1 python
+    cd -
+fi
