@@ -40,7 +40,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.9 $'),
+    version = cms.untracked.string('$Revision: 1.10 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -71,8 +71,8 @@ process.HLTEndSequence = cms.Sequence(process.reconstructionWithFamos)
 process.Realistic7TeVCollisionVtxSmearingParameters.type = cms.string("BetaFunc")
 process.famosSimHits.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
 process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
-process.GlobalTag.globaltag = 'START50_V7::All'
-#process.GlobalTag.globaltag = 'MC_42_V15A::All'
+#process.GlobalTag.globaltag = 'START50_V7::All'
+process.GlobalTag.globaltag = 'MC_42_V15A::All'
 #'MC_311_V2::All'
 
 
@@ -157,9 +157,12 @@ process.famosSimHits.Calorimetry.ECAL.TailIntervals = cms.vdouble(100.0, 1.0)
 #void EMShower::prepareSteps() from FastSimulation/ShowerDevelopment/src
 process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
+#Set up the LYSO detector for the forward ECAL
+     
+from ForwardCaloUpgrade.FastSim.LYSO_cff import myForwardECAL
+myForwardECAL( process )
 
-
-
+	
 #---------------------------------------------------------------
 # DQM
 #---------------------------------------------------------------
