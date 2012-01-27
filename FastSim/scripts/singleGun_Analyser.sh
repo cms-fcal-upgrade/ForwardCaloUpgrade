@@ -72,43 +72,106 @@ MINE=$[ENERGY-1]
 if [ $PRODUCE -eq 1 ] 
 then
 
-	sed s/'#PART '/''/ <SinglePigun_FASTSIM_cfg.py | 
-	sed s/'#MIN'/${MINE}/ |
-	sed s/'#MAX'/${ENERGY}/ | 
-	sed s/'#'${REGION}' '/''/ |
-	sed s/'#ENERGY '/''/ |
-	sed s/'#PARTID'/${PART}/ |
-	sed s/'#MEVENTS '/''/ |
-	sed s/'#NEVENTS'/${NEVENTS}/ |
-	sed s/'#FILENAME '/''/ >SinglePigun_FASTSIM_launch_cfg.py
-
-    OUT=${REP}'/'$PROD
-    nsmkdir $OUT
-    OUT=${OUT}'/'${PTITLE}
-    nsmkdir $OUT
-    OUT=$OUT'/'${ENERGY}'GEV'
-    nsmkdir $OUT
-    OUT=$OUT'/'${REGION}
-    nsmkdir $OUT
+    sed s/'#PART '/''/ <SinglePigun_FASTSIM_cfg.py | 
+    sed s/'#MIN'/${MINE}/ |
+    sed s/'#MAX'/${ENERGY}/ | 
+    sed s/'#'${REGION}' '/''/ |
+    sed s/'#ENERGY '/''/ |
+    sed s/'#PARTID'/${PART}/ |
+    sed s/'#MEVENTS '/''/ |
+    sed s/'#NEVENTS'/${NEVENTS}/ |
+    sed s/'#FILENAME '/''/ >SinglePigun_FASTSIM_launch_cfg.py
+	
     echo "We are launching the production for "$OUT
     
-    cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -o OutResonance_${PROD}_${PTITLE}_${ENERGY}_${REGION} -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
-elif [ $PRODUCE -eq 0 ];
+    
+
+    cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
+elif [ $PRODUCE -eq 0 ] 
 then
-    nsls -l $OUT
-    ../scripts/massNsCheckFileValidity.sh  ${REP} ${PROD}/${PTITLE}/${ENERGY}'GEV'/${REGION} printGood tmp.py
-    mv tmp.py ../python/Samples/${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.py
 
-elif [ $PRODUCE -eq 2 ];
-then
-        mkdir HISTOGRAMS
+    rm tmp.py
+    outputFile=tmp.py
 
-        SRC="ForwardCaloUpgrade.FastSim.Samples."${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}
+    touch $outputFile
 
-	sed s/'#SOURCE '/''/ <caloanalyzer_cfg.py | 
-        sed s/'#SRC'/${SRC}/ >caloanalyzer_launch_cfg.py
+    echo "import FWCore.ParameterSet.Config as cms" >>$outputFile
+    echo "" >>$outputFile
+    echo "fileName=cms.untracked.vstring()" >>$outputFile
+    echo "" >>$outputFile
+    echo "source = cms.Source(
+	\"PoolSource\", 
+	noEventSort = cms.untracked.bool(True), 
+	duplicateCheckMode = cms.untracked.string(\"noDuplicateCheck\"), 
+	fileNames = fileName
+        )" >>$outputFile
 
-	cmsRun caloanalyzer_launch_cfg.py
-	mv calorimeter_histograms.root HISTOGRAMS/calorimeter_histograms_${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.root
+    echo "" >>$outputFile
+    echo "fileName.extend([" >>$outputFile 
+    
+    NINF=$[NFILES-2]
+    i=0
+    while [ $i -le $NINF ]; do
+	
+	test=$(cmsLs ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root")
+	if `echo ${test} | grep "No such file or directory" 1>/dev/null 2>&1`
+	    then
+	    echo "No File" ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root"
+	else
+	    echo "'root://eoscms//eos/cms/"${OUT}"/SinglePigun_FASTSIM_"${i}".root',">>$outputFile 	
+	fi
+	i=$[i+1]
+    done
+    NINF=$[NFILES-1]
 
+
+    test=$(cmsLs ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${NINF}".root")
+    if `echo ${test} | grep "No such file or directory" 1>/dev/null 2>&1`
+	then
+	echo "No File" ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root"
+    else
+	echo "'root://eoscms//eos/cms/"${OUT}"/SinglePigun_FASTSIM_"${NINF}".root'">>$outputFile 	
+    fi
+
+    echo "])" >>$outputFile
+    
+    mv tmp.py ../python/Samples/${PTITLE}'_'${ENERGY}'_'${REGION}.py
+
+    SRC="ForwardCaloUpgrade.FastSim.Samples."${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}
+
+    sed s/'#SOURCE '/''/ <caloanalyzer_cfg.py | 
+    sed s/'#SRC'/${SRC}/ >caloanalyzer_launch_cfg.py
+
+    cmsRun caloanalyzer_launch_cfg.py
+    mv calorimeter_histograms.root HISTOGRAMS/calorimeter_histograms_${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.root
+
+
+else 
+    rm /tmp/mgouzevi/*.*
+    mkdir ${PTITLE}_${REGION}
+    sed s@'#SOURCE '@''@ <caloanalyzer_cfg.py | 
+    sed s@'#SRC'@ForwardCaloUpgrade.FastSim.Samples.${PTITLE}'_'${ENERGY}'_'${REGION}@ >caloanalyzer_launch_cfg.py 
+    cmsRun caloanalyzer_launch_cfg.py 
+    cp calorimeter_histograms.root  ${PTITLE}'_'${REGION}/calorimeter_histograms_${PTITLE}_${ENERGY}_${REGION}.root
+
+    hadd="hadd /tmp/mgouzevi/DQM_ShowerShape_"${PTITLE}_${ENERGY}_${REGION}".root "
+
+    NINF=$[NFILES-1]
+    i=0
+    while [ $i -le $NINF ]; do
+	test=$(cmsLs ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root")
+	if `echo ${test} | grep "No such file or directory" 1>/dev/null 2>&1`
+	    then
+	    echo "No File" ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root"
+	else
+	    cmsStage ${OUT}"/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root" /tmp/mgouzevi/
+	    hadd=$hadd" /tmp/mgouzevi/DQM_V0001_R000000001__ParticleGun__FastSim__DQM_"${i}".root"
+	fi
+	i=$[i+1]
+    done
+
+    echo $hadd
+    $hadd
+    cp /tmp/mgouzevi/DQM_ShowerShape_"${PTITLE}_${ENERGY}_${REGION}".root ELECTRON_FORWARD
+    rm /tmp/mgouzevi/*.*
 fi
