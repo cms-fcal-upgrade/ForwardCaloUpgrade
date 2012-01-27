@@ -23,24 +23,33 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
 process.load('DQMServices.Components.DQMFileSaver_cfi')
 
-
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(10)
 )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+
+#---------- Configure message logger ------------
+# to get the ECAL calorimeter parameters printed into readCalorimeters.log
+ 
+process.MessageLogger.readCalorimeters = cms.untracked.PSet( 
+	threshold = cms.untracked.string('INFO'),
+	INFO  = cms.untracked.PSet(limit = cms.untracked.int32(0)),
+	ECALProperties = cms.untracked.PSet(limit = cms.untracked.int32(10))
+	)
+
+process.MessageLogger.categories = cms.untracked.vstring('ECALProperties')
+process.MessageLogger.destinations = cms.untracked.vstring('readCalorimeters','cerr')
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 
 
 # Input source
 process.source = cms.Source("EmptySource")
 
-process.options = cms.untracked.PSet(
-
-)
+process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.10 $'),
+    version = cms.untracked.string('$Revision: 1.11 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
