@@ -5,7 +5,7 @@ process = cms.Process("Demo")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load('FastSimulation.Configuration.Geometries_MC_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'MC_42_V15A::All'
+process.GlobalTag.globaltag = 'START50_V7::All'
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
