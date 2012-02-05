@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.11 $'),
+    version = cms.untracked.string('$Revision: 1.12 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -179,7 +179,7 @@ myForwardECAL( process )
 # to fill the shower shape histograms
 process.famosSimHits.Calorimetry.ECAL.bFixedLength = cms.bool(True)
 # switch on the DQM histograms in FastSimulation/CalorimeterProperties and in FastSimulation/ShowerShapes
-process.famosSimHits.Calorimetry.CalorimeterProperties.useDQM = cms.bool(True)
+process.famosSimHits.Calorimetry.useDQM = cms.untracked.bool(True)
 # DQM file saves customization
 process.dqmSaver.workflow = '/ParticleGun/FastSim/DQM'
 
