@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.13 $'),
+    version = cms.untracked.string('$Revision: 1.14 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -167,7 +167,7 @@ process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
 #Set up the LYSO detector for the forward ECAL
      
-from ForwardCaloUpgrade.FastSim.LYSO_cff import myForwardECAL
+from ForwardCaloUpgrade.FastSim.LSO_cff import myForwardECAL
 myForwardECAL( process )
 
 	
