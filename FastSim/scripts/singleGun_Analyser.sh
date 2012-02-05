@@ -84,8 +84,13 @@ then
 	
     echo "We are launching the production for "$OUT
     
-    
+#    cmsMkdir ${REP}'/'
+#    cmsMkdir ${REP}'/'${PROD}'/'
+#    cmsMkdir ${REP}'/'${PROD}'/'${PTITLE}'/'
+#    cmsMkdir ${REP}'/'${PROD}'/'${PTITLE}'/'${ENERGY}'GEV/'
+#    cmsMkdir $OUT
 
+    echo "cmsBatch.py "$NFILES" SinglePigun_FASTSIM_launch_cfg.py  -r "${OUT}" -b 'bsub -q '$QUEUE' < batchScript.sh'"
     cmsBatch.py $NFILES SinglePigun_FASTSIM_launch_cfg.py  -r ${OUT} -b 'bsub -q '$QUEUE' < batchScript.sh'
 elif [ $PRODUCE -eq 0 ] 
 then
