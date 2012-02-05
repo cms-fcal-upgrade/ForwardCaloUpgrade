@@ -143,8 +143,8 @@ else
     mkdir ${PTITLE}_${REGION}
     sed s@'#SOURCE '@''@ <caloanalyzer_cfg.py | 
     sed s@'#SRC'@ForwardCaloUpgrade.FastSim.Samples.${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}@ >caloanalyzer_launch_cfg.py 
-#    cmsRun caloanalyzer_launch_cfg.py 
-#    cp calorimeter_histograms.root  ${PTITLE}_${REGION}/calorimeter_histograms_${PROD}_${PTITLE}_${ENERGY}_${REGION}.root
+    cmsRun caloanalyzer_launch_cfg.py 
+    cp calorimeter_histograms.root  ${PTITLE}_${REGION}/calorimeter_histograms_${PROD}_${PTITLE}_${ENERGY}_${REGION}.root
 
     hadd="hadd /tmp/mgouzevi/DQM_ShowerShape_"${PROD}"_"${PTITLE}"_"${ENERGY}_${REGION}".root "
 

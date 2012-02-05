@@ -6,7 +6,7 @@
 
 # The root of the castor repertory where you want to store your data. This
 # repertory must exist
-REP=/store/cmst3/user/mgouzevi/FCAL_UPGRADE/LYSO
+REP=/store/cmst3/user/mgouzevi/FCAL_UPGRADE/LSO
 # The PDG id of your particle. The script would automatically transform
 # it into particle name when known and add to the repertory name
 # e- = 11; nu = 12; gamma= 22; pion=211
@@ -45,9 +45,3 @@ esac
 i=$[i+1]
 done
 
-if [ $PRODUCE -eq 0 ] 
-then
-    cd ..
-    scramv1 python
-    cd -
-fi
