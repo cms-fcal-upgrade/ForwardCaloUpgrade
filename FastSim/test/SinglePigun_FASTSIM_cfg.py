@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.12 $'),
+    version = cms.untracked.string('$Revision: 1.13 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -80,9 +80,8 @@ process.HLTEndSequence = cms.Sequence(process.reconstructionWithFamos)
 process.Realistic7TeVCollisionVtxSmearingParameters.type = cms.string("BetaFunc")
 process.famosSimHits.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
 process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
-#process.GlobalTag.globaltag = 'START50_V7::All'
+#process.GlobalTag.globaltag = 'MC_50_V13::All'
 process.GlobalTag.globaltag = 'MC_42_V15A::All'
-#'MC_311_V2::All'
 
 
 
