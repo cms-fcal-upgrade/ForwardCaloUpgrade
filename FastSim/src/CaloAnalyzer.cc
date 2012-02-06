@@ -13,7 +13,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id: CaloAnalyzer.cc,v 1.6 2011/10/28 16:08:41 mgouzevi Exp $
+// $Id: CaloAnalyzer.cc,v 1.7 2011/11/01 12:05:21 mgouzevi Exp $
 //
 //
 
@@ -304,26 +304,26 @@ CaloAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
   hMap["caloEB_5to5_energy"] = new TH1F("caloEB_5to5_energy", "5to5 energy in ECAL barrel in 5to5 cluster", 5000, 0, 1000);
   hMap["caloEE_5to5_energy"] = new TH1F("caloEE_5to5_energy", "5to5 energy in ECAL endcap in 5to5 cluster", 5000, 0, 1000);    
 
-  hMap["caloEB_5to5_energy_10"] = new TH1F("caloEB_5to5_energy_10", "Total energy in ECAL barrel zoom to 10 GeV", 75, 0, 15);
-  hMap["caloEE_5to5_energy_10"] = new TH1F("caloEE_5to5_energy_10", "Total energy in ECAL endcap zoom to 10 GeV", 75, 0, 15);
+  hMap["caloEB_5to5_energy_10"] = new TH1F("caloEB_5to5_energy_10", "Total energy in ECAL barrel zoom to 10 GeV", 600, 0, 15);
+  hMap["caloEE_5to5_energy_10"] = new TH1F("caloEE_5to5_energy_10", "Total energy in ECAL endcap zoom to 10 GeV", 600, 0, 15);
 
-  hMap["caloEB_5to5_energy_20"] = new TH1F("caloEB_5to5_energy_20", "Total energy in ECAL barrel zoom to 20 GeV", 100, 10, 30);
-  hMap["caloEE_5to5_energy_20"] = new TH1F("caloEE_5to5_energy_20", "Total energy in ECAL endcap zoom to 20 GeV", 100, 10, 30);
+  hMap["caloEB_5to5_energy_20"] = new TH1F("caloEB_5to5_energy_20", "Total energy in ECAL barrel zoom to 20 GeV", 400, 10, 30);
+  hMap["caloEE_5to5_energy_20"] = new TH1F("caloEE_5to5_energy_20", "Total energy in ECAL endcap zoom to 20 GeV", 400, 10, 30);
 
-  hMap["caloEB_5to5_energy_40"] = new TH1F("caloEB_5to5_energy_40", "Total energy in ECAL barrel zoom to 40 GeV", 150, 25, 55);
-  hMap["caloEE_5to5_energy_40"] = new TH1F("caloEE_5to5_energy_40", "Total energy in ECAL endcap zoom to 40 GeV", 150, 25, 55);
+  hMap["caloEB_5to5_energy_40"] = new TH1F("caloEB_5to5_energy_40", "Total energy in ECAL barrel zoom to 40 GeV", 400, 15, 55);
+  hMap["caloEE_5to5_energy_40"] = new TH1F("caloEE_5to5_energy_40", "Total energy in ECAL endcap zoom to 40 GeV", 400, 15, 55);
 
   hMap["caloEB_5to5_energy_80"] = new TH1F("caloEB_5to5_energy_80", "Total energy in ECAL barrel zoom to 80 GeV", 250, 55, 105);
   hMap["caloEE_5to5_energy_80"] = new TH1F("caloEE_5to5_energy_80", "Total energy in ECAL endcap zoom to 80 GeV", 250, 55, 105);
 
-  hMap["caloEB_5to5_energy_160"] = new TH1F("caloEB_5to5_energy_160", "Total energy in ECAL barrel zoom to 160 GeV", 160, 100, 180);
-  hMap["caloEE_5to5_energy_160"] = new TH1F("caloEE_5to5_energy_160", "Total energy in ECAL endcap zoom to 160 GeV", 160, 100, 180);
+  hMap["caloEB_5to5_energy_160"] = new TH1F("caloEB_5to5_energy_160", "Total energy in ECAL barrel zoom to 160 GeV", 200, 100, 180);
+  hMap["caloEE_5to5_energy_160"] = new TH1F("caloEE_5to5_energy_160", "Total energy in ECAL endcap zoom to 160 GeV", 200, 100, 180);
 
-  hMap["caloEB_5to5_energy_320"] = new TH1F("caloEB_5to5_energy_320", "Total energy in ECAL barrel zoom to 320 GeV", 200, 200, 400);
-  hMap["caloEE_5to5_energy_320"] = new TH1F("caloEE_5to5_energy_320", "Total energy in ECAL endcap zoom to 320 GeV", 200, 200, 400);
+  hMap["caloEB_5to5_energy_320"] = new TH1F("caloEB_5to5_energy_320", "Total energy in ECAL barrel zoom to 320 GeV", 250, 200, 400);
+  hMap["caloEE_5to5_energy_320"] = new TH1F("caloEE_5to5_energy_320", "Total energy in ECAL endcap zoom to 320 GeV", 250, 200, 400);
 
-  hMap["caloEB_5to5_energy_640"] = new TH1F("caloEB_5to5_energy_640", "Total energy in ECAL barrel zoom to 640 GeV", 300, 400, 700);
-  hMap["caloEE_5to5_energy_640"] = new TH1F("caloEE_5to5_energy_640", "Total energy in ECAL endcap zoom to 640 GeV", 300, 400, 700);
+  hMap["caloEB_5to5_energy_640"] = new TH1F("caloEB_5to5_energy_640", "Total energy in ECAL barrel zoom to 640 GeV", 200, 400, 700);
+  hMap["caloEE_5to5_energy_640"] = new TH1F("caloEE_5to5_energy_640", "Total energy in ECAL endcap zoom to 640 GeV", 200, 400, 700);
 
 
 
@@ -332,26 +332,26 @@ CaloAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
   hMap["caloEB_total_energy"] = new TH1F("caloEB_total_energy", "Total energy in ECAL barrel", 5000, 0, 1000);
   hMap["caloEE_total_energy"] = new TH1F("caloEE_total_energy", "Total energy in ECAL endcap", 5000, 0, 1000);    
 
-  hMap["caloEB_total_energy_10"] = new TH1F("caloEB_total_energy_10", "Total energy in ECAL barrel zoom to 10 GeV", 75, 0, 15);
-  hMap["caloEE_total_energy_10"] = new TH1F("caloEE_total_energy_10", "Total energy in ECAL endcap zoom to 10 GeV", 75, 0, 15);
+  hMap["caloEB_total_energy_10"] = new TH1F("caloEB_total_energy_10", "Total energy in ECAL barrel zoom to 10 GeV", 600, 0, 15);
+  hMap["caloEE_total_energy_10"] = new TH1F("caloEE_total_energy_10", "Total energy in ECAL endcap zoom to 10 GeV", 600, 0, 15);
 
-  hMap["caloEB_total_energy_20"] = new TH1F("caloEB_total_energy_20", "Total energy in ECAL barrel zoom to 20 GeV", 100, 10, 30);
-  hMap["caloEE_total_energy_20"] = new TH1F("caloEE_total_energy_20", "Total energy in ECAL endcap zoom to 20 GeV", 100, 10, 30);
+  hMap["caloEB_total_energy_20"] = new TH1F("caloEB_total_energy_20", "Total energy in ECAL barrel zoom to 20 GeV", 400, 10, 30);
+  hMap["caloEE_total_energy_20"] = new TH1F("caloEE_total_energy_20", "Total energy in ECAL endcap zoom to 20 GeV", 400, 10, 30);
 
-  hMap["caloEB_total_energy_40"] = new TH1F("caloEB_total_energy_40", "Total energy in ECAL barrel zoom to 40 GeV", 150, 25, 55);
-  hMap["caloEE_total_energy_40"] = new TH1F("caloEE_total_energy_40", "Total energy in ECAL endcap zoom to 40 GeV", 150, 25, 55);
+  hMap["caloEB_total_energy_40"] = new TH1F("caloEB_total_energy_40", "Total energy in ECAL barrel zoom to 40 GeV", 400, 25, 55);
+  hMap["caloEE_total_energy_40"] = new TH1F("caloEE_total_energy_40", "Total energy in ECAL endcap zoom to 40 GeV", 400, 25, 55);
 
   hMap["caloEB_total_energy_80"] = new TH1F("caloEB_total_energy_80", "Total energy in ECAL barrel zoom to 80 GeV", 250, 55, 105);
   hMap["caloEE_total_energy_80"] = new TH1F("caloEE_total_energy_80", "Total energy in ECAL endcap zoom to 80 GeV", 250, 55, 105);
 
-  hMap["caloEB_total_energy_160"] = new TH1F("caloEB_total_energy_160", "Total energy in ECAL barrel zoom to 160 GeV", 160, 100, 180);
-  hMap["caloEE_total_energy_160"] = new TH1F("caloEE_total_energy_160", "Total energy in ECAL endcap zoom to 160 GeV", 160, 100, 180);
+  hMap["caloEB_total_energy_160"] = new TH1F("caloEB_total_energy_160", "Total energy in ECAL barrel zoom to 160 GeV", 200, 100, 180);
+  hMap["caloEE_total_energy_160"] = new TH1F("caloEE_total_energy_160", "Total energy in ECAL endcap zoom to 160 GeV", 200, 100, 180);
 
-  hMap["caloEB_total_energy_320"] = new TH1F("caloEB_total_energy_320", "Total energy in ECAL barrel zoom to 320 GeV", 200, 200, 400);
-  hMap["caloEE_total_energy_320"] = new TH1F("caloEE_total_energy_320", "Total energy in ECAL endcap zoom to 320 GeV", 200, 200, 400);
+  hMap["caloEB_total_energy_320"] = new TH1F("caloEB_total_energy_320", "Total energy in ECAL barrel zoom to 320 GeV", 250, 200, 400);
+  hMap["caloEE_total_energy_320"] = new TH1F("caloEE_total_energy_320", "Total energy in ECAL endcap zoom to 320 GeV", 250, 200, 400);
 
-  hMap["caloEB_total_energy_640"] = new TH1F("caloEB_total_energy_640", "Total energy in ECAL barrel zoom to 640 GeV", 300, 400, 700);
-  hMap["caloEE_total_energy_640"] = new TH1F("caloEE_total_energy_640", "Total energy in ECAL endcap zoom to 640 GeV", 300, 400, 700);
+  hMap["caloEB_total_energy_640"] = new TH1F("caloEB_total_energy_640", "Total energy in ECAL barrel zoom to 640 GeV", 200, 400, 700);
+  hMap["caloEE_total_energy_640"] = new TH1F("caloEE_total_energy_640", "Total energy in ECAL endcap zoom to 640 GeV", 200, 400, 700);
 
   hMap2D["caloEE_xsize"] = new TH2F("caloEE_xsize", "Transverse x size (cm)", 50, 0, 10, 100, 0, 100); 
   hMap2D["caloEE_ysize"] = new TH2F("caloEE_ysize", "Transverse y size (cm)", 50, 0, 10, 100, 0, 100); 
