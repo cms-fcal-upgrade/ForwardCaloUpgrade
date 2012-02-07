@@ -6,14 +6,20 @@ def myForwardECAL( process ):
     
     # Light Collection efficiency
 
-    process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.lightColl = cms.double(0.03)
+    process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.lightColl = cms.double(0.023)
+###    process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.lightColl = cms.double(0.999)
 
     # Light Collection uniformity
     process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.lightCollUnif = cms.double(0.003)
+###    process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.lightCollUnif = cms.double(0.00001)
 
-    # Photostatistics (photons/GeV) in the homegeneous material
+    # Photostatistics (photons/GeV) in the homegeneous material.
+    # estimate the photo-electron fluctuations.
+    # Be carefull when you sumulate to keep: photoStatistics*lightColl*ParticleEnergy<2^31. Otherwise TRandom3 would refuse to
     ## photoStatistics = cms.double(50.E3),
     process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.photoStatistics = cms.double(1610.E3)
+###    process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.photoStatistics = cms.double(1.E7)
+
                  
     # Thickness of the detector in cm
     process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.thickness = cms.double(22.0)
