@@ -19,6 +19,15 @@
 
 using namespace RooFit ;
 
+TString sTitle("ELECTRON_FORWARD/calorimeter_histograms_");
+TString sProd("PERFECT_LIGHT_COLL_RIGHT_");
+###TString sProd("REALISTIC_LIGHT_COLLECTION_ETA2_");
+TString sParticle("ELECTRON");
+TString sRegion("FORWARD");
+
+
+
+
 RooFitResult* FitHistWithCBShape(TH1* h)
 {
   RooFitResult *res = 0;
@@ -58,13 +67,6 @@ RooFitResult* Electron5x5(int indx)
 
   for (int i = 1; i < 8; i++){
 
-    TString sTitle("ELECTRON_FORWARD/calorimeter_histograms_");
-    //    TString sProd("NOPS_");
-//    TString sProd("NOPS_EF_LC_4TMS_");
-    TString sProd("");
-    TString sParticle("ELECTRON");
-    //    TString sParticle("PHOTON");
-    TString sRegion("FORWARD");
     int idx = TMath::Power(2,i-1)*10;
     TString sName = sTitle + "" + sProd + "" + sParticle + "_" + Form("%d",idx) + "_" + sRegion + ".root";
     fname[i-1] = sName.Data();
@@ -84,7 +86,7 @@ RooFitResult* Electron5x5(int indx)
   r->Print();
 
   TString sNamePng(fname[indx]);
-  sNamePng.ReplaceAll(".root", "_finebinning.png");
+  sNamePng.ReplaceAll(".root", "_5to5_finebinning.png");
   cout << "sNamePng = " << sNamePng.Data() << endl;
 
 
@@ -95,9 +97,16 @@ RooFitResult* Electron5x5(int indx)
 }
 
 
-void Graph(){
+void FitterExample(){
 
    TGraphErrors* gSigma = new TGraphErrors(7);
+
+   gSigma->SetTitle("#sigma/#mu");
+
+   TGraphErrors* gMean = new TGraphErrors(7);
+
+   gMean->SetTitle("#mu/Ene");
+
 
    for (int i = 0; i < 7; i++){
       RooFitResult *r = Electron5x5(i);
@@ -105,25 +114,76 @@ void Graph(){
 
       double sVal = ((RooAbsReal*) r->floatParsFinal().find("sigma"))->getVal();
       double sError = ((RooAbsReal*) r->floatParsFinal().find("sigma"))->getPropagatedError(*r);
-  
+ 
+      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal();
+      double sErrorMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getPropagatedError(*r);
+
+ 
       double Ene = TMath::Power(2,i)*10;
 
-      cout << "dSigma = " << sVal << " error = " << sError<< endl;
-      gSigma->SetPoint(i, Ene, sVal/Ene);
-      gSigma->SetPointError(i, 0, sError/Ene);
+      cout << "Ene  =  " << Ene << " sMean = " << sMean << " errorMean = " << sErrorMean << " dSigma = " << sVal << " error = " << 
+sError<< endl;
+      gSigma->SetPoint(i, Ene, sVal/sMean);
+      gSigma->SetPointError(i, 0, sError/sMean);
+
+      gMean->SetPoint(i, Ene, sMean/Ene);
+      gMean->SetPointError(i, 0, sErrorMean/Ene);
+
+
    }
 
    for (int i = 0; i < 7; i++){
 
-      double Ene, dSigma;
+      double Ene, dSigma, dMean, dMeanError;
       
-      gSigma->GetPoint(i, Ene, dSigma);
+      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal();
 
-      cout << Ene << " " << dSigma << " " << gSigma->GetErrorY(i) << " " << endl;
+      gSigma->GetPoint(i, Ene, dSigma);
+      gMean->GetPoint(i, Ene, dMean);
+
+      cout << Ene << " " << dMean*Ene << " " << gMean->GetErrorY(i)*Ene << " " << dSigma << " " << gSigma->GetErrorY(i) << " " << endl;
    }
 
 
+   string sName = sTitle + "" + sProd + "" + sParticle + "_" + sRegion + ".txt";
+
+   ofstream outFileTxt;
+   outFileTxt.open(sName.c_str());
+
+
+   for (int i = 0; i < 7; i++){
+  
+      double Ene, dSigma;
+
+      gSigma->GetPoint(i, Ene, dSigma);
+
+      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal();
+
+      outFileTxt << Ene << " " << dMean*Ene << " " << gMean->GetErrorY(i)*Ene << " " << dSigma << " " << gSigma->GetErrorY(i) << " " << 
+endl;
+
+   }
+
+   outFileTxt.close();
+
+   TCanvas* c = new TCanvas();
+
+   c->Divide(1,2);
+   c->cd(1);
+
    gSigma->Draw("APE");
-   gPad->SaveAs("ELECTRON_FORWARD/Resolution.png");
+
+   c->cd(2);
+   gMean->Draw("APE");
+
+   TLine* L = new TLine(0, 1, 700, 1);
+   L->SetLineColor(kRed);
+   L->SetLineWidth(2);
+   L->Draw("SAME");
+
+
+
+   string sName = sTitle + "" + sProd + "" + sParticle + "_" + sRegion + ".png";
+   c->SaveAs(sName.c_str());
 
 }
