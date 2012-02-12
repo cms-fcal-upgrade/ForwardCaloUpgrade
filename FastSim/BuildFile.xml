@@ -4,6 +4,7 @@
 <use name="FWCore/MessageLogger"/>
 <use name="Geometry/CaloGeometry"/>
 <use name="Geometry/Records"/>
+<use name="DataFormats/EcalDetID"/>
 <use name="rootcore"/>
 <use name="root"/>
 <flags EDM_PLUGIN="1"/>
