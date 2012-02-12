@@ -20,7 +20,7 @@
 // assignment of pinter runAct(run) <=> runAct=run
 
 EventAction::EventAction(RunAction* run)
-:runAct(run),printModulo(20)
+:runAct(run),aSize(500),printModulo(20)
 {}
 
 EventAction::~EventAction()
@@ -39,13 +39,15 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
  
 // initialisation per event
 
- EnergyEcal = EnergyHcal = EnergyZero = RangeHcal = 0.;
- for (G4int nl=0; nl<17; nl++) {
-     edeplay[nl] = 0.;
-     rangelay[nl] = 0.;
- }
- for (G4int nc=0; nc<1700; nc++) edepcell[nc] = 0.;
-
+  EnergyEcal = EnergyHcal = EnergyZero = RangeHcal = RangeEcal = 0. ;
+  for (G4int nl=0; nl<20; ++nl) { 
+     dEdLHcal [nl] = 0.; 
+     RangeHcalLay[nl] = 0.; 
+  }
+  for (G4int i=0; i<aSize; ++i) { dEdL[i] = 0.; }
+  for (G4int j=0; j<aSize; ++j) { dEdR[j] = 0.; }     
+  for (G4int k=0; k<aSize; ++k) { dEdRHcal[k] = 0.; }     
+  for (G4int l=0; l<aSize; ++l) { RangeEcalLay[l] = 0.; }     
 }
 
 // Member function at the end of each event
@@ -53,34 +55,33 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
 void EventAction::EndOfEventAction(const G4Event* evt)
 {
 
-//accumulates statistic
-
+//accumulates statistics
+//----------------------
   runAct->fillPerEvent(EnergyEcal, EnergyHcal, EnergyZero);
   
 // fill histos
-
+//------------
   HistoManager* myana= HistoManager::GetPointer();
-  myana-> FillHisto(EnergyEcal, EnergyHcal, EnergyZero, RangeHcal);
+  myana-> FillHisto(EnergyEcal, EnergyHcal, EnergyZero, RangeHcal, RangeEcal);
 
-// fill deposited energy for each layer
+// fill Hcal longitudinal shower profile
+//----------------------------------------
+  myana-> FillHcalLongShape(dEdLHcal);  
 
-  p_array = edeplay;        // assign layer's array adress  to pointer
-  myana-> FillHistoLayer(p_array);  
+// fill Hcal transverse shower profile
+//-------------------------------------
+  myana-> FillHcalTransShape(dEdRHcal);
 
-// fill range of charge particles for each layer
+// fill Ecal transverse shower profile
+//-------------------------------------
+  myana-> FillTransShape(dEdR);
 
-  p_range = rangelay;        // assign layer's array adress  to pointer
-//  myana-> FillHistoRange(p_range);
-  myana-> FillHistoRange(rangelay);
-
-// fill deposited energy as radius function for each layers
-
-  p_cells = edepcell;       // assign cell's array adress to pointer
-  myana-> FillHistoCell(p_cells);
-
+// fill longitudinal shower profile
+//----------------------------------
+  myana-> FillLongShape(dEdL);
 
 //print per event (modulo n)
-
+//---------------------------
   G4int evtNb = evt->GetEventID();
 
   if (evtNb%printModulo == 0) {

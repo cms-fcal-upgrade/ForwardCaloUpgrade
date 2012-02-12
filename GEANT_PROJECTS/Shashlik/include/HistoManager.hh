@@ -12,6 +12,8 @@ class TH1D;
 class TH2D;
 class TTree;
 
+ const G4int  nhist = 7; 
+
 class HistoManager 
 {
 private:
@@ -24,31 +26,35 @@ private:
 
     static HistoManager* GetPointer();
 
-    void Book();
+    void Book(G4double,G4int,G4double,G4int,G4double,G4int,G4double);
     void Clear();
     void Save();
 
-    void FillHisto(G4double, G4double, G4double, G4double);
-    void FillHistoLayer(G4double*);
-    void FillHistoRange(G4double*);
-    void FillHistoCell(G4double*);
+    void FillHisto(G4double, G4double, G4double, G4double, G4double);
+    void FillHcalTransShape(G4double*);
+    void FillHcalLongShape(G4double*);
+    void FillTransShape(G4double*);
+    void FillLongShape(G4double*);
 
   private:
 
-    TH1D*  ph_ecal;
-    TH1D*  ph_hcal;
-    TH1D*  ph_zero;
-  
+    TH1D*  histo[nhist];
+
     TTree*    tree_tot;
     TTree*    tree_vec;
-    TTree*    tree_ran;
-    TTree*    tree_cel;
 
-    G4double  e_ecal, e_hcal, e_zero, e_rang;
-    G4double  e_vec[17], r_vec[17], e_cell[1700];
+//    G4int     hist3, hist4;
+    G4int     nhLtot, nhRtot, nhRtotc;
+    G4double  dhLbin, dhRbin, dhRbinc;
+    G4double  EdepEcalRad, EdepEcalLong;
+    G4double  EdepHcalRad, EdepHcalLong;
+
+    G4double  e_ecal, e_hcal, e_zero, r_hcal, r_ecal;
+    G4double  e_vec[17];
 
     G4String  fileName ;
 };
+
 
 #endif
 //===============================================================

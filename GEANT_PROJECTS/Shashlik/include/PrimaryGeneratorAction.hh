@@ -8,8 +8,9 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
+#include "G4ParticleGun.hh"
 
-class G4ParticleGun;
+//class G4ParticleGun;
 class G4Event;
 class DetectorConstruction;
 
@@ -22,6 +23,7 @@ public:
   virtual ~PrimaryGeneratorAction();
 
   void GeneratePrimaries(G4Event*);
+  G4ParticleGun* GetParticleGun() {return particleGun;};
 
 private:
   G4ParticleGun*                particleGun;	  //pointer a to G4  class

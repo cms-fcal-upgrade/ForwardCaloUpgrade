@@ -25,31 +25,35 @@ public:
     
   void AddEcal(G4double de) { EnergyEcal += de; };
   void AddZero(G4double de) { EnergyZero += de; };
-  void AddHcal(G4double de, G4int n_layer) {       
-                            EnergyHcal += de; 
-                            edeplay[n_layer] +=de; };
-  void AddRange(G4double dl, G4int n_layer) {
-                             RangeHcal += dl;
-                             rangelay[n_layer] +=dl; };
+  void AddHcal(G4double de) { EnergyHcal += de; };       
 
-  void AddCell(G4double de, G4int n_layer, G4double yhit, G4double zhit) 
-  {       
-      i_cell =  int( sqrt(yhit*yhit+zhit*zhit) / 10. ) + 100*n_layer;
-      edepcell[i_cell] +=de;  
-  };
+  void AddHcalRange(G4double dl, G4int lay_hcal) {
+                                 RangeHcal += dl;
+                                 RangeHcalLay[lay_hcal] +=dl; };
+
+  void AddEcalRange(G4double dl, G4int lay_ecal) {
+                                 RangeEcal += dl;
+                                 RangeEcalLay[lay_ecal] +=dl; };
+
+  void fillEcalStep(G4double dEstep, G4int Lbin, G4int Rbin) {
+                                     dEdL[Lbin] += dEstep; 
+                                     dEdR[Rbin] += dEstep; };
+
+  void fillHcalStep(G4double dEstep, G4int Lbin, G4int Rbin) {
+                                     dEdLHcal[Lbin] += dEstep;
+                                     dEdRHcal[Rbin] += dEstep; };
 
 private:
 
    RunAction*  runAct;
    G4double    EnergyEcal, EnergyHcal, EnergyZero;
-   G4double    RangeHcal;
-   G4double*   p_array;
-   G4double*   p_cells;
-   G4double*   p_range;
-   G4double    edeplay[17], rangelay[17];
-   G4double    edepcell[1700];
-   G4int       printModulo, n_layer;                     
-   G4int       i_cell;                     
+   G4double    RangeHcal,  RangeEcal;
+   G4int       aSize;
+   G4double    dEdL[500], dEdR[500];
+   G4double    dEdLHcal[20], dEdRHcal[500];
+   G4double    RangeHcalLay[20], RangeEcalLay[500];
+   G4int       printModulo;                     
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

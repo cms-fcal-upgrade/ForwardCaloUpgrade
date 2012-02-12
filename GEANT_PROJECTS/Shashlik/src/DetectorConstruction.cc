@@ -14,6 +14,7 @@
 #include "G4PVPlacement.hh"
 #include "G4PVReplica.hh"
 #include "G4UniformMagField.hh"
+#include "G4NistManager.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -53,7 +54,7 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
 {
 
 // default parameter values of the calorimeter, Hadron Endcap (HE)
-
+//----------------------------------------------------------------
   AbsorberThickness =  79.0*mm;
   AirGapThickness   =   9.0*mm;
   WrapThickness     =   7.0*mm;
@@ -65,37 +66,44 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   LayerThickness = AbsorberThickness + AirGapThickness;
   CalorThickness = NbOfHcalLayers*LayerThickness;
 
-// parameters for zero scintillator layer in front of HE
+  nRtotHcal = 100;
+  dRbinHcal = 5.0*mm;
 
+// parameters for zero scintillator layer in front of HE
+//------------------------------------------------------
   ZeroWrapThick = 15.0*mm;
   ZeroGapThick  = 13.0*mm;
   ZeroSensThick =  9.0*mm;
   
 // dead material in front of HE
-
+//-----------------------------
   CablesThickness   =  1.5*mm;
   G10plateThickness =  2.5*mm;
   SuppThickness     =  4.5*mm;
   AluSeThickness     = 3.0*cm;
 
-// Ecal defaul parameters
-
-  EcalThickness     = 22.0*cm;
-  EcalAbsThickness  =  0.0*mm;
-  EcalSensThickness = 220.*mm;
+// Ecal default parameters
+//-----------------------
+  EcalAbsThickness  =   0.0*mm;
+  EcalSensThickness = 220.0*mm;
   NbOfEcalLayers    = 1;
   ComputeEcalParameters();
 
-// materials
+  nRtot = 100;
+  dRbin = 5.0*mm;
+  nLtot = 100;
+  dLbin = 2.2*mm;
 
+// materials
+//-----------
   DefineMaterials();
-  SetEcalAbsMaterial("Lead");
-  SetEcalSensMaterial("PbWO");
+  SetHcalAbsMaterial("Brass_def");
+  SetEcalAbsMaterial("Lead_def");
+  SetEcalSensMaterial("PbWO_def");
 
 // create commands for interactive definition of the calorimeter
-
+//--------------------------------------------------------------
   detectorMessenger = new DetectorMessenger(this);
-  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -124,7 +132,7 @@ G4double fractionmass;
 
 //
 // define Elements
-//
+//-----------------
 
 G4Element* H  = new G4Element("Hydrogen",symbol="H" , z= 1., a= 1.01*g/mole);
 G4Element* C  = new G4Element("Carbon"  ,symbol="C" , z= 6., a= 12.01*g/mole);
@@ -136,6 +144,7 @@ G4Element* Cl = new G4Element("Chlorine",symbol="Cl", z=17., a= 35.45*g/mole);
 G4Element* Cu = new G4Element("Copper"  ,symbol="Cu", z=29., a= 63.54*g/mole);
 G4Element* Zn = new G4Element("Zinc"    ,symbol="Zn", z=30., a= 65.38*g/mole);
 G4Element* Y  = new G4Element("Ytrium"  ,symbol="Y" , z=39., a= 88.91*g/mole);
+G4Element* Ce = new G4Element("Cerium"  ,symbol="Ce", z=58., a=140.11*g/mole);
 G4Element* Lu = new G4Element("Lutecium",symbol="Lu", z=71., a=174.96*g/mole);
 G4Element* W  = new G4Element("Tungsten",symbol="W" , z=74., a=183.84*g/mole);
 G4Element* Pb = new G4Element("Lead"    ,symbol="Pb", z=82., a=207.20*g/mole);
@@ -151,10 +160,14 @@ new G4Material("Aluminium", z=13., a=26.98*g/mole, density=2.700*g/cm3);
 pLead =
 new G4Material("Lead", z=82., a=207.20*g/mole, density=11.34*g/cm3);
 
+pLead_d =
+new G4Material("Lead_def", z=82., a=207.20*g/mole, density=11.34*g/cm3);
+
 pTung =
 new G4Material("Tungsten", z=74., a=183.84*g/mole, density=19.25*g/cm3);
 
 // define a material from elements.   case 1: chemical molecule
+//--------------------------------------------------------------
 
 // define scintillator (C_9H_10)_n
 //---------------------------------
@@ -163,7 +176,20 @@ new G4Material("Scintillator", density= 1.032*g/cm3, ncomponents=2);
 pSci->AddElement(C, natoms=9);
 pSci->AddElement(H, natoms=10);
 
+const G4int nSci = 1;
+G4double eSci[nSci] = { 3.10*eV };
+G4double rSci[nSci] = { 1.58    };
+
+G4MaterialPropertiesTable* proSci = new G4MaterialPropertiesTable();
+proSci->AddProperty("RINDEX", eSci, rSci, nSci);
+pSci->SetMaterialPropertiesTable(proSci);
+
+// Birks constant is 0.0052 [g/(MeV*cm2)] 
+//----------------------------------------
+pSci->GetIonisation()->SetBirksConstant(0.050*mm/MeV);
+
 // define a material from elements.   case 2: mixture by fractional mass
+//-----------------------------------------------------------------------
 
 // define Air:
 //------------
@@ -178,6 +204,11 @@ pBra =
 new G4Material("Brass"  , density= 8.530*g/cm3, ncomponents=2);
 pBra->AddElement(Cu, fractionmass=0.7);
 pBra->AddElement(Zn, fractionmass=0.3);
+
+pBra_d =
+new G4Material("Brass_def"  , density= 8.530*g/cm3, ncomponents=2);
+pBra_d->AddElement(Cu, fractionmass=0.7);
+pBra_d->AddElement(Zn, fractionmass=0.3);
 
 // define G10 material (22% Si + 27% C + 42% O + 6% H + 3% Cl):
 // ------------------------------------------------------------
@@ -198,13 +229,37 @@ pCab->AddElement(C , fractionmass=0.26);
 pCab->AddElement(O , fractionmass=0.14);
 pCab->AddElement(H , fractionmass=0.02);
 
+// define ECAL crystals PWO4_def (45.5% PB + 40.4% W + 14.1% O):
+// ---------------------------------------------------------
+pPwo_d =
+new G4Material("PbWO_def" , density= 8.300*g/cm3, ncomponents=3);
+pPwo_d->AddElement(Pb, fractionmass=0.455);
+pPwo_d->AddElement(W , fractionmass=0.404);
+pPwo_d->AddElement(O , fractionmass=0.141);
+
+const G4int nPwod = 1;
+G4double ePwod[nPwod] = { 3.10*eV };
+G4double rPwod[nPwod] = { 2.16    };
+
+G4MaterialPropertiesTable* proPwod = new G4MaterialPropertiesTable();
+proPwod->AddProperty("RINDEX", ePwod, rPwod, nPwod);
+pPwo_d->SetMaterialPropertiesTable(proPwod);
+
 // define ECAL crystals PWO4 (45.5% PB + 40.4% W + 14.1% O):
 // ---------------------------------------------------------
 pPwo =
 new G4Material("PbWO" , density= 8.300*g/cm3, ncomponents=3);
-pPwo->AddElement(Pb, fractionmass=0.455);
+pPwo->AddElement(Pb, fractionmass=0.455); 
 pPwo->AddElement(W , fractionmass=0.404);
 pPwo->AddElement(O , fractionmass=0.141);
+
+const G4int nPwo = 1;
+G4double ePwo[nPwo] = { 3.10*eV };
+G4double rPwo[nPwo] = { 2.16    };
+
+G4MaterialPropertiesTable* proPwo = new G4MaterialPropertiesTable();
+proPwo->AddProperty("RINDEX", ePwo, rPwo, nPwo);
+pPwo->SetMaterialPropertiesTable(proPwo);
 
 // define ceramic scintillator LAG (Lu3Al5O12) 6.7 g/cm3
 // ------------------------------------------------------
@@ -214,6 +269,14 @@ pSens1->AddElement(Lu, natoms=3 );
 pSens1->AddElement(Al, natoms=5 );
 pSens1->AddElement(O , natoms=12);
 
+const G4int nLag = 1;
+G4double eLag[nLag] = { 3.10*eV };
+G4double rLag[nLag] = { 1.868   };
+  
+G4MaterialPropertiesTable* proLag = new G4MaterialPropertiesTable();
+proLag->AddProperty("RINDEX", eLag, rLag, nLag);          
+pSens1->SetMaterialPropertiesTable(proLag);
+
 // define ceramic scintillator YAG (Y3Al5O12) 4.57 g/cm3
 // ------------------------------------------------------
 pSens2 =                
@@ -222,22 +285,81 @@ pSens2->AddElement(Y , natoms=3 );
 pSens2->AddElement(Al, natoms=5 );
 pSens2->AddElement(O , natoms=12);
 
-// define ceramic scintillator LSO (Lu2SiO5) 7.34 g/cm3
+const G4int nYag = 1;
+G4double eYag[nYag] = { 3.10*eV };
+G4double rYag[nYag] = { 1.859   };   
+
+G4MaterialPropertiesTable* proYag = new G4MaterialPropertiesTable();
+proYag->AddProperty("RINDEX", eYag, rYag, nYag);
+pSens2->SetMaterialPropertiesTable(proYag);
+
+// define ceramic scintillator LSO (Lu2SiO5) 7.41 g/cm3
 // ------------------------------------------------------  
 pSens3 =
-new G4Material("LSO" , density= 7.34*g/cm3, ncomponents=3);
+new G4Material("LSO" , density= 7.41*g/cm3, ncomponents=3);
 pSens3->AddElement(Lu, natoms=2 );
 pSens3->AddElement(Si, natoms=1 );
 pSens3->AddElement(O , natoms=5 );
 
-// define ceramic scintillator LYSO (Lu2Y2SiO5) 7.30 g/cm3
-// ------------------------------------------------------  
+const G4int nLso = 1;
+G4double eLso[nLso] = { 3.10*eV };
+G4double rLso[nLso] = { 1.82    };  
+
+G4MaterialPropertiesTable* proLso = new G4MaterialPropertiesTable();
+proLso->AddProperty("RINDEX", eLso, rLso, nLso);
+pSens3->SetMaterialPropertiesTable(proLso);
+
+// define ceramic scintillator LYSO (Lu2(1-x)Y2xSiO5) (x=0.1) 7.11 g/cm3
+// ----------------------------------------------------------------------  
 pSens4 =
 new G4Material("LYSO" , density= 7.30*g/cm3, ncomponents=4);
-pSens4->AddElement(Lu, natoms=2 );
-pSens4->AddElement(Y , natoms=2 );
-pSens4->AddElement(Si, natoms=1 );
-pSens4->AddElement(O , natoms=5);
+pSens4->AddElement(Lu, 71.45*perCent );
+pSens4->AddElement(Y ,  4.03*perCent );
+pSens4->AddElement(Si,  6.37*perCent );
+pSens4->AddElement(O , 18.15*perCent );
+
+const G4int nLyso = 1;
+G4double eLyso[nLyso] = { 3.10*eV };
+G4double rLyso[nLyso] = { 1.82    };
+
+G4MaterialPropertiesTable* proLyso = new G4MaterialPropertiesTable();
+proLyso->AddProperty("RINDEX", eLyso, rLyso, nLyso);
+pSens4->SetMaterialPropertiesTable(proLyso);
+
+// define ceramic scintillator LYSO:Ce (Lu2(1-x)Y2xSiO5)(Ce) (x=0.1) 7.11 g/cm3
+// which doped by Ce ---------------------------------------------------------
+// -------------------
+pSens5 =
+new G4Material("LYSOc" , density= 7.30*g/cm3, ncomponents=5);
+pSens5->AddElement(Lu, 71.44*perCent );
+pSens5->AddElement(Y ,  4.03*perCent );
+pSens5->AddElement(Si,  6.37*perCent );
+pSens5->AddElement(O , 18.14*perCent );
+pSens5->AddElement(Ce,  0.02*perCent); 
+
+const G4int nLysc = 1;
+G4double eLysc[nLysc] = { 3.10*eV };
+G4double rLysc[nLysc] = { 1.82    };
+
+G4MaterialPropertiesTable* proLysc = new G4MaterialPropertiesTable();
+proLysc->AddProperty("RINDEX", eLysc, rLysc, nLysc);
+pSens5->SetMaterialPropertiesTable(proLysc);
+
+// define ceramic scintillator YSO (Y2SiO5) 4.54 g/cm3
+// ------------------------------------------------------
+pSens6 =
+new G4Material("YSO" , density= 4.54*g/cm3, ncomponents=3);  
+pSens6->AddElement(Y , natoms=2 );
+pSens6->AddElement(Si, natoms=1 );
+pSens6->AddElement(O , natoms=5);
+
+const G4int nYso = 1;
+G4double eYso[nYso] = { 3.10*eV };
+G4double rYso[nYso] = { 1.80    };
+
+G4MaterialPropertiesTable* proYso = new G4MaterialPropertiesTable();
+proYso->AddProperty("RINDEX", eYso, rYso, nYso);
+pSens6->SetMaterialPropertiesTable(proYso);
 
 // examples of vacuum
 
@@ -355,20 +477,20 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 
   solidAbsorber=0; logicAbsorber=0; physiAbsorber=0;  
   
-  solidAbsorber = new G4Box("Brass",   	                //its name
+  solidAbsorber = new G4Box("HcalAbs",   	                //its name
                       AbsorberThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); 
                           
-  logicAbsorber = new G4LogicalVolume(solidAbsorber,    //its solid
-      			              pBra,             //its material
-      			             "Brass");          //name
+  logicAbsorber = new G4LogicalVolume(solidAbsorber,                //its solid
+      			              HcalAbsMaterial,             //its material
+      			              HcalAbsMaterial->GetName()); //name
       			                  
-  physiAbsorber = new G4PVPlacement(0,		        //no rotation
-        	      G4ThreeVector(-AirGapThickness/2.,0.,0.), //its position
-                                     logicAbsorber,     //its logical volume
-                                    "Brass",            //its name
-                                     logicLayer,        //its mother
-                                     false,             //no boulean operat
-                                     0);                //copy number
+  physiAbsorber = new G4PVPlacement(0,		                 //no rotation
+        	      G4ThreeVector(-AirGapThickness/2.,0.,0.),  //its position
+                                     logicAbsorber,              //logical volume
+                                     HcalAbsMaterial->GetName(), //its name
+                                     logicLayer,                 //its mother
+                                     false,                      //no boulean operat
+                                     0);                         //copy number
 
 // Al Wrapper 7.0*mm for scintillator (0.5*mm wall thickness)
 //===========================================================
@@ -541,32 +663,11 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                      false,
                                      2);
 
-/*
-// ECAL (PWO4) 22.0*cm in front of HE (at -70.80*cm)
-//===================================================
-
-  solidEcal=0; logicEcal=0; physiEcal=0;
-  
-  solidEcal = new G4Box("Ecal",  
-                         EcalThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
-  
-  logicEcal = new G4LogicalVolume(solidEcal,
-                                  pPwo,
-                                 "Ecal");
-                                  
-  physiEcal = new G4PVPlacement(0,
-                  G4ThreeVector(-70.8*cm, 0.0, 0.0),
-                                 logicEcal,
-                                "Ecal",
-                                 logicWorld,
-                                 false,
-                                 0);
-*/
-
 // Ecal calorimeter (total thickness must be <= 22.0 cm)
 //------------------------------------------------------- 
   solidEcal=0; logicEcal=0; physiEcal=0;
   solEcalLayer=0; logEcalLayer=0; phyEcalLayer=0;
+  offsetEcal = -818.0*mm;
   
   if (EcalCalorThickness > 0.)  
     { solidEcal = new G4Box("Ecal",                                  
@@ -714,7 +815,53 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    0);
 
   PrintCalorParameters();     
-  
+
+// example how to change cuts in different medias through the input cards
+//========================================================================
+
+// change cuts in Ecal sensitive material
+//---------------------------------------
+   if( EcalSensMaterial->GetName() != "PbWO_def" ) {
+     G4Region* aRegion = new G4Region(EcalSensMaterial->GetName());
+     logEcalSens->SetRegion(aRegion);
+     aRegion->AddRootLogicalVolume(logEcalSens);
+     G4ProductionCuts* cut1 = new G4ProductionCuts;
+     cut1->SetProductionCut(0.1*mm);
+     aRegion->SetProductionCuts(cut1);
+   }
+
+// change cuts in Ecal absorption material
+//----------------------------------------
+   if( EcalAbsThickness > 0. ) {
+     if( EcalAbsMaterial->GetName() == EcalSensMaterial->GetName() )
+       { G4cout << "\n ===> Stop from DetectorConstruction::G4Region(): " 
+             << "\n EcalAbsMaterial = " << EcalAbsMaterial->GetName()
+             << " must not be the same as"
+             << " EcalSensMaterial = " << EcalSensMaterial->GetName()
+             << "\n Please check name of  EcalAbsMaterial"
+             << G4endl;
+         exit(1);
+       }
+          
+     G4Region* bRegion = new G4Region(EcalAbsMaterial->GetName());
+     logEcalAbs->SetRegion(bRegion);
+     bRegion->AddRootLogicalVolume(logEcalAbs);
+     G4ProductionCuts* cut2 = new G4ProductionCuts;
+     cut2->SetProductionCut(0.1*mm);
+     bRegion->SetProductionCuts(cut2);
+   }
+
+// change cuts in Hcal absorption material
+//----------------------------------------
+   if( HcalAbsMaterial->GetName() != "Brass_def") {
+     G4Region* cRegion = new G4Region(HcalAbsMaterial->GetName());
+     logicAbsorber->SetRegion(cRegion);
+     cRegion->AddRootLogicalVolume(logicAbsorber);
+     G4ProductionCuts* cut3 = new G4ProductionCuts;
+     cut3->SetProductionCut(0.2*mm);
+     cRegion->SetProductionCuts(cut3);   
+   }
+
 //                                        
 // Visualization attributes
 //
@@ -803,7 +950,7 @@ void DetectorConstruction::PrintCalorParameters()
   G4cout << "\n------------------------------------------------------------"
          << "\n---> The HCAL calorimeter is " << NbOfHcalLayers 
          << " layers of: [ "
-         << AbsorberThickness/mm << "mm of " << "Brass" 
+         << AbsorberThickness/mm << "mm of " << HcalAbsMaterial->GetName() 
          << " + "
          << SensThickness/mm << "mm of " << "Scintillator" << " ] " 
          << "\n------------------------------------------------------------\n";
@@ -817,6 +964,19 @@ void DetectorConstruction::PrintCalorParameters()
          << " ] "
          << "\n------------------------------------------------------------\n";
  
+  G4cout << "\n------------------------------------------------------------"
+         << "\n---> The ECAL calorimeter: you have chosen " << nRtot
+         << " total number of bins "
+         << "\n---> with " << dRbin       
+         << " mm width size for transverse shower profile "
+         << "\n------------------------------------------------------------\n";
+         
+  G4cout << "\n------------------------------------------------------------"
+         << "\n---> The ECAL calorimeter: you have chosen " << nLtot
+         << " total number of bins "
+         << "\n---> with " << dLbin
+         << " mm width size for longitudinal shower profile "
+         << "\n------------------------------------------------------------\n";
 
 }
 
@@ -830,19 +990,33 @@ void DetectorConstruction::SetEcalAbsMaterial(G4String materialChoice)
   if (pttoMaterial) EcalAbsMaterial = pttoMaterial;
 }
 
+void DetectorConstruction::SetHcalAbsMaterial(G4String materialChoice)
+{
+  G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
+  if (pttoMaterial) HcalAbsMaterial = pttoMaterial;
+
+  if(HcalAbsMaterial->GetName() != "Brass_def" && HcalAbsMaterial->GetName() != "Brass")  
+    { G4cout << "\n ===> Stop from DetectorConstruction::SetHcalAbsMaterial(): "
+              << "\n HcalAbsMaterial = " << HcalAbsMaterial->GetName()  
+              << "\n Brass is only possible for the Hcal "
+              << "absorption material at this moment."
+              << G4endl;
+       exit(1);
+    }
+}
+
 // change Ecal absorber thickness and recompute the calorimeter parameters
 //-------------------------------------------------------------------------
 void DetectorConstruction::SetEcalAbsThickness(G4double val)
 {
   EcalAbsThickness = val;
-  if (EcalAbsThickness > 220.0)
+  if (EcalAbsThickness > 220.000)
     { G4cout << "\n ===> Stop from DetectorConstruction::SetEcalAbsThickness(): " 
              << "\n EcalAbsThickness = " << EcalAbsThickness  
              << " mm, greater than 220.0 mm. "
              << "\n Check value of EcalAbsThickness." 
              << G4endl;
-      return;
-//      exit(1);
+      exit(1);
     }
 }
 
@@ -852,6 +1026,19 @@ void DetectorConstruction::SetEcalSensMaterial(G4String materialChoice)
 {
   G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
   if (pttoMaterial) EcalSensMaterial = pttoMaterial;
+
+  if( EcalSensMaterial->GetName() != "PbWO_def" && EcalSensMaterial->GetName() != "LAG"
+    && EcalSensMaterial->GetName() != "YAG"  && EcalSensMaterial->GetName() != "LSO"
+    && EcalSensMaterial->GetName() != "YSO"  && EcalSensMaterial->GetName() != "LYSO"
+    && EcalSensMaterial->GetName() != "PbWO" && EcalSensMaterial->GetName() != "LYSOc")
+     { G4cout << "\n ===> Stop from DetectorConstruction::SetEcalSensMaterial(): "
+              << "\n EcalSensMaterial = " <<  EcalSensMaterial->GetName()
+              << "\n Please choose Ecal sensitive material from "
+              << "this possible list:"
+              << "\n PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc"
+              << G4endl;
+       exit(1);
+     }
 }
 
 // change Ecal sensitive thickness and recompute the calorimeter parameters 
@@ -859,14 +1046,13 @@ void DetectorConstruction::SetEcalSensMaterial(G4String materialChoice)
 void DetectorConstruction::SetEcalSensThickness(G4double val)
 {
   EcalSensThickness = val;
-  if (EcalSensThickness > 220.0)
+  if (EcalSensThickness > 220.000)
     { G4cout << "\n ===> Stop from DetectorConstruction::SetEcalSensThickness(): " 
              << "\n EcalSensThickness = " << EcalSensThickness  
              << " mm, greater than 220.0 mm "
              << "\n Check value of EcalSensThickness. "  
              << G4endl;
-      return;
-//      exit(1);
+      exit(1);
     }
 }
 
@@ -881,10 +1067,60 @@ void DetectorConstruction::SetNbOfEcalLayers(G4int val)
              << " less than 1. "
              << "\n Check value of NbOfEcalLayers. " 
              << G4endl;
-      return;
-//      exit(1);
+      exit(1);
     }
 }
+
+// Set binning for Hcal transverse shower profile
+//------------------------------------------------
+  void DetectorConstruction::SetHcalRBining(G4ThreeVector Value)
+  {
+    hist5       = Value(0);
+    nRtotHcal   = Value(1);
+    dRbinHcal   = Value(2)*mm;
+    if( nRtotHcal > 500 )  
+    { G4cout << "\n ===> Stop from DetectorConstruction::SetHcalRBining(): "
+             << "\n nRtotHcal = " << nRtotHcal << " is greater than 500. "
+             << "\n Please use value <= 500 "
+             << " or increase array dEdRh in EventAction.hh  "
+             << G4endl;
+      exit(1);
+    } 
+  }
+
+// Set binning for Ecal transverse shower profile
+//------------------------------------------------
+  void DetectorConstruction::SetSensRBining(G4ThreeVector Value)
+  { 
+    hist3   = Value(0);
+    nRtot   = Value(1);
+    dRbin   = Value(2)*mm;
+    if( nRtot > 500 )
+    { G4cout << "\n ===> Stop from DetectorConstruction::SetSensRBining(): "
+             << "\n nRtot = " << nRtot << " is greater than 500. "
+             << "\n Please use value <= 500 "
+             << " or increase array dEdR in EventAction.hh  "
+             << G4endl;
+      exit(1);
+    }
+  }
+
+// Set binning for Ecal longitudinal shower profile
+//--------------------------------------------------
+  void DetectorConstruction::SetSensLBining(G4ThreeVector Value)
+  { 
+    hist4   = Value(0);
+    nLtot   = Value(1);
+    dLbin   = Value(2)*mm;
+    if( nLtot > 500 )
+    { G4cout << "\n ===> Stop from DetectorConstruction::SetSensLBining(): "
+             << "\n nLtot = " << nLtot << " is greater than 500. "
+             << "\n Please use value <= 500 "
+             << " or increase array dEdL in EventAction.cc  "
+             << G4endl;
+      exit(1);
+    }
+  }
 
 // Set magnetic field
 //--------------------

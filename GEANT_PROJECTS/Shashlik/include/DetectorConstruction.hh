@@ -8,6 +8,7 @@
 
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
+#include "G4ThreeVector.hh"
 
 class G4Box;
 class G4Material;
@@ -27,6 +28,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
   public:
 
+     void SetHcalAbsMaterial (G4String);     
+
      void SetEcalAbsMaterial (G4String);     
      void SetEcalAbsThickness(G4double);     
 
@@ -35,6 +38,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      
      void SetNbOfEcalLayers (G4int);   
      void ComputeEcalParameters();   
+
+     void SetSensLBining(G4ThreeVector);
+     void SetSensRBining(G4ThreeVector);
+     void SetHcalRBining(G4ThreeVector);
      
      void SetMagField(G4double);
 
@@ -47,20 +54,27 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      void PrintCalorParameters(); 
                     
      const G4VPhysicalVolume* GetphysiWorld() {return physiWorld;};           
-//     const G4VPhysicalVolume* GetEcal()       {return physiEcal;};
      const G4VPhysicalVolume* GetEcal()       {return phyEcalSens;};
      const G4VPhysicalVolume* GetHcal()       {return physiSens;};
      const G4VPhysicalVolume* GetZero()       {return phySensZero;};
 
-     G4int GetNbOfEcalLayers()         {return NbOfEcalLayers;}; 
-     
-     G4Material* GetEcalAbsMaterial()  {return EcalAbsMaterial;};
-     G4double    GetEcalAbsThickness() {return EcalAbsThickness;};      
-     
-     G4Material* GetEcalSensMaterial()  {return EcalSensMaterial;};
-     G4double    GetEcalSensThickness() {return EcalSensThickness;};
+     G4int       GetNbOfEcalLayers()    {return NbOfEcalLayers;}; 
+     G4double    GetEcalOffset()        {return offsetEcal;};
+
+     G4int       GetnLtot()             {return nLtot;};
+     G4int       GetnRtot()             {return nRtot;};
+     G4int       GetHcalnRtot()         {return nRtotHcal;};
+     G4double    GetdLbin()             {return dLbin;};
+     G4double    GetdRbin()             {return dRbin;};
+     G4double    GetHcaldRbin()         {return dRbinHcal;};
      
   private:
+
+     G4int    hist3,    hist4,   hist5;
+     G4int    nLtot,    nRtot,   nRtotHcal;       
+     G4double dLbin,    dRbin,   dRbinHcal;      
+
+     G4Material*        HcalAbsMaterial;
 
      G4Material*        EcalAbsMaterial;
      G4double           EcalAbsThickness;
@@ -69,7 +83,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4int              NbOfEcalLayers;
      G4double           EcalLayerThickness;
      G4double           EcalCalorThickness;
-     
+     G4double           offsetEcal;
+      
      G4double           LayerThickness;
      G4double           AbsorberThickness;
      G4double           WrapThickness;
@@ -90,11 +105,16 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Material*        pCab;
      G4Material*        pPwo;
      G4Material*        pTung;
+     G4Material*        pPwo_d;
+     G4Material*        pLead_d;
+     G4Material*        pBra_d;
 
      G4Material*        pSens1;
      G4Material*        pSens2;
      G4Material*        pSens3;
      G4Material*        pSens4 ;
+     G4Material*        pSens5 ;
+     G4Material*        pSens6 ;
           
      G4double           ZeroWrapThick;
      G4double           ZeroGapThick;
@@ -102,7 +122,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      G4double           CablesThickness;
      G4double           G10plateThickness;
-     G4double           EcalThickness;
      G4double           SuppThickness;
      G4double           AluSeThickness;
      G4double           LeadSeThickness;
@@ -201,10 +220,10 @@ inline void DetectorConstruction::ComputeEcalParameters()
    EcalLayerThickness = EcalAbsThickness + EcalSensThickness;
    EcalCalorThickness = NbOfEcalLayers*EcalLayerThickness;
 
-   if( EcalCalorThickness > 220.0 ) {
+   if( EcalCalorThickness < 0.001 || EcalCalorThickness > 220.001) {
        G4cout << "\n ===> Stop from DetectorConstruction::ComputeEcalParameters(): "
               << "\n EcalCalorThickness = " << EcalCalorThickness  
-              << " mm, greater than 220.0*mm. "
+              << " mm, out of range 0 < EcalCalorThickness <= 220.0*mm. "
               << "\n Check input parameters: NbOfEcalLayers, EcalAbsThickness"
               << " and EcalSensThickness "
               << G4endl;

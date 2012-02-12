@@ -10,9 +10,14 @@
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
 
+#include "DetectorConstruction.hh"
+#include "PrimaryGeneratorAction.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-RunAction::RunAction()
+//RunAction::RunAction()
+RunAction::RunAction(DetectorConstruction* det, PrimaryGeneratorAction* kin)
+:Det(det),Kin(kin)
 {}
 
 RunAction::~RunAction()
@@ -31,12 +36,27 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 
   HistoManager* myana= HistoManager::GetPointer();
   myana-> Clear();
-  myana-> Book();
-    
+//  myana-> Book();
+
+  G4double Ekin = Kin->GetParticleGun()->GetParticleEnergy();
+  G4int    nRtot = Det->GetnRtot();
+  G4double dRbin = Det->GetdRbin();
+  G4int    nLtot = Det->GetnLtot();
+  G4double dLbin = Det->GetdLbin();
+  G4int    nRtoth = Det->GetHcalnRtot();
+  G4double dRbinh = Det->GetHcaldRbin(); 
+  if( Det->GetNbOfEcalLayers() !=1) {
+      nLtot = Det->GetNbOfEcalLayers(); 
+      dLbin = 1.;
+  }
+
+  myana-> Book(Ekin,nRtot,dRbin,nLtot,dLbin,nRtoth,dRbinh);
+
 // initialize cumulative quantities
 
   sumEcal  = sumHcal  = sumZero  = 0.;
   sum2Ecal = sum2Hcal = sum2Zero = 0.;
+
 }
 
 

@@ -15,15 +15,15 @@
 // user application
 // -----------------
 #include "DetectorConstruction.hh"
-
-//#include "QGSP_BIC.hh"
-//#include "QGSP.hh"
-#include "QGSP_BERT.hh"
-
 #include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
+#include "RunAction.hh"      
 #include "EventAction.hh"
 #include "SteppingAction.hh"
+
+//#include "QGSP_BERT.hh"
+//#include "QGSP_BERT_EMV.hh"
+//#include "QGSP_FTFP_BERT.hh"
+#include "FTFP_BERT_EMV.hh"
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -68,19 +68,22 @@ int main(int argc,char** argv)
 // Initilization of the different physics list
 // --------------------------------------------
 
-//  runManager-> SetUserInitialization(new QGSP_BIC);
-//  runManager-> SetUserInitialization(new QGSP);
-  runManager-> SetUserInitialization(new QGSP_BERT);
+//  runManager-> SetUserInitialization(new QGSP_BERT);
+//  runManager-> SetUserInitialization(new QGSP_BERT_EMV);
+//  runManager-> SetUserInitialization(new QGSP_FTFP_BERT);
+  runManager-> SetUserInitialization(new FTFP_BERT_EMV);
  
 // Set user gen-action class
 // --------------------------  
-  G4VUserPrimaryGeneratorAction* gen_action = 
+//  G4VUserPrimaryGeneratorAction* gen_action = 
+  PrimaryGeneratorAction* gen_action = 
                           new PrimaryGeneratorAction(detector);
   runManager->SetUserAction(gen_action);
 
 // Set user run-action class
 // -------------------------
-  RunAction* run_action = new RunAction;  
+//  RunAction* run_action = new RunAction;  
+  RunAction* run_action = new RunAction(detector, gen_action);  
   runManager->SetUserAction(run_action);
 
 // Set user event-action class

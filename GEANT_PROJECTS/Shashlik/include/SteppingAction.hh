@@ -23,6 +23,7 @@ public:
 private:
   DetectorConstruction* detector;
   EventAction*          eventaction;  
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
