@@ -1,5 +1,6 @@
 {
 
+  bool bRebinTrans = false;
 
   for (int j = 0; j < 7; j++){
 
@@ -87,6 +88,10 @@
     TransShapeFullSim->SetTitle(sTitle.c_str());
     TransShapeFastSim->SetTitle(sTitle.c_str());
 
+    if (bRebinTrans) {
+      TransShapeFullSim->Rebin();     TransShapeFullSim->Rebin();      TransShapeFullSim->Rebin();
+      TransShapeFastSim->Rebin();     TransShapeFastSim->Rebin();      TransShapeFastSim->Rebin();
+    }
 
     TransShapeFullSim->DrawClone();
     TransShapeFastSim->DrawClone("SAME");
@@ -105,7 +110,10 @@
 
     LT->Draw("SAME");
 
-    string sNamePng("ELECTRON_FORWARD/PERFECT_LIGHT_COLLECTION_ELECTRON_"); sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD.png";
+    string sNamePng("ELECTRON_FORWARD/PERFECT_LIGHT_COLLECTION_ELECTRON_"); 
+
+    if (bRebinTrans) sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD.png";
+    else sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD_COARSE.png";
 
     c->SaveAs(sNamePng.c_str());
 
