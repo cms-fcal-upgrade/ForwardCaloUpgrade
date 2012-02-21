@@ -1,6 +1,6 @@
 {
 
-  bool bRebinTrans = false;
+  bool bRebinTrans = true;
 
   for (int j = 0; j < 7; j++){
 
@@ -139,7 +139,7 @@
 
     string sNamePng("ELECTRON_FORWARD/PERFECT_LIGHT_COLLECTION_ELECTRON_"); 
 
-    if (bRebinTrans) sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD.png";
+    if (!bRebinTrans) sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD.png";
     else sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD_COARSE.png";
 
     c->SaveAs(sNamePng.c_str());
