@@ -36,17 +36,24 @@
 
     double intFastSim = LongShapeFastSim->Integral();
     LongShapeFastSim->Scale(1./intFastSim);
+    LongShapeFastSim->SetLineColor(kRed);
+
 
     c->cd(1);
 
     string sTitle("Longitudinal shape E(Electron) = "); sTitle = sTitle + Form("%d", iMass); 
     
+    LongShapeFullSim->SetStats(0);
+    LongShapeFastSim->SetStats(0);
+
     LongShapeFullSim->SetTitle(sTitle.c_str());
     LongShapeFastSim->SetTitle(sTitle.c_str());
 
     LongShapeFullSim->DrawClone();
     LongShapeFastSim->DrawClone("SAME");
   
+    
+
     c->cd(3);
 
     TLine* L = new TLine(0, 1, 26, 1);
@@ -55,6 +62,8 @@
 
     LongShapeFastSim->SetMaximum(1.5);
     LongShapeFastSim->SetMinimum(0.5);
+
+    LongShapeFastSim->SetYTitle("Fast/Full");
 
     LongShapeFastSim->Divide(LongShapeFullSim);
     LongShapeFastSim->Draw();
@@ -81,10 +90,19 @@
     double intFastSim = TransShapeFastSim->Integral();
     TransShapeFastSim->Scale(1./intFastSim);
 
+    TransShapeFastSim->SetLineColor(kRed);
+
     c->cd(2);
 
+    TLegend* Legend = new TLegend(0.5, 0.7, 0.9., 0.9);
+
+    gPad->SetLogy();
+
     string sTitle("Transverse shape E(Electron) = "); sTitle = sTitle + Form("%d", iMass); 
-    
+ 
+    TransShapeFullSim->SetStats(0);
+    TransShapeFastSim->SetStats(0);
+
     TransShapeFullSim->SetTitle(sTitle.c_str());
     TransShapeFastSim->SetTitle(sTitle.c_str());
 
@@ -96,19 +114,28 @@
     TransShapeFullSim->DrawClone();
     TransShapeFastSim->DrawClone("SAME");
 
+
+    Legend->AddEntry(TransShapeFastSim, "Fast Sim", "l");
+    Legend->AddEntry(TransShapeFullSim, "Full Sim", "f");
+
+    Legend->Draw();
+
     c->cd(4);
 
     TLine* LT = new TLine(0, 1, 7, 1);
     LT->SetLineWidth(2);
     LT->SetLineStyle(2);
 
-    TransShapeFastSim->SetMaximum(1.5);
-    TransShapeFastSim->SetMinimum(0.5);
+    TransShapeFastSim->SetMaximum(2.0);
+    TransShapeFastSim->SetMinimum(0.0);
+
+    TransShapeFastSim->SetYTitle("Fast/Full");
 
     TransShapeFastSim->Divide(TransShapeFullSim);
     TransShapeFastSim->Draw();
 
     LT->Draw("SAME");
+    
 
     string sNamePng("ELECTRON_FORWARD/PERFECT_LIGHT_COLLECTION_ELECTRON_"); 
 
