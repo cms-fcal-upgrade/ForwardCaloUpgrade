@@ -19,14 +19,27 @@
 
 using namespace RooFit ;
 
+
 TString sTitle("ELECTRON_FORWARD/calorimeter_histograms_");
-TString sProd("PERFECT_LIGHT_COLL_RIGHT_");
-###TString sProd("REALISTIC_LIGHT_COLLECTION_ETA2_");
+//TString sProd("PBWO_FEB2012_REALISTIC_LIGHT_COLLECTION_ETA23_");
+TString sProd("PBWO_FEB2012_PERFECT_LIGHT_COLLECTION_ETA23_");
+//TString sProd("LSO_FEB2012_REALISTIC_LIGHT_COLLECTION_ETA23_");
+//TString sProd("LSO_FEB2012_PERFECT_LIGHT_COLLECTION_ETA23_");
 TString sParticle("ELECTRON");
-TString sRegion("FORWARD");
+TString sRegion("_FORWARD");
+bool bFastSim = true;
+bool bSuperCluster = true;
 
-
-
+/*
+// LSO_FEB2012_FULLSIM_PERFECT_LIGHT_COLLECTION_ELECTRON_320.root
+TString sTitle("ELECTRON_FORWARD/");
+//TString sProd("LSO_FEB2012_FULLSIM_PERFECT_LIGHT_COLLECTION_");
+TString sProd("PBWO_FEB2012_FULLSIM_PERFECT_LIGHT_COLLECTION_");
+TString sParticle("ELECTRON");
+TString sRegion("");
+bool bFastSim = false;
+bool bSuperCluster = false;
+*/
 
 RooFitResult* FitHistWithCBShape(TH1* h)
 {
@@ -34,8 +47,8 @@ RooFitResult* FitHistWithCBShape(TH1* h)
 
   double avg = h->GetMean();
   double rms = h->GetRMS();
-  double xmin = avg-5.0*rms;
-  double xmax = avg+5.0*rms;
+  double xmin = avg-3.0*rms;
+  double xmax = avg+3.0*rms;
 
   RooRealVar E("E","E", xmin, xmax, "GeV");
   RooDataHist dataSet("dataSet", "dataSet", E, h ); 
@@ -58,6 +71,39 @@ RooFitResult* FitHistWithCBShape(TH1* h)
 }
 
 
+RooFitResult* FitHistWithCBShape(TTree* tr)
+{
+  RooFitResult *res = 0;
+
+  tr->Draw("ecal>>h");
+  
+
+  double avg = h->GetMean();
+  double rms = h->GetRMS();
+  double xmin = avg-3.0*rms;
+  double xmax = avg+3.0*rms;
+
+  RooRealVar ecal("ecal","ecal", xmin, xmax, "MeV");
+  RooDataSet dataSet("dataSet", "dataSet", tr, ecal); 
+  RooPlot* frame = ecal.frame();
+  dataSet.plotOn(frame);
+
+  RooRealVar mean("mean","mean", avg, xmin, xmax) ;
+  RooRealVar sigma("sigma","width", rms, 0.001, 5.0*rms);
+  RooRealVar alpha("alpha","alpha", 1.0, -10.0, 10.0);
+  RooRealVar n("n","n", 1.0, 0.001, 10000.0);
+  
+  RooCBShape CBall("CBall","Crystal Ball", ecal, mean, sigma, alpha, n);
+  
+  res = CBall.fitTo(dataSet, Save() );
+
+  CBall.plotOn(frame);
+  frame->Draw();
+  return res;
+
+}
+
+
 
 
 RooFitResult* Electron5x5(int indx)
@@ -68,7 +114,7 @@ RooFitResult* Electron5x5(int indx)
   for (int i = 1; i < 8; i++){
 
     int idx = TMath::Power(2,i-1)*10;
-    TString sName = sTitle + "" + sProd + "" + sParticle + "_" + Form("%d",idx) + "_" + sRegion + ".root";
+    TString sName = sTitle + "" + sProd + "" + sParticle + "_" + Form("%d",idx) + "" + sRegion + ".root";
     fname[i-1] = sName.Data();
 
   }
@@ -77,16 +123,28 @@ RooFitResult* Electron5x5(int indx)
 
   if( indx<0 || indx>6 ) return;
   TFile* fin = new TFile( fname[indx].Data() );
-  string shisto("caloEE_5to5_energy_"); shisto = shisto + "" + Form("%d",idx) + ";1";
+
+  string shisto("caloEE_");
+
+  if (bSuperCluster) shisto = shisto + "5to5_energy_" + Form("%d",idx) + ";1";
+  else shisto = shisto + "total_energy_" + Form("%d",idx) + ";1";
+
 
   cout << shisto.c_str() << endl;
+	
+  if (bFastSim) {
+    TH1D* hist = (TH1D*)fin->Get(shisto.c_str());
+    RooFitResult *r = FitHistWithCBShape(hist);
+  } else {
+    TTree* tr = (TTree*)fin->Get("Total;1");
+    RooFitResult *r = FitHistWithCBShape(tr);
+  }
 
-  TH1D* hist = (TH1D*)fin->Get(shisto.c_str());
-  RooFitResult *r = FitHistWithCBShape(hist);
   r->Print();
 
   TString sNamePng(fname[indx]);
-  sNamePng.ReplaceAll(".root", "_5to5_finebinning.png");
+  if (bSuperCluster) sNamePng.ReplaceAll(".root", "_5to5_finebinning.png");
+  else  sNamePng.ReplaceAll(".root", "_5to5_finebinning.png");
   cout << "sNamePng = " << sNamePng.Data() << endl;
 
 
@@ -98,6 +156,9 @@ RooFitResult* Electron5x5(int indx)
 
 
 void FitterExample(){
+
+  double factor = 1.0;
+  if (!bFastSim) factor = 1.e-3;
 
    TGraphErrors* gSigma = new TGraphErrors(7);
 
@@ -112,11 +173,11 @@ void FitterExample(){
       RooFitResult *r = Electron5x5(i);
 
 
-      double sVal = ((RooAbsReal*) r->floatParsFinal().find("sigma"))->getVal();
-      double sError = ((RooAbsReal*) r->floatParsFinal().find("sigma"))->getPropagatedError(*r);
+      double sVal = ((RooAbsReal*) r->floatParsFinal().find("sigma"))->getVal()*factor;
+      double sError = ((RooAbsReal*) r->floatParsFinal().find("sigma"))->getPropagatedError(*r)*factor;
  
-      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal();
-      double sErrorMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getPropagatedError(*r);
+      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal()*factor;
+      double sErrorMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getPropagatedError(*r)*factor;
 
  
       double Ene = TMath::Power(2,i)*10;
@@ -134,9 +195,11 @@ sError<< endl;
 
    for (int i = 0; i < 7; i++){
 
-      double Ene, dSigma, dMean, dMeanError;
+  
+
+     double Ene, dSigma, dMean, dMeanError;
       
-      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal();
+     double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal()*factor;
 
       gSigma->GetPoint(i, Ene, dSigma);
       gMean->GetPoint(i, Ene, dMean);
@@ -144,8 +207,8 @@ sError<< endl;
       cout << Ene << " " << dMean*Ene << " " << gMean->GetErrorY(i)*Ene << " " << dSigma << " " << gSigma->GetErrorY(i) << " " << endl;
    }
 
-
-   string sName = sTitle + "" + sProd + "" + sParticle + "_" + sRegion + ".txt";
+   if (bSuperCluster)    string sName = sTitle + "" + sProd + "" + sParticle + "" + sRegion + "5x5.txt";
+   else string sName = sTitle + "" + sProd + "" + sParticle + "" + sRegion + "total.txt";
 
    ofstream outFileTxt;
    outFileTxt.open(sName.c_str());
@@ -153,11 +216,12 @@ sError<< endl;
 
    for (int i = 0; i < 7; i++){
   
-      double Ene, dSigma;
+     double Ene, dSigma, dMean;
 
+      gMean->GetPoint(i, Ene, dMean);
       gSigma->GetPoint(i, Ene, dSigma);
 
-      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal();
+      double sMean = ((RooAbsReal*) r->floatParsFinal().find("mean"))->getVal()*factor;
 
       outFileTxt << Ene << " " << dMean*Ene << " " << gMean->GetErrorY(i)*Ene << " " << dSigma << " " << gSigma->GetErrorY(i) << " " << 
 endl;
@@ -183,7 +247,7 @@ endl;
 
 
 
-   string sName = sTitle + "" + sProd + "" + sParticle + "_" + sRegion + ".png";
+   string sName = sTitle + "" + sProd + "" + sParticle + "" + sRegion + ".png";
    c->SaveAs(sName.c_str());
 
 }

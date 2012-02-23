@@ -1,13 +1,15 @@
 {
 
-  bool bRebinTrans = true;
+  bool bRebinTrans = false;
 
   for (int j = 0; j < 7; j++){
 
     int iMass = 10*TMath::Power(2, j);
 
-    string sNameFast("ELECTRON_FORWARD/DQM_ShowerShape_PERFECT_LIGHT_COLLECTION_ETA23_ELECTRON_"); sNameFast = sNameFast + Form("%d", iMass) + "_FORWARD.root";
-    string sNameFull("ELECTRON_FORWARD/FULLSIM_PERFECT_LIGHT_COLLECTION_ELECTRON_"); sNameFull = sNameFull + Form("%d", iMass) + ".root";
+    string sName("PBWO_FEB2012_PERFECT_LIGHT_COLLECTION_ETA23_ELECTRON_"); sName = sName  + Form("%d", iMass)  + "_FORWARD";
+
+    string sNameFast("ELECTRON_FORWARD/DQM_ShowerShape_"); sNameFast = sNameFast + "" + sName + ".root";
+    string sNameFull("ELECTRON_FORWARD/PBWO_FEB2012_FULLSIM_PERFECT_LIGHT_COLLECTION_ELECTRON_"); sNameFull = sNameFull + Form("%d", iMass) + ".root";
 
     TFile *_file0 = TFile::Open(sNameFast.c_str());
     TFile *_file1 = TFile::Open(sNameFull.c_str());
@@ -137,10 +139,10 @@
     LT->Draw("SAME");
     
 
-    string sNamePng("ELECTRON_FORWARD/PERFECT_LIGHT_COLLECTION_ELECTRON_"); 
+    string sNamePng("ELECTRON_FORWARD/"); 
 
-    if (!bRebinTrans) sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD.png";
-    else sNamePng = sNamePng + Form("%d", iMass) + "_FORWARD_COARSE.png";
+    if (!bRebinTrans) sNamePng = sNamePng + "" + sName + ".png";
+    else sNamePng = sNamePng + "" + sName + "_COARSE.png";
 
     c->SaveAs(sNamePng.c_str());
 
