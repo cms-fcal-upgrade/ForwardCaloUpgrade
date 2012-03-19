@@ -19,11 +19,12 @@
 #include "RunAction.hh"      
 #include "EventAction.hh"
 #include "SteppingAction.hh"
+#include "HistoManager.hh"
 
 //#include "QGSP_BERT.hh"
-//#include "QGSP_BERT_EMV.hh"
+#include "QGSP_BERT_EMV.hh"
 //#include "QGSP_FTFP_BERT.hh"
-#include "FTFP_BERT_EMV.hh"
+//#include "FTFP_BERT_EMV.hh"
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -69,32 +70,35 @@ int main(int argc,char** argv)
 // --------------------------------------------
 
 //  runManager-> SetUserInitialization(new QGSP_BERT);
-//  runManager-> SetUserInitialization(new QGSP_BERT_EMV);
+  runManager-> SetUserInitialization(new QGSP_BERT_EMV);
 //  runManager-> SetUserInitialization(new QGSP_FTFP_BERT);
-  runManager-> SetUserInitialization(new FTFP_BERT_EMV);
+//  runManager-> SetUserInitialization(new FTFP_BERT_EMV);
+
+// Initilization of histograms 
+//-----------------------------
+  HistoManager* histo = new HistoManager();
  
 // Set user gen-action class
-// --------------------------  
-//  G4VUserPrimaryGeneratorAction* gen_action = 
+// --------------------------  	
   PrimaryGeneratorAction* gen_action = 
                           new PrimaryGeneratorAction(detector);
   runManager->SetUserAction(gen_action);
 
 // Set user run-action class
 // -------------------------
-//  RunAction* run_action = new RunAction;  
-  RunAction* run_action = new RunAction(detector, gen_action);  
+  RunAction* run_action = new RunAction(detector, gen_action, histo);  
   runManager->SetUserAction(run_action);
+
 
 // Set user event-action class
 // ---------------------------
-  EventAction* event_action = new EventAction(run_action);
+  EventAction* event_action = new EventAction(run_action, detector, histo);
   runManager->SetUserAction(event_action);
 
 // Set user stepping-action class
 // ------------------------------
   G4UserSteppingAction* stepping_action =
-                    new SteppingAction(detector, event_action);
+                    new SteppingAction(detector, event_action, histo);
   runManager->SetUserAction(stepping_action);
   
 // Initialize G4 kernel

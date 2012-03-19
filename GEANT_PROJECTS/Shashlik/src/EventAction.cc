@@ -5,6 +5,7 @@
 
 #include "EventAction.hh"
 #include "RunAction.hh"
+#include "DetectorConstruction.hh"
 #include "HistoManager.hh"
 
 #include "G4Event.hh"
@@ -19,17 +20,49 @@
 // Constructor of EventAction-class and
 // assignment of pinter runAct(run) <=> runAct=run
 
-EventAction::EventAction(RunAction* run)
-:runAct(run),aSize(500),printModulo(20)
+EventAction::EventAction(RunAction* run,DetectorConstruction* det,HistoManager* hist)
+:runAct(run),detCon(det),myana(hist),printModulo(20)
 {}
 
 EventAction::~EventAction()
-{}
+{
+//delete dynamic bin arrays
+//-------------------------
+ delete dEdL;
+ delete dEdR;
+ delete dEdLAbs;
+ delete dEdRAbs;
+ delete dEdRHcal;
+ delete RangeEcalLay;
+
+}
 
 // Member function which run at the start of each event
 
 void EventAction::BeginOfEventAction(const G4Event* evt)
 {  
+
+// get bin number for histograms
+//------------------------------
+
+  nLayers  = detCon->GetNbOfEcalLayers();
+  nRtot    = myana->GetnRtot();
+  nLtot    = myana->GetnLtot();
+  if( nLayers != 1 ) nLtot = nLayers;
+  nRtoth   = myana->GetHcalnRtot();
+  nRtotAbs = myana->GetAbsnRtot();
+  nLtotAbs = myana->GetAbsnLtot();
+  if( nLayers != 1 ) nLtotAbs = nLayers;
+
+// initialize dynamic bin arrays
+//-----------------------------
+  dEdL     = new G4double[nLtot];
+  dEdR     = new G4double[nRtot];
+  dEdLAbs  = new G4double[nLtotAbs];
+  dEdRAbs  = new G4double[nRtotAbs];
+  dEdRHcal = new G4double[nRtoth];
+  RangeEcalLay = new G4double[nLayers];
+
   G4int evtNb = evt->GetEventID();
 
   if (evtNb%printModulo == 0) { 
@@ -39,15 +72,18 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
  
 // initialisation per event
 
-  EnergyEcal = EnergyHcal = EnergyZero = RangeHcal = RangeEcal = 0. ;
+  EnergyEcal = EnergyHcal = EnergyZero = EnergyAbs = 0. ;
+  RangeHcal = RangeEcal = 0. ;
   for (G4int nl=0; nl<20; ++nl) { 
      dEdLHcal [nl] = 0.; 
      RangeHcalLay[nl] = 0.; 
   }
-  for (G4int i=0; i<aSize; ++i) { dEdL[i] = 0.; }
-  for (G4int j=0; j<aSize; ++j) { dEdR[j] = 0.; }     
-  for (G4int k=0; k<aSize; ++k) { dEdRHcal[k] = 0.; }     
-  for (G4int l=0; l<aSize; ++l) { RangeEcalLay[l] = 0.; }     
+  for (G4int i=0; i<nLtot; ++i)    { dEdL[i] = 0.; }
+  for (G4int j=0; j<nRtot; ++j)    { dEdR[j] = 0.; }     
+  for (G4int k=0; k<nRtoth; ++k)   { dEdRHcal[k] = 0.; }     
+  for (G4int l=0; l<nLayers; ++l)  { RangeEcalLay[l] = 0.; }     
+  for (G4int m=0; m<nLtotAbs; ++m) { dEdLAbs[m] = 0.; }
+  for (G4int n=0; n<nRtotAbs; ++n) { dEdRAbs[n] = 0.; }     
 }
 
 // Member function at the end of each event
@@ -61,8 +97,11 @@ void EventAction::EndOfEventAction(const G4Event* evt)
   
 // fill histos
 //------------
-  HistoManager* myana= HistoManager::GetPointer();
-  myana-> FillHisto(EnergyEcal, EnergyHcal, EnergyZero, RangeHcal, RangeEcal);
+  myana-> FillEnergy(EnergyEcal, EnergyHcal, EnergyZero, EnergyAbs);
+
+// fill Ecal and Hcal range of charged particles
+//----------------------------------------------
+  myana-> FillRange(RangeHcal, RangeEcal);
 
 // fill Hcal longitudinal shower profile
 //----------------------------------------
@@ -79,6 +118,14 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 // fill longitudinal shower profile
 //----------------------------------
   myana-> FillLongShape(dEdL);
+
+// fill Ecal absorber transverse shower profile
+//----------------------------------------------
+  myana-> FillAbsTransShape(dEdRAbs);
+  
+// fill Ecal absorber longitudinal shower profile
+//------------------------------------------------
+  myana-> FillAbsLongShape(dEdLAbs);
 
 //print per event (modulo n)
 //---------------------------

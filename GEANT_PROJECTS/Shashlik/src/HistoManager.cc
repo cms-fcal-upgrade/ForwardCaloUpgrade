@@ -2,6 +2,7 @@
 // ====================================================================
 
 #include "HistoManager.hh"
+#include "HistoMessenger.hh"
 #include "RunAction.hh"
 
 // ROOT headers
@@ -13,8 +14,6 @@
 
 #include <stdio.h>
 
-HistoManager* HistoManager::myanalysis= 0;
-
 // ====================================================================
 
 HistoManager::HistoManager()
@@ -23,11 +22,16 @@ HistoManager::HistoManager()
 
  tree_tot  = 0;
  tree_vec  = 0;
+ tree_ran  = 0;
 
  fileName = "test_01.root";
  
+ nLtot = nRtot = nLtotAbs = nRtotAbs = nRtotHcal = 200;
+ dLbin = dRbin = dLbinAbs = dRbinAbs = dRbinHcal = 2.0;  
+
  gROOT->Reset();                         // ROOT style
 
+ histoMessenger = new HistoMessenger(this);
 }
 
 HistoManager::~HistoManager()
@@ -36,32 +40,17 @@ HistoManager::~HistoManager()
 
   delete tree_tot;
   delete tree_vec;
-
-}
-
-// determine pointer to histos
-
-HistoManager* HistoManager::GetPointer()
-{
-  if (myanalysis == 0) {
-    myanalysis = new HistoManager();
-  }
-
-  return myanalysis;
+  delete tree_ran;
+  delete histoMessenger;
 }
 
 // histos definition
 //-------------------
-void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
-                                       G4int nLtot, G4double dLbin,
-                                       G4int nRtoth, G4double dRbinh)
+void HistoManager::Book(G4double Ekin, G4int nLayers)
 {
-  nhRtot = nRtot;      // number bins for Ecal transverse shower profile
-  dhRbin = dRbin;      // bin width for Ecal transverse shower profile
-  nhLtot = nLtot;      // number bins for Ecal longitudinal shower profile
-  dhLbin = dLbin;      // bin width for Ecal longitudinal shower profile
-  nhRtotc = nRtoth;    // number bins for Hcal transverse shower profile
-  dhRbinc = dRbinh;    // bin width for Hcal transverse shower profile
+// Turn on histo errors
+//----------------------
+  TH1::SetDefaultSumw2(true);
 
   histo[0] = new TH1D("Ecal", "Deposited Energy", 100, 0., 1.10*Ekin/GeV);
   histo[0]-> GetXaxis()-> SetTitle("E [GeV]");
@@ -78,19 +67,22 @@ void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
   histo[2]-> SetFillColor(kBlue);
   histo[2]-> SetStats(1);
 
-  tree_tot = new TTree("Total", "Calorimeter info");
+  tree_tot = new TTree("Total", "Energy Calorimeter info");
   tree_tot-> Branch("ecal",&e_ecal,"e_ecal/D");
   tree_tot-> Branch("hcal",&e_hcal,"e_hcal/D");
   tree_tot-> Branch("zero",&e_zero,"e_zero/D");
-  tree_tot-> Branch("hran",&r_hcal,"r_hcal/D");
-  tree_tot-> Branch("eran",&r_ecal,"r_ecal/D");
+  tree_tot-> Branch("abse",&e_abs ,"e_abs/D");
+
+  tree_ran = new TTree("Range", "Range Calorimeter info");
+  tree_ran-> Branch("hran",&r_hcal,"r_hcal/D");
+  tree_ran-> Branch("eran",&r_ecal,"r_ecal/D");
 
   tree_vec = new TTree("Vector", "Layer energy info");
   tree_vec-> Branch("e_vec",e_vec,"e_vec[17]/D");
 
 // Ecal transverse shower profile  in [mm]
 //-----------------------------------------
-    histo[3] = new TH1D("EcalTrShape","Ecal Transverse Shape",nhRtot,0.,nhRtot*dhRbin);
+    histo[3] = new TH1D("EcalTrShape","Ecal Transverse Shape",nRtot,0.,nRtot*dRbin);
     histo[3]-> GetXaxis()-> SetTitle("rho / mm");
     histo[3]-> GetYaxis()-> SetTitle("1/E dE/dbin");   
     histo[3]-> SetFillColor(kBlue);
@@ -98,28 +90,67 @@ void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
 
 // Ecal longitudinal shower profile in [mm] or per layer's number 
 //----------------------------------------------------------------
-    histo[4] = new TH1D("EcalLoShape","Ecal Longitudinal Shape",nhLtot,0.,nhLtot*dhLbin);
-    if ( (int)dhLbin !=1) { histo[4]-> GetXaxis()-> SetTitle("z / mm");    }
-    else                  { histo[4]-> GetXaxis()-> SetTitle("z / layer"); }
+    if( nLayers != 1) { nLtot = nLayers; dLbin = 1; }
+    histo[4] = new TH1D("EcalLoShape","Ecal Longitudinal Shape",
+                                               nLtot, 0., nLtot*dLbin);
+    if( nLayers ==1) { histo[4]-> GetXaxis()-> SetTitle("z / mm");    }
+    else             { histo[4]-> GetXaxis()-> SetTitle("z / layer"); }
     histo[4]-> GetYaxis()-> SetTitle("1/E dE/dbin");   
     histo[4]-> SetFillColor(kBlue);
     histo[4]-> SetStats(1);
 
-// Hcal transverse shower profile  in [mm]
-//-----------------------------------------
-    histo[5] = new TH1D("HcalTrShape","Hcal Transverse Shape",nhRtotc,0.,nhRtotc*dhRbinc);
-    histo[5]-> GetXaxis()-> SetTitle("rho / mm");
-    histo[5]-> GetYaxis()-> SetTitle("1/E dE/dbin");
+// Ecal Molier radius [mm] in sensitive material (90% energy)
+//-----------------------------------------------------------
+    G4int nTemp = int(50./dRbin);
+    histo[5] = new TH1D("EcalSensMol","Ecal Sens Molier",nTemp,0.,nTemp*dRbin);
+    histo[5]-> GetXaxis()-> SetTitle("Molier radius / mm");
     histo[5]-> SetFillColor(kBlue);
     histo[5]-> SetStats(1);
 
-// Hcal longitudinal shower profile per layer's number
-//------------------------------------------------------
-    histo[6] = new TH1D("HcalLoShape","Hcal Longitudinal Shape", 18, 0., 18.);
-    histo[6]-> GetXaxis()-> SetTitle("z / layer"); 
+// Hcal transverse shower profile  in [mm]
+//-----------------------------------------
+    histo[6] = new TH1D("HcalTrShape","Hcal Transverse Shape",
+                                       nRtotHcal, 0., nRtotHcal*dRbinHcal);
+    histo[6]-> GetXaxis()-> SetTitle("rho / mm");
     histo[6]-> GetYaxis()-> SetTitle("1/E dE/dbin");
     histo[6]-> SetFillColor(kBlue);
     histo[6]-> SetStats(1);
+
+// Hcal longitudinal shower profile per layer's number
+//------------------------------------------------------
+    histo[7] = new TH1D("HcalLoShape","Hcal Longitudinal Shape", 18, 0., 18.);
+    histo[7]-> GetXaxis()-> SetTitle("z / layer"); 
+    histo[7]-> GetYaxis()-> SetTitle("1/E dE/dbin");
+    histo[7]-> SetFillColor(kBlue);
+    histo[7]-> SetStats(1);
+
+// Ecal transverse shower profile [mm] in absorber
+//-------------------------------------------------   
+    histo[8] = new TH1D("AbsTrShape","Ecal Abs Transverse Shape",
+                                   nRtotAbs, 0., nRtotAbs*dRbinAbs);
+    histo[8]-> GetXaxis()-> SetTitle("rho / mm");
+    histo[8]-> GetYaxis()-> SetTitle("1/E dE/dbin");
+    histo[8]-> SetFillColor(kBlue);
+    histo[8]-> SetStats(1);
+
+// Ecal longitudinal shower profile in [mm] or per layer's number
+//----------------------------------------------------------------
+    if( nLayers != 1) { nLtotAbs = nLayers; dLbinAbs = 1; }
+    histo[9] = new TH1D("AbsLoShape","Ecal Abs Longitudinal Shape",
+                                      nLtotAbs, 0., nLtotAbs*dLbinAbs);
+    if( nLayers ==1) { histo[9]-> GetXaxis()-> SetTitle("z / mm");    }
+    else             { histo[9]-> GetXaxis()-> SetTitle("z / layer"); }
+    histo[9]-> GetYaxis()-> SetTitle("1/E dE/dbin");
+    histo[9]-> SetFillColor(kBlue);
+    histo[9]-> SetStats(1);
+
+// Ecal Molier radius [mm] in absorber material (90% energy)
+//-----------------------------------------------------------
+    G4int naTemp = int(50./dRbinAbs);
+    histo[10] = new TH1D("EcalAbsMol","Ecal Abs Molier",naTemp,0.,naTemp*dRbinAbs);
+    histo[10]-> GetXaxis()-> SetTitle("Molier radius / mm");
+    histo[10]-> SetFillColor(kBlue);
+    histo[10]-> SetStats(1);
 
   return;
 }
@@ -132,24 +163,24 @@ void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
 
   tree_tot = 0;
   tree_vec = 0;
+  tree_ran = 0;
 
   return;
 }
 
 //==> write out histos in the output file ===============
 
-//  void HistoManager::Save(const G4String& fname)
+//  void HistoManager::Save(G4String fileName)
   void HistoManager::Save()
 {
 
-//  TFile* file = new TFile(fname.c_str(),
-  TFile* file = new TFile(fileName,
-                          "RECREATE", "Geant4 ROOT analysis");
+  TFile* file = new TFile(fileName, "RECREATE", "Geant4 ROOT analysis");
 
   for(G4int ih=0; ih<nhist; ih++) histo[ih]->Write();
 
   tree_tot->  Write();
   tree_vec->  Write();
+  tree_ran->  Write();
 
   file-> Close();
   delete file;
@@ -159,8 +190,8 @@ void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
 
 //==> Fill histo with deposited energy ====================
 
-   void HistoManager::FillHisto(G4double ecal, G4double hcal, G4double zero,
-                                              G4double rhcal, G4double recal)
+   void HistoManager::FillEnergy(G4double ecal, G4double hcal, G4double zero,
+                                                               G4double absor)
    {
 
      histo[0]-> Fill(ecal/GeV);
@@ -170,48 +201,68 @@ void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
      e_ecal = ecal;
      e_hcal = hcal;
      e_zero = zero;
-     r_hcal = rhcal;
-     r_ecal = recal;
-
+     e_abs  = absor; 
      tree_tot-> Fill();
    }
 
+// Fill Ecal and Hcal range of charged particles
+//----------------------------------------------
+   void HistoManager::FillRange(G4double rhcal, G4double recal)
+   {
+     r_hcal = rhcal;
+     r_ecal = recal;
+     tree_ran-> Fill();
+   }  
+
+// Fill Ecal transverse shower profile in sensitive material
+//-----------------------------------------------------------
    void HistoManager::FillTransShape(G4double* p_tra)
    {
      EdepEcalRad = 0.;
-     for(G4int itr=0; itr<nhRtot; itr++) EdepEcalRad += p_tra[itr];
+     for(G4int itr=0; itr<nRtot; itr++) EdepEcalRad += p_tra[itr];
      if( EdepEcalRad > 0. ) { 
-       for(G4int jtr=0; jtr<nhRtot; jtr++) {
-          G4double xrbin = dhRbin*jtr + 0.5*dhRbin;
+       G4double EdepTemp = 0.0;
+       G4double xMolier = 0.0;  
+       for(G4int jtr=0; jtr<nRtot; jtr++) {
+          G4double xrbin = dRbin*jtr + 0.5*dRbin;
           histo[3]-> Fill(xrbin,p_tra[jtr]/EdepEcalRad);
+          EdepTemp += p_tra[jtr];
+          if( EdepTemp/EdepEcalRad < 0.90) xMolier = xrbin;
        }
+       histo[5]-> Fill(xMolier);
      }
    }
 
+// Fill Ecal longitudinal shower profile in sensitive material
+//------------------------------------------------------------
    void HistoManager::FillLongShape(G4double* p_lon)
    {
      EdepEcalLong = 0.;
-     for(G4int ilo=0; ilo<nhLtot; ilo++) EdepEcalLong += p_lon[ilo];
+     for(G4int ilo=0; ilo<nLtot; ilo++) EdepEcalLong += p_lon[ilo];
      if( EdepEcalLong > 0. ) {
-       for(G4int jlo=0; jlo<nhLtot; jlo++) {
-          G4double xlbin = dhLbin*jlo + 0.5*dhLbin; 
+       for(G4int jlo=0; jlo<nLtot; jlo++) {
+          G4double xlbin = dLbin*jlo + 0.5*dLbin; 
           histo[4]-> Fill(xlbin,p_lon[jlo]/EdepEcalLong);
        }
      }
    }
 
+// Fill Hcal transverse shower profile in sensitive material
+//-----------------------------------------------------------
    void HistoManager::FillHcalTransShape(G4double* ph_tra)
    {
      EdepHcalRad = 0.;
-     for(G4int ihtr=0; ihtr<nhRtot; ihtr++) EdepHcalRad += ph_tra[ihtr];
+     for(G4int ihtr=0; ihtr<nRtotHcal; ihtr++) EdepHcalRad += ph_tra[ihtr];
      if( EdepHcalRad > 0. ) {
-       for(G4int jhtr=0; jhtr<nhRtot; jhtr++) {
-          G4double xhrbin = dhRbin*jhtr + 0.5*dhRbin;
-          histo[5]-> Fill(xhrbin,ph_tra[jhtr]/EdepHcalRad);
+       for(G4int jhtr=0; jhtr<nRtotHcal; jhtr++) {
+          G4double xhrbin = dRbinHcal*jhtr + 0.5*dRbinHcal;
+          histo[6]-> Fill(xhrbin,ph_tra[jhtr]/EdepHcalRad);
        }
      }
    }
 
+// Fill Hcal longitudinal shower profile in sensitive material
+//--------------------------------------------------------------
    void HistoManager::FillHcalLongShape(G4double* ph_lon)
    {
      EdepHcalLong = 0.;
@@ -219,11 +270,91 @@ void HistoManager::Book(G4double Ekin, G4int nRtot, G4double dRbin,
      if( EdepHcalLong > 0. ) {
        for(G4int jhlo=0; jhlo<18; jhlo++) {
           G4double xhlbin = jhlo + 0.5;
-          histo[6]-> Fill(xhlbin,ph_lon[jhlo]/EdepHcalLong);
+          histo[7]-> Fill(xhlbin,ph_lon[jhlo]/EdepHcalLong);
        }
      }  
      for(G4int kfi=0; kfi<17; kfi++) e_vec[kfi] = ph_lon[kfi];
      tree_vec-> Fill();
    }    
+
+// Fill Ecal transverse shower shape in absorber
+//-----------------------------------------------
+   void HistoManager::FillAbsTransShape(G4double* pa_tra)
+   {
+     EdepAbsRad = 0.;
+     for(G4int itr=0; itr<nRtotAbs; itr++) EdepAbsRad += pa_tra[itr];
+     if( EdepAbsRad > 0. ) {
+       G4double EdepTemp = 0.0;
+       G4double xMolier = 0.0;
+       for(G4int jtr=0; jtr<nRtotAbs; jtr++) {
+          G4double xrbin = dRbinAbs*jtr + 0.5*dRbinAbs;
+          histo[8]-> Fill(xrbin,pa_tra[jtr]/EdepAbsRad);
+          EdepTemp += pa_tra[jtr];
+          if( EdepTemp/EdepAbsRad < 0.90 ) xMolier = xrbin;
+       }
+       histo[10]->Fill(xMolier);
+     }
+   }
+
+// Fill Ecal longitudinal shower profile in absorber
+//---------------------------------------------------
+   void HistoManager::FillAbsLongShape(G4double* pa_lon)
+   {
+     EdepAbsLong = 0.;
+     for(G4int ilo=0; ilo<nLtotAbs; ilo++) EdepAbsLong += pa_lon[ilo];
+     if( EdepAbsLong > 0. ) {
+       for(G4int jlo=0; jlo<nLtotAbs; jlo++) {
+          G4double xlbin = dLbinAbs*jlo + 0.5*dLbinAbs;
+          histo[9]-> Fill(xlbin,pa_lon[jlo]/EdepAbsLong);
+       }
+     }
+   }
+
+// Set binning for Ecal transverse shower profile
+//------------------------------------------------
+  void HistoManager::SetSensRBining(G4ThreeVector Value)
+  { 
+    nRtot   = Value(0);
+    dRbin   = Value(1)*mm;
+  }
+
+// Set binning for Ecal longitudinal shower profile
+//--------------------------------------------------
+  void HistoManager::SetSensLBining(G4ThreeVector Value)
+  {
+    nLtot   = Value(0);
+    dLbin   = Value(1)*mm;
+  }       
+
+// Set binning for Hcal transverse shower profile
+//------------------------------------------------
+  void HistoManager::SetHcalRBining(G4ThreeVector Value)
+  {
+    nRtotHcal   = Value(0);
+    dRbinHcal   = Value(1)*mm;
+  }
+
+// Set binning for Ecal Absorber transverse shower profile 
+//---------------------------------------------------------
+  void HistoManager::SetAbsRBining(G4ThreeVector Value)
+  {
+    nRtotAbs   = Value(0);
+    dRbinAbs   = Value(1)*mm;
+  }
+   
+// Set binning for Ecal Absorber longitudinal shower profile
+//-----------------------------------------------------------
+  void HistoManager::SetAbsLBining(G4ThreeVector Value)
+  {
+    nLtotAbs   = Value(0);
+    dLbinAbs   = Value(1)*mm;
+  }
+
+// Set ROOT file name
+//--------------------
+  void HistoManager::SetFileName(G4String userFile)
+  {
+    fileName = userFile;
+  }
 
 //===========================================================

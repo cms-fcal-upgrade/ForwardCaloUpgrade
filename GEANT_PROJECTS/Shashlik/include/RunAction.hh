@@ -13,6 +13,7 @@
 
 class DetectorConstruction;
 class PrimaryGeneratorAction;
+class HistoManager;
 
 class G4Run;
 
@@ -21,7 +22,7 @@ class RunAction : public G4UserRunAction
 
  public:
 
-  RunAction(DetectorConstruction*, PrimaryGeneratorAction*);
+  RunAction(DetectorConstruction*, PrimaryGeneratorAction*, HistoManager*);
  ~RunAction();
 
 // RunAction();
@@ -38,8 +39,9 @@ private:
   G4double sumHcal, sum2Hcal;
   G4double sumZero, sum2Zero;
 
-  DetectorConstruction* Det;
+  DetectorConstruction*   Det;
   PrimaryGeneratorAction* Kin;
+  HistoManager*           myana;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

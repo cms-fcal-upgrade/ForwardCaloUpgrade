@@ -66,9 +66,6 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   LayerThickness = AbsorberThickness + AirGapThickness;
   CalorThickness = NbOfHcalLayers*LayerThickness;
 
-  nRtotHcal = 100;
-  dRbinHcal = 5.0*mm;
-
 // parameters for zero scintillator layer in front of HE
 //------------------------------------------------------
   ZeroWrapThick = 15.0*mm;
@@ -80,19 +77,16 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   CablesThickness   =  1.5*mm;
   G10plateThickness =  2.5*mm;
   SuppThickness     =  4.5*mm;
-  AluSeThickness     = 3.0*cm;
+  AluSeThickness    = 30.0*mm;
+  LeadSeThickness   = 15.0*mm;
 
 // Ecal default parameters
 //-----------------------
   EcalAbsThickness  =   0.0*mm;
   EcalSensThickness = 220.0*mm;
   NbOfEcalLayers    = 1;
+  offsetEcal        =-818.0*mm;
   ComputeEcalParameters();
-
-  nRtot = 100;
-  dRbin = 5.0*mm;
-  nLtot = 100;
-  dLbin = 2.2*mm;
 
 // materials
 //-----------
@@ -632,7 +626,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    false,                 
                                    0);                   
 
-// G10 plate 2.5*mm behind of ECAL and in front of HE (at -59.80*cm)
+// G10 plate 2.5*mm behind of ECAL and in front of HE (at -39.80*cm)
 //===================================================================
 
   solidG10plate=0; logicG10plate=0; physiG10plate=0;
@@ -645,7 +639,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    "G10plate");
                                      
   physiG10plate = new G4PVPlacement(0,
-                      G4ThreeVector(-59.8*cm, 0.0, 0.0),
+                      G4ThreeVector(-39.8*cm, 0.0, 0.0),
                                      logicG10plate,  
                                     "G10plate",
                                      logicWorld,
@@ -663,22 +657,23 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                      false,
                                      2);
 
-// Ecal calorimeter (total thickness must be <= 22.0 cm)
+// Ecal calorimeter (total thickness must be <= 400.0 mm)
 //------------------------------------------------------- 
   solidEcal=0; logicEcal=0; physiEcal=0;
   solEcalLayer=0; logEcalLayer=0; phyEcalLayer=0;
-  offsetEcal = -818.0*mm;
+  middleEcal = offsetEcal + EcalCalorThickness/2.; 
   
   if (EcalCalorThickness > 0.)  
     { solidEcal = new G4Box("Ecal",                                  
-                      EcalCalorThickness/2,CalorSizeYZ/2,CalorSizeYZ/2);
+                      EcalCalorThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
                              
       logicEcal = new G4LogicalVolume(solidEcal,                 
                                       defaultMaterial,           
                                       "Ecal");                   
                                        
       physiEcal = new G4PVPlacement(0,                
-                                    G4ThreeVector(-70.8*cm, 0.0, 0.0),        
+//                                    G4ThreeVector(-70.8*cm, 0.0, 0.0),        
+                                    G4ThreeVector(middleEcal, 0.0, 0.0),        
                                     logicEcal,       
                                     "Ecal",          
                                     logicWorld,       
@@ -688,7 +683,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 // Ecal layer
 //------------
       solEcalLayer = new G4Box("EcLayer",                 
-                     EcalLayerThickness/2,CalorSizeYZ/2,CalorSizeYZ/2); 
+                     EcalLayerThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); 
                        
       logEcalLayer = new G4LogicalVolume(solEcalLayer,      
                                          defaultMaterial,
@@ -716,14 +711,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   
   if (EcalAbsThickness > 0.) 
     { solEcalAbs = new G4Box("EcalAbs",            
-                              EcalAbsThickness/2,CalorSizeYZ/2,CalorSizeYZ/2); 
+                              EcalAbsThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); 
                           
       logEcalAbs = new G4LogicalVolume(solEcalAbs,    
                                        EcalAbsMaterial, 
                                        EcalAbsMaterial->GetName()); 
                                           
       phyEcalAbs = new G4PVPlacement(0,                 
-                       G4ThreeVector(-EcalSensThickness/2,0.,0.), 
+                       G4ThreeVector(-EcalSensThickness/2.,0.,0.), 
                                       logEcalAbs,                 
                                       EcalAbsMaterial->GetName(), 
                                       logEcalLayer,       
@@ -734,17 +729,16 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 // Ecal sensitive material
 //-------------------------
   solEcalSens=0; logEcalSens=0; phyEcalSens=0; 
-  
   if (EcalSensThickness > 0.)
     { solEcalSens = new G4Box("EcalSens",
-                        EcalSensThickness/2,CalorSizeYZ/2,CalorSizeYZ/2);
+                        EcalSensThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
                            
       logEcalSens = new G4LogicalVolume(solEcalSens,
                                         EcalSensMaterial,
                                         EcalSensMaterial->GetName());
                                      
       phyEcalSens = new G4PVPlacement(0,                     
-                        G4ThreeVector(EcalAbsThickness/2,0.,0.),  
+                        G4ThreeVector(EcalAbsThickness/2.,0.,0.),  
                                       logEcalSens,                       
                                       EcalSensMaterial->GetName(), 
                                       logEcalLayer,             
@@ -821,13 +815,15 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 
 // change cuts in Ecal sensitive material
 //---------------------------------------
-   if( EcalSensMaterial->GetName() != "PbWO_def" ) {
-     G4Region* aRegion = new G4Region(EcalSensMaterial->GetName());
-     logEcalSens->SetRegion(aRegion);
-     aRegion->AddRootLogicalVolume(logEcalSens);
-     G4ProductionCuts* cut1 = new G4ProductionCuts;
-     cut1->SetProductionCut(0.1*mm);
-     aRegion->SetProductionCuts(cut1);
+   if( EcalSensThickness > 0. ) {
+     if( EcalSensMaterial->GetName() != "PbWO_def" ) {
+       G4Region* aRegion = new G4Region(EcalSensMaterial->GetName());
+       logEcalSens->SetRegion(aRegion);
+       aRegion->AddRootLogicalVolume(logEcalSens);
+       G4ProductionCuts* cut1 = new G4ProductionCuts;
+       cut1->SetProductionCut(0.1*mm);
+       aRegion->SetProductionCuts(cut1);
+     }
    }
 
 // change cuts in Ecal absorption material
@@ -905,10 +901,10 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   atb->SetForceSolid(true);
   logicG10plate->SetVisAttributes(atb);}
 
- {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,1.0,0.0,0.5));
-  atb->SetForceSolid(true);  
+// {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,1.0,0.0,0.5));
+//  atb->SetForceSolid(true);  
 //  logicEcal->SetVisAttributes(atb);} 
-  logEcalSens->SetVisAttributes(atb);} 
+//  logEcalSens->SetVisAttributes(atb);} 
 
  {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,0.0,0.0));
   atb->SetForceSolid(true);  
@@ -964,20 +960,6 @@ void DetectorConstruction::PrintCalorParameters()
          << " ] "
          << "\n------------------------------------------------------------\n";
  
-  G4cout << "\n------------------------------------------------------------"
-         << "\n---> The ECAL calorimeter: you have chosen " << nRtot
-         << " total number of bins "
-         << "\n---> with " << dRbin       
-         << " mm width size for transverse shower profile "
-         << "\n------------------------------------------------------------\n";
-         
-  G4cout << "\n------------------------------------------------------------"
-         << "\n---> The ECAL calorimeter: you have chosen " << nLtot
-         << " total number of bins "
-         << "\n---> with " << dLbin
-         << " mm width size for longitudinal shower profile "
-         << "\n------------------------------------------------------------\n";
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -1010,13 +992,20 @@ void DetectorConstruction::SetHcalAbsMaterial(G4String materialChoice)
 void DetectorConstruction::SetEcalAbsThickness(G4double val)
 {
   EcalAbsThickness = val;
-  if (EcalAbsThickness > 220.000)
+  if (EcalAbsThickness > 400.000)
     { G4cout << "\n ===> Stop from DetectorConstruction::SetEcalAbsThickness(): " 
              << "\n EcalAbsThickness = " << EcalAbsThickness  
-             << " mm, greater than 220.0 mm. "
+             << " mm, greater than 400.0 mm. "
              << "\n Check value of EcalAbsThickness." 
              << G4endl;
       exit(1);
+    }
+  if (EcalAbsThickness > 220.001)
+    { G4cout << "\n ===> Warning from DetectorConstruction::SetEcalAbsThickness(): "
+             << "\n EcalAbsThickness = " << EcalAbsThickness
+             << " mm, greater than 220.0 mm. "
+             << "\n Are you shure that it is correct ? "
+             << G4endl;
     }
 }
 
@@ -1046,13 +1035,20 @@ void DetectorConstruction::SetEcalSensMaterial(G4String materialChoice)
 void DetectorConstruction::SetEcalSensThickness(G4double val)
 {
   EcalSensThickness = val;
-  if (EcalSensThickness > 220.000)
+  if (EcalSensThickness > 400.000)
     { G4cout << "\n ===> Stop from DetectorConstruction::SetEcalSensThickness(): " 
              << "\n EcalSensThickness = " << EcalSensThickness  
              << " mm, greater than 220.0 mm "
              << "\n Check value of EcalSensThickness. "  
              << G4endl;
       exit(1);
+    }
+  if (EcalSensThickness > 220.000)
+    { G4cout << "\n ===> Warning from DetectorConstruction::SetEcalSensThickness(): "
+             << "\n EcalSensThickness = " << EcalSensThickness
+             << " mm, greater than 220.0 mm "
+             << "\n Are you shure that it is correct ? "
+             << G4endl;
     }
 }
 
@@ -1071,57 +1067,6 @@ void DetectorConstruction::SetNbOfEcalLayers(G4int val)
     }
 }
 
-// Set binning for Hcal transverse shower profile
-//------------------------------------------------
-  void DetectorConstruction::SetHcalRBining(G4ThreeVector Value)
-  {
-    hist5       = Value(0);
-    nRtotHcal   = Value(1);
-    dRbinHcal   = Value(2)*mm;
-    if( nRtotHcal > 500 )  
-    { G4cout << "\n ===> Stop from DetectorConstruction::SetHcalRBining(): "
-             << "\n nRtotHcal = " << nRtotHcal << " is greater than 500. "
-             << "\n Please use value <= 500 "
-             << " or increase array dEdRh in EventAction.hh  "
-             << G4endl;
-      exit(1);
-    } 
-  }
-
-// Set binning for Ecal transverse shower profile
-//------------------------------------------------
-  void DetectorConstruction::SetSensRBining(G4ThreeVector Value)
-  { 
-    hist3   = Value(0);
-    nRtot   = Value(1);
-    dRbin   = Value(2)*mm;
-    if( nRtot > 500 )
-    { G4cout << "\n ===> Stop from DetectorConstruction::SetSensRBining(): "
-             << "\n nRtot = " << nRtot << " is greater than 500. "
-             << "\n Please use value <= 500 "
-             << " or increase array dEdR in EventAction.hh  "
-             << G4endl;
-      exit(1);
-    }
-  }
-
-// Set binning for Ecal longitudinal shower profile
-//--------------------------------------------------
-  void DetectorConstruction::SetSensLBining(G4ThreeVector Value)
-  { 
-    hist4   = Value(0);
-    nLtot   = Value(1);
-    dLbin   = Value(2)*mm;
-    if( nLtot > 500 )
-    { G4cout << "\n ===> Stop from DetectorConstruction::SetSensLBining(): "
-             << "\n nLtot = " << nLtot << " is greater than 500. "
-             << "\n Please use value <= 500 "
-             << " or increase array dEdL in EventAction.cc  "
-             << G4endl;
-      exit(1);
-    }
-  }
-
 // Set magnetic field
 //--------------------
 
@@ -1130,7 +1075,7 @@ void DetectorConstruction::SetNbOfEcalLayers(G4int val)
 
 void DetectorConstruction::SetMagField(G4double fieldValue)
 {
-//apply a global uniform magnetic field along Z axis
+//apply a global uniform magnetic field along X axis
 
   G4FieldManager* fieldMgr
    = G4TransportationManager::GetTransportationManager()->GetFieldManager();
@@ -1138,7 +1083,7 @@ void DetectorConstruction::SetMagField(G4double fieldValue)
   if(magField) delete magField;         //delete the existing magn field
 
   if(fieldValue!=0.)                    // create a new one if non nul
-  { magField = new G4UniformMagField(G4ThreeVector(0.,0.,fieldValue));
+  { magField = new G4UniformMagField(G4ThreeVector(fieldValue, 0., 0.));
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
   } else {
@@ -1148,7 +1093,7 @@ void DetectorConstruction::SetMagField(G4double fieldValue)
 
    G4cout << "\n---------------------------------------------------------------"
           << "\n===> You chose uniform magnetic field Value = "
-          << fieldValue << " [kG] along Z-axis "  
+          << fieldValue << " [kG] along X-axis "  
           << "\n---------------------------------------------------------------\n";
 }
 

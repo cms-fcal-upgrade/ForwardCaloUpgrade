@@ -6,6 +6,7 @@
 #include "SteppingAction.hh"
 #include "DetectorConstruction.hh"
 #include "EventAction.hh"
+#include "HistoManager.hh"
 #include "G4Material.hh"
 #include "G4Step.hh"
 //#include "G4DynamicParticle.hh"
@@ -16,8 +17,8 @@
 // eventaction(evt) => eventaction=evt
 
 SteppingAction::SteppingAction(DetectorConstruction* det,
-                                         EventAction* evt)
-:detector(det), eventaction(evt)					 
+                               EventAction* evt, HistoManager* hist)
+:detector(det), eventaction(evt), histo(hist)					 
 { }
 
 // Distructor
@@ -69,8 +70,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 // AddEcal(edep), AddHcal(edep) and AddZero(edep) are member functions 
 // of EventAction-class, which accumulate deposited energy
 
-// collect information for Ecal
-//-----------------------------    
+// collect information for Ecal sensitive media
+//--------------------------------------------- 
    if( volume == detector->GetEcal()) 
    {
      G4int nEcalLayer = touch->GetCopyNumber(1);
@@ -79,12 +80,12 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
        G4double offset = detector->GetEcalOffset();
 
-       G4int SlideNb = int( (aPoint.x() - offset) / detector->GetdLbin() );
-       if( SlideNb > detector->GetnLtot()   ) SlideNb = detector->GetnLtot();
+       G4int SlideNb = int( (aPoint.x() - offset) / histo->GetdLbin() );
+       if( SlideNb > histo->GetnLtot()   ) SlideNb = histo->GetnLtot();
        if( detector->GetNbOfEcalLayers() !=1) SlideNb = nEcalLayer; 
 
-       G4int RingNb  = int( radius / detector->GetdRbin() );        
-       if( RingNb > detector->GetnRtot() ) RingNb = detector->GetnRtot();
+       G4int RingNb  = int( radius / histo->GetdRbin() );        
+       if( RingNb > histo->GetnRtot() ) RingNb = histo->GetnRtot();
 
        eventaction->fillEcalStep(edep,SlideNb,RingNb);
        eventaction->AddEcal(edep);
@@ -98,6 +99,27 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      }
    }
 
+// collect information in Ecal absorber 
+//-------------------------------------
+   if( volume == detector->GetAbsEcal())
+   {
+     G4int nEcalLayer = touch->GetCopyNumber(1);
+     if( edep > 0. ) {  
+       G4ThreeVector aPoint  = prePoint + 0.5*(postPoint - prePoint);
+       G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
+       G4double offset = detector->GetEcalOffset();
+       
+       G4int SlideAbs = int( (aPoint.x() - offset) / histo->GetAbsdLbin() );
+       if( SlideAbs > histo->GetAbsnLtot()  ) SlideAbs = histo->GetAbsnLtot();
+       if( detector->GetNbOfEcalLayers() !=1) SlideAbs = nEcalLayer;
+       G4int RingAbs  = int( radius / histo->GetAbsdRbin() );
+       if( RingAbs > histo->GetAbsnRtot() ) RingAbs = histo->GetAbsnRtot();
+
+       eventaction->fillAbsStep(edep,SlideAbs,RingAbs);
+       eventaction->AddAbs(edep);
+     }
+   }
+
 // collect Hcal information
 //-------------------------- 
    if( volume == detector->GetHcal() ) {
@@ -105,8 +127,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      if( edep > 0. ) {
        G4ThreeVector aPoint  = prePoint + 0.5*(postPoint - prePoint);
        G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
-       G4int RingHcal  = int( radius / detector->GetHcaldRbin() );        
-       if( RingHcal > detector->GetHcalnRtot() ) RingHcal = detector->GetHcalnRtot();
+       G4int RingHcal  = int( radius / histo->GetHcaldRbin() );        
+       if( RingHcal > histo->GetHcalnRtot() ) RingHcal = histo->GetHcalnRtot();
 
        G4double birk1  = mat->GetIonisation()->GetBirksConstant();
        G4double response = edep;

@@ -8,16 +8,19 @@
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
-#include "HistoManager.hh"
+//#include "HistoManager.hh"
+//#include "DetectorConstruction.hh"
 
 class RunAction;
+class DetectorConstruction;
+class HistoManager;
 
 // Determination of EventAction-class
 
 class EventAction : public G4UserEventAction
 {
 public:
-  EventAction(RunAction*);
+  EventAction(RunAction*, DetectorConstruction*, HistoManager*);
   virtual ~EventAction();
 
   void  BeginOfEventAction(const G4Event*);
@@ -26,6 +29,7 @@ public:
   void AddEcal(G4double de) { EnergyEcal += de; };
   void AddZero(G4double de) { EnergyZero += de; };
   void AddHcal(G4double de) { EnergyHcal += de; };       
+  void AddAbs(G4double de)  { EnergyAbs  += de; };
 
   void AddHcalRange(G4double dl, G4int lay_hcal) {
                                  RangeHcal += dl;
@@ -43,15 +47,23 @@ public:
                                      dEdLHcal[Lbin] += dEstep;
                                      dEdRHcal[Rbin] += dEstep; };
 
+  void fillAbsStep(G4double dEstep, G4int Lbin, G4int Rbin) {
+                                    dEdLAbs[Lbin] += dEstep;
+                                    dEdRAbs[Rbin] += dEstep; };
+
 private:
 
    RunAction*  runAct;
-   G4double    EnergyEcal, EnergyHcal, EnergyZero;
+   DetectorConstruction* detCon;
+   HistoManager* myana;
+
+   G4double    EnergyEcal, EnergyHcal, EnergyZero, EnergyAbs;
    G4double    RangeHcal,  RangeEcal;
-   G4int       aSize;
-   G4double    dEdL[500], dEdR[500];
-   G4double    dEdLHcal[20], dEdRHcal[500];
-   G4double    RangeHcalLay[20], RangeEcalLay[500];
+   G4int       nRtot, nLtot, nRtoth, nLayers;
+   G4int       nRtotAbs, nLtotAbs;
+   G4double    *dEdL, *dEdR, *dEdRHcal, *RangeEcalLay;
+   G4double    *dEdLAbs, *dEdRAbs;
+   G4double    dEdLHcal[20], RangeHcalLay[20];
    G4int       printModulo;                     
 
 };

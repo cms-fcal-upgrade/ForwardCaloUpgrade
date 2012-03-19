@@ -47,7 +47,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   AbsThickCmd = new G4UIcmdWithADoubleAndUnit("/ecal/det/setEcalAbsThick",this);
   AbsThickCmd->SetGuidance("Set Thickness of the Ecal Absorber");
   AbsThickCmd->SetParameterName("Size",false);
-  AbsThickCmd->SetRange("Size>=0. && Size<=220.");
+  AbsThickCmd->SetRange("Size>=0. && Size<=400.");
   AbsThickCmd->SetUnitCategory("Length");
   AbsThickCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
@@ -59,30 +59,10 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   SensThickCmd = new G4UIcmdWithADoubleAndUnit("/ecal/det/setEcalSensThick",this);
   SensThickCmd->SetGuidance("Set Thickness of the Ecal Sensitive");
   SensThickCmd->SetParameterName("Size",false);
-  SensThickCmd->SetRange("Size>0.0 && Size<=220.");
+//  SensThickCmd->SetRange("Size>0.0 && Size<=400.");
+  SensThickCmd->SetRange("Size>=0.0 && Size<=400.");
   SensThickCmd->SetUnitCategory("Length");  
   SensThickCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  LBinSensCmd = new G4UIcmdWith3Vector("/ecal/det/setSensLbin",this);
-  LBinSensCmd->SetGuidance("set longitudinal bining");
-  LBinSensCmd->SetGuidance("nb of bins; bin thickness (in cm)");
-  LBinSensCmd->SetParameterName("LtRee","nLtot","dLbin",true);
-  LBinSensCmd->SetRange("LtRee>=0 && nLtot>=1 && dLbin>0");
-  LBinSensCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  RBinSensCmd = new G4UIcmdWith3Vector("/ecal/det/setSensRbin",this);
-  RBinSensCmd->SetGuidance("set radial bining");
-  RBinSensCmd->SetGuidance("nb of bins; bin thickness (in cm)");
-  RBinSensCmd->SetParameterName("RtRee","nRtot","dRbin",true);
-  RBinSensCmd->SetRange("RtRee>=0 && nRtot>=1 && dRbin>0");
-  RBinSensCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
-
-  RBinHcalCmd = new G4UIcmdWith3Vector("/ecal/det/setHcalRbin",this);
-  RBinHcalCmd->SetGuidance("set radial bining");
-  RBinHcalCmd->SetGuidance("nb of bins; bin thickness (in cm)");
-  RBinHcalCmd->SetParameterName("RtReeH","nRtotH","dRbinH",true);
-  RBinHcalCmd->SetRange("RtReeH>=0 && nRtotH>=1 && dRbinH>0");
-  RBinHcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   UpdateCmd = new G4UIcmdWithoutParameter("/ecal/det/update",this);
   UpdateCmd->SetGuidance("Update calorimeter geometry.");
@@ -108,8 +88,6 @@ DetectorMessenger::~DetectorMessenger()
   delete AbsThickCmd; 
   delete SensMaterCmd;
   delete SensThickCmd;
-  delete LBinSensCmd;
-  delete RBinSensCmd;
   delete MagFieldCmd;
   delete UpdateCmd;
   delete detDir;
@@ -143,15 +121,6 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
   if( command == MagFieldCmd )
    { Detector->SetMagField(MagFieldCmd->GetNewDoubleValue(newValue));}
-
-  if( command == LBinSensCmd )
-   { Detector->SetSensLBining(LBinSensCmd->GetNew3VectorValue(newValue));}
-
-  if( command == RBinSensCmd ) 
-   { Detector->SetSensRBining(RBinSensCmd->GetNew3VectorValue(newValue));}    
-
-  if( command == RBinHcalCmd ) 
-   { Detector->SetHcalRBining(RBinHcalCmd->GetNew3VectorValue(newValue));}    
 
 }
 
