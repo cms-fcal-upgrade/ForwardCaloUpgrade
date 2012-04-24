@@ -68,6 +68,19 @@ HistoMessenger::HistoMessenger(HistoManager * man)
   RBinHcalCmd->SetRange("nRtotH>=1 && dRbinH>0");
   RBinHcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+  RespEcalCmd = new G4UIcmdWith3Vector("/test/histo/setEcalResponse",this);
+  RespEcalCmd->SetGuidance("set Ecal resonse");
+  RespEcalCmd->SetGuidance("PhotoStat; LightCollEff; LightCollUnif");
+  RespEcalCmd->SetParameterName("LYield","LEff","LUnif",true);
+  RespEcalCmd->SetRange("LYield>=0 && LEff>=0 && LUnif>=0");
+  RespEcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  NoiseEcalCmd = new G4UIcmdWithADoubleAndUnit("/test/histo/setEcalCellNoise",this);
+  NoiseEcalCmd->SetGuidance("Set Noise for Ecal cells");
+  NoiseEcalCmd->SetParameterName("Noise",false);
+  NoiseEcalCmd->SetRange("Noise>=0.0");
+  NoiseEcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -80,6 +93,8 @@ HistoMessenger::~HistoMessenger()
   delete LBinAbsCmd;
   delete RBinAbsCmd;
   delete RBinHcalCmd;
+  delete RespEcalCmd;
+  delete NoiseEcalCmd;
   delete FileNameCmd;  
   delete histoDir;
   delete testDir;  
@@ -100,14 +115,20 @@ void HistoMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
    { histoManager->SetSensRBining(RBinEcalCmd->GetNew3VectorValue(newValue));}    
 
   if( command == LBinAbsCmd )
-   { histoManager->SetAbsLBining(LBinEcalCmd->GetNew3VectorValue(newValue));}
+   { histoManager->SetAbsLBining(LBinAbsCmd->GetNew3VectorValue(newValue));}
  
   if( command == RBinAbsCmd )
-   { histoManager->SetAbsRBining(RBinEcalCmd->GetNew3VectorValue(newValue));}
+   { histoManager->SetAbsRBining(RBinAbsCmd->GetNew3VectorValue(newValue));}
 
   if( command == RBinHcalCmd ) 
    { histoManager->SetHcalRBining(RBinHcalCmd->GetNew3VectorValue(newValue));}    
 
+  if( command == RespEcalCmd )
+   { histoManager->SetEcalResponse(RespEcalCmd->GetNew3VectorValue(newValue));}
+
+  if( command == NoiseEcalCmd )
+   { histoManager->SetEcalCellNoise(NoiseEcalCmd->GetNewDoubleValue(newValue));}
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -51,6 +51,12 @@ public:
                                     dEdLAbs[Lbin] += dEstep;
                                     dEdRAbs[Rbin] += dEstep; };
 
+  void fillEcalCell(G4int Lcell, G4double dEstep) {dECellsEcal[Lcell] += dEstep;};
+
+  void fillEcalHits(G4int Lhits, G4double dEstep) {dEHitsEcal[Lhits] += dEstep;};
+
+  G4int   GetEventNb()              {return evtNbOld;};
+
 private:
 
    RunAction*  runAct;
@@ -61,10 +67,13 @@ private:
    G4double    RangeHcal,  RangeEcal;
    G4int       nRtot, nLtot, nRtoth, nLayers;
    G4int       nRtotAbs, nLtotAbs;
+   G4int       nEcalCells;
    G4double    *dEdL, *dEdR, *dEdRHcal, *RangeEcalLay;
    G4double    *dEdLAbs, *dEdRAbs;
+   G4double    *dECellsEcal, *dEHitsEcal;
    G4double    dEdLHcal[20], RangeHcalLay[20];
    G4int       printModulo;                     
+   G4int       evtNbOld;
 
 };
 

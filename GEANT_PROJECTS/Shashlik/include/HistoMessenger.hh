@@ -38,6 +38,8 @@ class HistoMessenger: public G4UImessenger
     G4UIcmdWith3Vector*        LBinAbsCmd;
     G4UIcmdWith3Vector*        RBinAbsCmd;
     G4UIcmdWith3Vector*        RBinHcalCmd;
+    G4UIcmdWith3Vector*        RespEcalCmd;
+    G4UIcmdWithADoubleAndUnit* NoiseEcalCmd;
 
 
 };

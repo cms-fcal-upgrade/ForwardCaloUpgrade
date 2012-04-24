@@ -59,7 +59,6 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   SensThickCmd = new G4UIcmdWithADoubleAndUnit("/ecal/det/setEcalSensThick",this);
   SensThickCmd->SetGuidance("Set Thickness of the Ecal Sensitive");
   SensThickCmd->SetParameterName("Size",false);
-//  SensThickCmd->SetRange("Size>0.0 && Size<=400.");
   SensThickCmd->SetRange("Size>=0.0 && Size<=400.");
   SensThickCmd->SetUnitCategory("Length");  
   SensThickCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -77,6 +76,20 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   MagFieldCmd->SetUnitCategory("Magnetic flux density");
   MagFieldCmd->AvailableForStates(G4State_PreInit,G4State_Idle);  
 
+  NbCellEcalCmd = new G4UIcmdWith3Vector("/ecal/det/setEcalCells",this);
+  NbCellEcalCmd->SetGuidance("set number and transverse size Ecal cell");
+  NbCellEcalCmd->SetGuidance("nb of cells; transverse cell size [mm]");
+  NbCellEcalCmd->SetParameterName("nCells","dxCell"," ",true);
+  NbCellEcalCmd->SetRange("nCells>=1 && nCells < 26 && dxCell>0");
+  NbCellEcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
+  BirksConsHcalCmd = new G4UIcmdWith3Vector("/ecal/det/setHcalBirks",this);
+  BirksConsHcalCmd->SetGuidance("set Hcal Birks constant");
+  BirksConsHcalCmd->SetGuidance("birk1; birk2; birk3");
+  BirksConsHcalCmd->SetParameterName("birk1","birk2","birk3",true);
+  BirksConsHcalCmd->SetRange("birk1>=0 && birk2>=0 && birk3>=0");
+  BirksConsHcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -89,6 +102,8 @@ DetectorMessenger::~DetectorMessenger()
   delete SensMaterCmd;
   delete SensThickCmd;
   delete MagFieldCmd;
+  delete NbCellEcalCmd;
+  delete BirksConsHcalCmd;
   delete UpdateCmd;
   delete detDir;
   delete ecalDir;  
@@ -121,6 +136,12 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
   if( command == MagFieldCmd )
    { Detector->SetMagField(MagFieldCmd->GetNewDoubleValue(newValue));}
+
+  if( command == NbCellEcalCmd )
+   { Detector->SetEcalCells(NbCellEcalCmd->GetNew3VectorValue(newValue));}
+
+  if( command == BirksConsHcalCmd )
+   { Detector->SetHcalBirksConstant(BirksConsHcalCmd->GetNew3VectorValue(newValue));}
 
 }
 

@@ -39,6 +39,8 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit* SensThickCmd;
     G4UIcmdWithADoubleAndUnit* MagFieldCmd;
     G4UIcmdWithoutParameter*   UpdateCmd;
+    G4UIcmdWith3Vector*        NbCellEcalCmd;
+    G4UIcmdWith3Vector*        BirksConsHcalCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

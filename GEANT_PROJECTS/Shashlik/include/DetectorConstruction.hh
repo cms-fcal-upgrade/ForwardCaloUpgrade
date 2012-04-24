@@ -39,6 +39,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      void SetNbOfEcalLayers (G4int);   
      void ComputeEcalParameters();   
 
+     void SetEcalCells(G4ThreeVector);
+
+     void SetHcalBirksConstant(G4ThreeVector);
+
      void SetMagField(G4double);
 
      G4VPhysicalVolume* Construct();
@@ -57,6 +61,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      G4int       GetNbOfEcalLayers()    {return NbOfEcalLayers;}; 
      G4double    GetEcalOffset()        {return offsetEcal;};
+     G4int       GetNbOfEcalCells()     {return NbOfEcalCells;};
+     G4double    GetEcalCellSize()      {return EcalCellSize;};
+     G4double*   GetHcalBirksConstant() {return HcalBirksConst;};
 
   private:
 
@@ -71,6 +78,9 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double           EcalCalorThickness;
      G4double           offsetEcal;
      G4double           middleEcal;
+     G4int              NbOfEcalCells;
+     G4double           EcalCellSize;
+     G4double           HcalBirksConst[3];
       
      G4double           LayerThickness;
      G4double           AbsorberThickness;

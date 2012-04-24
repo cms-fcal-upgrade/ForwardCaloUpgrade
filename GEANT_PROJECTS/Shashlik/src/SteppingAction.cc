@@ -18,7 +18,7 @@
 
 SteppingAction::SteppingAction(DetectorConstruction* det,
                                EventAction* evt, HistoManager* hist)
-:detector(det), eventaction(evt), histo(hist)					 
+:detector(det), eventaction(evt), histo(hist), oldEvtNumber(0)				 
 { }
 
 // Distructor
@@ -89,6 +89,34 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
        eventaction->fillEcalStep(edep,SlideNb,RingNb);
        eventaction->AddEcal(edep);
+
+// deposited energy in Ecal cells
+//-------------------------------
+       G4int    IndCell = G4int( sqrt(detector->GetNbOfEcalCells()) );
+       G4double DxCell  = detector->GetEcalCellSize();
+       G4double maxSize = 0.5*DxCell*IndCell;
+       if( fabs(aPoint.y())<=maxSize && fabs(aPoint.z())<=maxSize) {
+         G4int iy_Ind = int( fabs(-maxSize-aPoint.y()) / DxCell );
+         G4int iz_Ind = int( fabs(-maxSize-aPoint.z()) / DxCell );
+         G4int cell_Ind = iz_Ind + iy_Ind*IndCell;
+         eventaction->fillEcalCell(cell_Ind,edep);
+       }
+
+// hit point (Y vs Z) of first point in Ecal  
+//------------------------------------------
+       if( eventaction->GetEventNb() == oldEvtNumber) {
+         oldEvtNumber = eventaction->GetEventNb() + 1;
+         G4int    IndHit = histo->GetnRtot();
+         G4double DxHits = histo->GetdRbin();
+         G4double maxHit = 0.5*DxHits*IndHit;
+         if( fabs(aPoint.y())<=maxHit && fabs(aPoint.z())<=maxHit ) {
+           G4int iy_Hit = int( fabs(-maxHit-aPoint.y()) / DxHits );
+           G4int iz_Hit = int( fabs(-maxHit-aPoint.z()) / DxHits );
+           G4int hit_Ind = iz_Hit + iy_Hit*IndHit;
+           eventaction->fillEcalHits(hit_Ind,edep);
+         }
+       }
+
      }
 
      if( charge != 0.) {
@@ -97,6 +125,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        G4double beta = (totalE > 0.) ? totalP / totalE : 1.;
        if( beta*rind_ecal > 1.) eventaction->AddEcalRange(stepl,nEcalLayer); 
      }
+
    }
 
 // collect information in Ecal absorber 
@@ -130,9 +159,17 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        G4int RingHcal  = int( radius / histo->GetHcaldRbin() );        
        if( RingHcal > histo->GetHcalnRtot() ) RingHcal = histo->GetHcalnRtot();
 
-       G4double birk1  = mat->GetIonisation()->GetBirksConstant();
+//       G4double birk1  = mat->GetIonisation()->GetBirksConstant();
        G4double response = edep;
-       if(birk1*edep*stepl*charge != 0.) response = edep/(1.+birk1*edep/stepl);
+       G4double* birks = detector->GetHcalBirksConstant();
+       if(birks[0]*edep*stepl*charge != 0.) {
+         G4double density = mat->GetDensity() / (g/cm3);
+         G4double rkb     = birks[0]/density;
+         G4double c       = birks[1]*rkb*rkb;
+         G4double dedx    = edep/(stepl / cm);
+         if( fabs(charge) >= 2. && birks[2] !=0. ) rkb /= birks[2];
+         response = edep/(1.+rkb*dedx+c*dedx*dedx);
+       }
 
        eventaction->AddHcal(response);
        eventaction->fillHcalStep(response,nHcalLayer,RingHcal);
@@ -146,8 +183,20 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      }
    }
 
-   if(volume == detector->GetZero() && edep > 0.) eventaction->AddZero(edep);
-
+   if(volume == detector->GetZero() && edep > 0.) {
+     G4double response = edep;
+     G4double* birks = detector->GetHcalBirksConstant();
+     if(birks[0]*edep*stepl*charge != 0.) {
+       G4double density = mat->GetDensity() / (g/cm3);
+       G4double rkb     = birks[0]/density;
+       G4double c       = birks[1]*rkb*rkb;
+       G4double dedx    = edep/(stepl / cm);
+       if( fabs(charge) >= 2. && birks[2] !=0. ) rkb /= birks[2];
+       response = edep/(1.+rkb*dedx+c*dedx*dedx);
+     }
+     eventaction->AddZero(response);
+   }
+ 
 //example of saving random number seed of this event, under condition
 //// if (condition) G4RunManager::GetRunManager()->rndmSaveThisEvent(); 
 }

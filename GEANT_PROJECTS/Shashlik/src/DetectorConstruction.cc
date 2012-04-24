@@ -57,9 +57,9 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
 //----------------------------------------------------------------
   AbsorberThickness =  79.0*mm;
   AirGapThickness   =   9.0*mm;
-  WrapThickness     =   7.0*mm;
+  WrapThickness     =   8.0*mm;
   GapThickness      =   6.0*mm;
-  SensThickness     =   3.9*mm;
+  SensThickness     =   3.7*mm;
   NbOfHcalLayers    =  17;
   CalorSizeYZ       = 100.0*cm;
 
@@ -95,6 +95,18 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   SetEcalAbsMaterial("Lead_def");
   SetEcalSensMaterial("PbWO_def");
 
+// Total number and transverse size of Ecal cells 
+// for selected area ------------------------------
+//-------------------  
+  NbOfEcalCells = 25;
+  EcalCellSize  = 28.62*mm; 
+
+// Birks constrant for scintillator in Hcal
+//-----------------------------------------
+  HcalBirksConst[0] = 0.0052;
+  HcalBirksConst[1] = 0.142;
+  HcalBirksConst[2] = 1.75;
+
 // create commands for interactive definition of the calorimeter
 //--------------------------------------------------------------
   detectorMessenger = new DetectorMessenger(this);
@@ -119,7 +131,7 @@ void DetectorConstruction::DefineMaterials()
  //This function illustrates the possible ways to define materials
  
 G4String symbol;             // a=mass of a mole;
-G4double a, z, density;      // z=mean number of protons;  
+G4double a, z, density;      // z=mean number of protons; 
 
 G4int ncomponents, natoms;
 G4double fractionmass;
@@ -486,7 +498,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                      false,                      //no boulean operat
                                      0);                         //copy number
 
-// Al Wrapper 7.0*mm for scintillator (0.5*mm wall thickness)
+// Al Wrapper 8.0*mm for scintillator (1.0*mm wall thickness)
 //===========================================================
                            
   solidWrap=0; logicWrap=0; physiWrap=0;
@@ -1066,6 +1078,43 @@ void DetectorConstruction::SetNbOfEcalLayers(G4int val)
       exit(1);
     }
 }
+
+// Set number and size of Ecal cells
+//-----------------------------------
+  void DetectorConstruction::SetEcalCells(G4ThreeVector Value)
+  {
+    NbOfEcalCells = (G4int)Value(0);
+    EcalCellSize  = (G4double)Value(1)*mm;
+    if( NbOfEcalCells !=1 && NbOfEcalCells !=4  && NbOfEcalCells !=9
+                          && NbOfEcalCells !=16 && NbOfEcalCells !=25 ) 
+    { 
+       G4cout << "\n ===> Stop from DetectorConstruction::SetEcalCells(): "
+              << "\n NbOfEcalCells = " << NbOfEcalCells
+              << " this number of cells is not allowed."
+              << "\n Please check number NbOfEcalCells."
+              << G4endl;
+       exit(1);
+    }
+
+    if( EcalCellSize*NbOfEcalCells > CalorSizeYZ*mm ) {
+       G4cout << "\n ===> Stop from DetectorConstruction::SetEcalCells(): "
+              << "\n EcalCellSize*NbOfEcalCells = " << EcalCellSize*NbOfEcalCells
+              << " mm, greater "
+              << " CalorSizeYZ = " << CalorSizeYZ*mm
+              << "\n Check values in setEcalCells."
+              << G4endl;
+       exit(1);
+    }
+  }
+
+// Set Birks constant for Hcal sensitive material
+//------------------------------------------------
+  void DetectorConstruction::SetHcalBirksConstant(G4ThreeVector Value)
+  {
+    HcalBirksConst[0] = G4double(Value(0));
+    HcalBirksConst[1] = G4double(Value(1));
+    HcalBirksConst[2] = G4double(Value(2));
+  }
 
 // Set magnetic field
 //--------------------

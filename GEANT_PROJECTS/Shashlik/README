@@ -15,7 +15,7 @@
         HE calorimeter size is 100.0*cm (Y-axis) and 100.0*cm (Z-axis). 
         Each HE layer (88.0*mm) consists of an absorber plate (79.0*mm Brass) 
         and of an air gap (9.0*mm). Inside air gap the aluminum wrapper 
-        (7.0*mm) is placed. The sensitive plate of 3.9*mm thickness of 
+        (8.0*mm) is placed. The sensitive plate of 3.7*mm thickness of 
         scintillator is inside of aluminum wrapper. The layer is
  	replicated.
  	
@@ -109,6 +109,38 @@
 /ecal/det/setEcalAbsThick  1.1 mm
 /ecal/det/setEcalSensThick 1.1 mm
 #
+# Set number and transverse size of Ecal cells:
+#----------------------------------------------
+# setEcalCells(0) - number of cells (= 1x1, 2x2, 3x3, 4x4 or 5x5);
+# setEcalCells(1) - transverse size of cell in [mm].
+#
+/ecal/det/setEcalCells 9 28.0 
+#
+# Set energy response for individual Ecal cells:
+#------------------------------------------------
+# setEcalResponse(0) - photostatistics photons/GeV;
+# setEcalResponse(1) - light collection efficiency;
+# setEcalResponse(0) - light collection uniformity;
+#
+/test/histo/setEcalResponse 5.0E5 0.03 0.0001
+#
+# Set noise value [MeV] for individual Ecal cells:
+#-------------------------------------------------
+/test/histo/setEcalCellNoise 140.0 MeV
+# 
+# Set Birks-Chou constants for Hcal sensitive media:
+#---------------------------------------------------
+# setHcalBirks(0) - [g / MeV*cm2];
+# setHcalBirks(1) - [g / MeV*cm2]**2;
+# setHcalBirks(2) - for alpha particle;
+#
+/ecal/det/setHcalBirks 0.0052 0.142 1.75
+#
+# double rkb     = birk1/density;
+# double c       = birk2*rkb*rkb;
+# if (abs(charge) >= 2.) rkb /= birk3; // based on alpha particle data
+# weight = 1./(1.+rkb*dedx+c*dedx*dedx);
+# 
 # setHcalAbsMat - type of Hcal absorber material
 # (only Brass have been foreseen yet), needed for applying
 # different production cuts in Hcal absorber material
@@ -126,6 +158,49 @@
 #
 /ecal/det/setMagField 0.0 kG
 #
+# Set primary particle position (x, y, z) [cm]:
+#----------------------------------------------
+# x =  -10.0 cm only Hcal will be simulated
+# x =  -81.8 cm only Ecal+Hcal+dead materials between will be simulated
+# x = -110.0 cm SE+Ecal+Hcal+dead materials (full setup) will be simulated
+#
+#/gun/position -81.8 0. 0. cm
+/gun/setVxPosition  -110.0 0.0 0.0 cm
+#
+# Add primary vertex smearing in transverse (Y vs Z) plane:
+#-----------------------------------------------------------
+# Smearing(0) - "off"(0) or "on"(>0) of smearing;  
+# Smearing(1) - "Type" of smearing area: 0 - ring, >0 - square;
+# Smearing(2) - ring radius or square side [mm] of smearing area.
+#
+/gun/setVxSmearing 1  0 50.0
+#
+# Set direction of primary particle (x, y, and z):
+#-------------------------------------------------
+# direction needs not to be a unit vector: px != 0 || py != 0 || pz != 0
+#
+/gun/direction  1.00 0.00 0.00
+#
+# Set type of particle:
+#----------------------
+#
+##/gun/particle pi-
+/gun/particle e-
+##/gun/particle mu-
+# 
+# Set energy of primary particle:
+#--------------------------------
+#
+/gun/energy 20. GeV
+#
+/run/initialize
+#
+# Set number of simulated events:
+#--------------------------------
+#
+/run/beamOn 1
+#
+
 
  2- HISTOGRAMs
  --------------
@@ -152,6 +227,9 @@
           c) ROOT 'TTree' "Range" presents total range of charged in
              sensitive medias of Ecal and HCAL.
             
+          d) ROOT 'TTree' "Cell" presents deposited energy in cells
+             of Ecal calorimeter. 
+ 
       The 6 TH1D-histograms with shower profile distributions are presents:
              
           a) EcalTrShape - Ecal transverse shower profile;
@@ -175,6 +253,10 @@
 
        There is the possibility to change the bin width and total number 
        of bins for these (shower profiles) histograms (see example below):
+
+       The 2-dimentions (TH2D-histogram) with hit point distribution
+       on front of Ecal  
+
 
 # Set name of ROOT output file:
 #------------------------------

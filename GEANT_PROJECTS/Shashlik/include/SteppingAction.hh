@@ -25,6 +25,7 @@ private:
   DetectorConstruction* detector;
   EventAction*          eventaction;  
   HistoManager*         histo;
+  int                 oldEvtNumber;
 
 };
 

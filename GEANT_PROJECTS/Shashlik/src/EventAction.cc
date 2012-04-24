@@ -34,7 +34,8 @@ EventAction::~EventAction()
  delete dEdRAbs;
  delete dEdRHcal;
  delete RangeEcalLay;
-
+ delete dECellsEcal;
+ delete dEHitsEcal;
 }
 
 // Member function which run at the start of each event
@@ -53,6 +54,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
   nRtotAbs = myana->GetAbsnRtot();
   nLtotAbs = myana->GetAbsnLtot();
   if( nLayers != 1 ) nLtotAbs = nLayers;
+  nEcalCells   = detCon->GetNbOfEcalCells();
 
 // initialize dynamic bin arrays
 //-----------------------------
@@ -62,8 +64,11 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
   dEdRAbs  = new G4double[nRtotAbs];
   dEdRHcal = new G4double[nRtoth];
   RangeEcalLay = new G4double[nLayers];
+  dECellsEcal  = new G4double[nEcalCells];
+  dEHitsEcal  = new G4double[nRtot*nRtot];
 
   G4int evtNb = evt->GetEventID();
+  evtNbOld    = evt->GetEventID();
 
   if (evtNb%printModulo == 0) { 
     G4cout << "\n---> Begin of event: " << evtNb << G4endl;
@@ -84,6 +89,8 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
   for (G4int l=0; l<nLayers; ++l)  { RangeEcalLay[l] = 0.; }     
   for (G4int m=0; m<nLtotAbs; ++m) { dEdLAbs[m] = 0.; }
   for (G4int n=0; n<nRtotAbs; ++n) { dEdRAbs[n] = 0.; }     
+  for (G4int i=0; i<nEcalCells; ++i) { dECellsEcal[i] = 0.; }
+  for (G4int j=0; j<nRtot*nRtot; ++j) { dEHitsEcal[j] = 0.; }
 }
 
 // Member function at the end of each event
@@ -126,6 +133,14 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 // fill Ecal absorber longitudinal shower profile
 //------------------------------------------------
   myana-> FillAbsLongShape(dEdLAbs);
+
+// fill Ecal cells energy
+//------------------------
+  myana-> FillCells(nEcalCells,dECellsEcal);   
+
+// fill Ecal transverse hits energy
+//---------------------------------
+  myana-> FillEcalTransHits(dEHitsEcal);
 
 //print per event (modulo n)
 //---------------------------
