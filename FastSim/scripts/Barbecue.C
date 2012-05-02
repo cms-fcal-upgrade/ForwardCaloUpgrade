@@ -13,7 +13,7 @@ double nonUnif; // non uniformity across the shashlik lengh pf light collected
 double stochasticResolution; // stochastic term corresponding to sigmaE/E = a/sqrt(E)
 
 // root -l
-// .x ../scripts/Shashlikator.C("../python/Detectors/Shashlik_PbLSO.in", "PbLSO")
+// .x ../scripts/Barbecue.C("../python/Detectors/Shashlik_PbLSO.in", "PbLSO")
 
 
 /*
@@ -31,7 +31,7 @@ double nonUnif = 0.00; // non uniformity across the shashlik lengh pf light coll
 double stochasticResolution = 0.136; // stochastic term corresponding to sigmaE/E = a/sqrt(E)
 */
 
-void Shashlikator(string sIn, string title){
+void Barbecue(string sIn, string title){
 
   string inTxt(sIn);
   ifstream fin(inTxt.c_str());
