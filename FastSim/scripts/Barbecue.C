@@ -4,7 +4,6 @@ double rho_p, rho_a; // density in g/cm3
 double Zp, Za;
 double Ap, Aa;
 double X0p, X0a; // raditation length (g/cm2)
-double Ecp, Eca; // Critical energy in MeV
 double RMp, RMa; // Molere radius (cm)
 double Lambda_p, Lambda_a; // Radiation length 
 double LumiYield_a; // photons / GeV
@@ -13,7 +12,7 @@ double nonUnif; // non uniformity across the shashlik lengh pf light collected
 double stochasticResolution; // stochastic term corresponding to sigmaE/E = a/sqrt(E)
 
 // root -l
-// .x ../scripts/Barbecue.C("../python/Detectors/Shashlik_PbLSO.in", "PbLSO")
+// .x ../scripts/Barbecue.C("../python/Detectors/Shashlik_PbLSO.in")
 
 
 /*
@@ -22,7 +21,6 @@ double rho_p = 11.34, rho_a = 7.4; // density in g/cm3
 double Zp = 82., Za = 56.6;
 double Ap = 207.2, Aa = 138.2;
 double X0p = 6.36, X0a = 8.52; // raditation length (g/cm2)
-double Ecp = 7.3, Eca = 10.5; // Critical energy in MeV
 double RMp = 1.63, RMa = 2.32; // Molere radius (cm)
 double Lambda_p = 18.3, Lambda_a = 21.09; // Radiation length 
 double LumiYield_a = 1610E3; // photons / GeV
@@ -31,13 +29,14 @@ double nonUnif = 0.00; // non uniformity across the shashlik lengh pf light coll
 double stochasticResolution = 0.136; // stochastic term corresponding to sigmaE/E = a/sqrt(E)
 */
 
-void Barbecue(string sIn, string title){
+void Barbecue(string sIn){
 
   string inTxt(sIn);
   ifstream fin(inTxt.c_str());
   
-  string s1, s2;
+  string s1, s2, title;
 
+  fin >> title;
   fin >> s1 >> s2 >> dp;
   fin >> s1 >> s2 >> da;
   fin >> s1 >> s2 >> rho_p;
@@ -48,8 +47,6 @@ void Barbecue(string sIn, string title){
   fin >> s1 >> s2 >> Aa;
   fin >> s1 >> s2 >> X0p;
   fin >> s1 >> s2 >> X0a;
-  fin >> s1 >> s2 >> Ecp;
-  fin >> s1 >> s2 >> Eca;
   fin >> s1 >> s2 >> RMp;
   fin >> s1 >> s2 >> RMa;
   fin >> s1 >> s2 >> Lambda_p;
@@ -81,7 +78,9 @@ void Barbecue(string sIn, string title){
   double X0ls = X0s/rho_s, X0la = X0a/rho_a, X0lp = X0p/rho_p;
 
   double RMs = 1./(wp/RMp + wa/RMa);
-
+  
+  double Ecp = 2.66e-3*TMath::Power((X0p*Zp/Ap),1.1)*1000;
+  double Eca = 2.66e-3*TMath::Power((X0a*Za/Aa),1.1)*1000;
   double Ecs = X0s*(wp/X0p*Ecp + wa/X0a*Eca);
 
   double Fs = X0s/rhod_s;
@@ -109,7 +108,7 @@ void Barbecue(string sIn, string title){
   cout << "X0 (cm)   \t\t" <<  Form("%.2f",X0lp) << "\t\t" << Form("%.2f",X0la) << "\t" << Form("%.2f",X0ls) << endl;
   cout << "RM (cm)   \t\t" << RMp << "\t\t" << RMa << "\t" << Form("%.2f",RMs) << endl;
 
-  cout << "Ec (MeV)  \t\t" << Ecp << "\t\t" << Eca << "\t" << Form("%.2f",Ecs) << endl;
+  cout << "Ec (MeV)  \t\t" << Form("%.2f",Ecp) << "\t\t" << Form("%.2f",Eca) << "\t" << Form("%.2f",Ecs) << endl;
   cout << "Fs      \t\t" << "" << "\t\t" << "" << "\t" << Form("%.2f",Fs) << endl;
   cout << "ehat    \t\t" << "" << "\t\t" << "" << "\t" << Form("%.2f",ehat) << endl;
 
