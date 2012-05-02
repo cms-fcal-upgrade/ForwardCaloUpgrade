@@ -1,15 +1,19 @@
 {
 
-  bool bRebinTrans = false;
+  bool bRebinTrans = true;//false;
 
   for (int j = 0; j < 7; j++){
 
     int iMass = 10*TMath::Power(2, j);
+                  
+    string sName("PBWO_FEB2012_PERFECT_LIGHT_COLLECTION_ETA23_ELECTRON_WITH_SAMPLING_"); sName = sName  + Form("%d", iMass)  + "_FORWARD";
 
-    string sName("PBWO_FEB2012_PERFECT_LIGHT_COLLECTION_ETA23_ELECTRON_"); sName = sName  + Form("%d", iMass)  + "_FORWARD";
+    //    string sName("SHASHLIK_PbLSO_REALISTIC_LIGHT_COLLECTION_ETA23_ELECTRON_"); sName = sName  + Form("%d", iMass)  + "_FORWARD";
 
     string sNameFast("ELECTRON_FORWARD/DQM_ShowerShape_"); sNameFast = sNameFast + "" + sName + ".root";
-    string sNameFull("ELECTRON_FORWARD/PBWO_FEB2012_FULLSIM_PERFECT_LIGHT_COLLECTION_ELECTRON_"); sNameFull = sNameFull + Form("%d", iMass) + ".root";
+    string sNameFull("ELECTRON_FORWARD/OUT_SHORTSTEPS/PBWO_FEB2012_FULLSIM_PERFECT_LIGHT_COLLECTION_ELECTRON_"); sNameFull = sNameFull + Form("%d", iMass) + ".root";
+    //    string sNameFull("ELECTRON_FORWARD/PbLSO_SHASHLIK_FULLSIM_PERFECT_LIGHT_COLLECTION_ELECTRON_"); sNameFull = sNameFull + Form("%d", iMass) + ".root";
+
 
     TFile *_file0 = TFile::Open(sNameFast.c_str());
     TFile *_file1 = TFile::Open(sNameFull.c_str());
@@ -23,8 +27,8 @@
     TH1F* LongShapeFullSim = new TH1F(*LongShapeFastSim);
     LongShapeFullSim->Scale(0);
     
-    LongShapeFullSim->SetLineColor(kBlue);
-    LongShapeFullSim->SetFillColor(kBlue);
+    LongShapeFullSim->SetLineColor(kYellow);
+    LongShapeFullSim->SetFillColor(kYellow);
     
     TH1F* EcalLoShape = (TH1F*) _file1->Get("EcalLoShape;1");
     
@@ -76,11 +80,11 @@
     TH1F* TransShapeFullSim = new TH1F(*TransShapeFastSim);
     TransShapeFullSim->Scale(0);
   
-    TransShapeFullSim->SetLineColor(kBlue);
-    TransShapeFullSim->SetFillColor(kBlue);
+    TransShapeFullSim->SetLineColor(kYellow);
+    TransShapeFullSim->SetFillColor(kYellow);
 
     TH1F* EcalTrShape = (TH1F*) _file1->Get("EcalTrShape;1");
-
+    //TH1F* EcalTrShape = (TH1F*) _file1->Get("AbsTrShape;1");
     for (int i = 1; i < TransShapeFullSim->GetNbinsX()+1; i++){
 
       TransShapeFullSim->SetBinContent(i, EcalTrShape->GetBinContent(i));
@@ -116,6 +120,45 @@
     TransShapeFullSim->DrawClone();
     TransShapeFastSim->DrawClone("SAME");
 
+    double intFull = TransShapeFullSim->Integral();
+    double intFast = TransShapeFastSim->Integral();
+
+    double rateFullPrevious = -1;
+    double rateFastPrevious = -1;
+    
+    double MrFull = -1.;//TransShapeFullSim->GetBinCenter(k);
+    double MrFast = -1.;//TransShapeFastSim->GetBinCenter(k);
+
+    for (int k = 1; k < TransShapeFullSim->GetNbinsX()+1; k++){
+      
+      double rateFull = TransShapeFullSim->Integral(1, k)/intFull;
+      //     cout << "k = " << k << " rateFull = " << rateFull << endl;
+      if (rateFull > 0.9 && rateFullPrevious < 0.9) {
+	cout << "rateFull = " << rateFull << endl;
+	//<< " TransShapeFullSim->GetBinCenter(k) = " 
+	//		       << TransShapeFullSim->GetBinCenter(k) << endl;
+	MrFull = TransShapeFullSim->GetBinCenter(k);
+
+      }
+
+      rateFullPrevious = rateFull;
+
+      double rateFast = TransShapeFastSim->Integral(1, k)/intFast;
+      if (rateFast > 0.9 && rateFastPrevious < 0.9) {
+	cout << "rateFast = " << rateFast << endl;
+      //" TransShapeFastSim->GetBinCenter(k) = " 
+      //			       << TransShapeFastSim->GetBinCenter(k) << endl;
+
+	MrFast = TransShapeFullSim->GetBinCenter(k);
+
+      }
+
+      rateFastPrevious = rateFast;
+
+    }
+    
+    cout << "Mass = " << iMass << " Mr Full = " << MrFull << " Mr Fast = " <<  MrFast << endl;
+
 
     Legend->AddEntry(TransShapeFastSim, "Fast Sim", "l");
     Legend->AddEntry(TransShapeFullSim, "Full Sim", "f");
@@ -139,7 +182,7 @@
     LT->Draw("SAME");
     
 
-    string sNamePng("ELECTRON_FORWARD/"); 
+    string sNamePng("ELECTRON_FORWARD/OUT_SHORTSTEPS/"); 
 
     if (!bRebinTrans) sNamePng = sNamePng + "" + sName + ".png";
     else sNamePng = sNamePng + "" + sName + "_COARSE.png";

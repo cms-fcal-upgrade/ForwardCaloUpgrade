@@ -24,7 +24,7 @@ process.load('FastSimulation.Configuration.EventContent_cff')
 process.load('DQMServices.Components.DQMFileSaver_cfi')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(50)
 )
 
 
@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.14 $'),
+    version = cms.untracked.string('$Revision: 1.15 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -87,13 +87,13 @@ process.GlobalTag.globaltag = 'MC_42_V15A::All'
 
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
-	MinE = cms.double(9.99),
-        MaxE = cms.double(10.01),
+	MinE = cms.double(9.999),
+        MaxE = cms.double(10.001),
 	# Pion = 211, nu_e = 12, e = 11
         PartID = cms.vint32(11),
 	# Eta limits set up to be in the end-cap
-        MinEta = cms.double(1.6),
-        MaxEta = cms.double(2.5),
+        MinEta = cms.double(2.),
+        MaxEta = cms.double(2.1),
 	MinPhi = cms.double(-3.14159265359),
         MaxPhi = cms.double(3.14159265359)
     ),
@@ -165,9 +165,13 @@ process.famosSimHits.Calorimetry.ECAL.TailIntervals = cms.vdouble(100.0, 1.0)
 #void EMShower::prepareSteps() from FastSimulation/ShowerDevelopment/src
 process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
-#Set up the LYSO detector for the forward ECAL
+#Set up the LSO detector for the forward ECAL
      
-from ForwardCaloUpgrade.FastSim.LSO_cff import myForwardECAL
+#from ForwardCaloUpgrade.FastSim.LSO_cff import myForwardECAL
+#myForwardECAL( process )
+#from ForwardCaloUpgrade.FastSim.PBWO_cff import myForwardECAL
+#myForwardECAL( process )
+from ForwardCaloUpgrade.FastSim.Shashlik_cff import myForwardECAL
 myForwardECAL( process )
 
 	
@@ -203,14 +207,14 @@ for path in process.paths:
 #--------------------------- Dont change those lines -----------------------------#
 #------- They are used by scripts to produce automatically large data samples ----#
 
-#FORWARD process.generator.PGunParameters.MinEta = cms.double(1.6)
+#FORWARD process.generator.PGunParameters.MinEta = cms.double(2.3)
 #FORWARD process.generator.PGunParameters.MinEta = cms.double(2.4)
 
 #CENTRAL process.generator.PGunParameters.MinEta = cms.double(-0.9)
 #CENTRAL process.generator.PGunParameters.MinEta = cms.double(0.9)
 
-#ENERGY process.generator.PGunParameters.MinE = cms.double(#MIN.99)
-#ENERGY process.generator.PGunParameters.MaxE = cms.double(#MAX.01)
+#ENERGY process.generator.PGunParameters.MinE = cms.double(#MIN.999)
+#ENERGY process.generator.PGunParameters.MaxE = cms.double(#MAX.001)
 
 #PART process.generator.PGunParameters.PartID = cms.vint32(#PARTID)
 #MEVENTS process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(#NEVENTS))
