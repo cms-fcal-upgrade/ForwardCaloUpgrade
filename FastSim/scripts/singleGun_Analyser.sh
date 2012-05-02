@@ -13,6 +13,9 @@ NEVENTS=$6
 PRODUCE=$7
 QUEUE=$8
 PROD=$9
+LABEL=${10}
+
+REP=$REP'/'${LABEL}
 
 if [ $NFILES -le 0 ] 
 then
@@ -140,18 +143,18 @@ then
 
     echo "])" >>$outputFile
     
-    mv tmp.py ../python/Samples/${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.py
+    mv tmp.py ../python/Samples/${LABEL}_${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}.py
 
 
 else 
     rm /tmp/mgouzevi/*.*
     mkdir ${PTITLE}_${REGION}
     sed s@'#SOURCE '@''@ <caloanalyzer_cfg.py | 
-    sed s@'#SRC'@ForwardCaloUpgrade.FastSim.Samples.${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}@ >caloanalyzer_launch_cfg.py 
+    sed s@'#SRC'@ForwardCaloUpgrade.FastSim.Samples.${LABEL}_${PROD}_${PTITLE}'_'${ENERGY}'_'${REGION}@ >caloanalyzer_launch_cfg.py 
     cmsRun caloanalyzer_launch_cfg.py 
-    cp calorimeter_histograms.root  ${PTITLE}_${REGION}/calorimeter_histograms_${PROD}_${PTITLE}_${ENERGY}_${REGION}.root
+    cp calorimeter_histograms.root  ${PTITLE}_${REGION}/calorimeter_histograms_${LABEL}_${PROD}_${PTITLE}_${ENERGY}_${REGION}.root
 
-    hadd="hadd /tmp/mgouzevi/DQM_ShowerShape_"${PROD}"_"${PTITLE}"_"${ENERGY}_${REGION}".root "
+    hadd="hadd /tmp/mgouzevi/DQM_ShowerShape_"${LABEL}"_"${PROD}"_"${PTITLE}"_"${ENERGY}_${REGION}".root "
 
     NINF=$[NFILES-1]
     i=0
@@ -169,6 +172,6 @@ else
 
     echo $hadd
     $hadd
-    cp /tmp/mgouzevi/DQM_ShowerShape_"${PROD}"_"${PTITLE}_${ENERGY}_${REGION}".root ELECTRON_FORWARD
+    cp /tmp/mgouzevi/DQM_ShowerShape_"${LABEL}"_"${PROD}"_"${PTITLE}_${ENERGY}_${REGION}".root ELECTRON_FORWARD
     rm /tmp/mgouzevi/*.*
 fi

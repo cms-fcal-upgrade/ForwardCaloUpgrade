@@ -6,8 +6,12 @@
 
 # The root of the castor repertory where you want to store your data. This
 # repertory must exist
-REP=/store/cmst3/user/mgouzevi/FCAL_UPGRADE/LSO
 # The PDG id of your particle. The script would automatically transform
+#REP=/store/cmst3/user/mgouzevi/FCAL_UPGRADE/PBWO_FEB2012
+REP=/store/cmst3/user/mgouzevi/FCAL_UPGRADE
+#LABEL=LSO_FEB2012
+#LABEL=PBWO_FEB2012
+LABEL=SHASHLIK_PbLSO
 # it into particle name when known and add to the repertory name
 # e- = 11; nu = 12; gamma= 22; pion=211
 PART=11
@@ -16,13 +20,13 @@ ENERGY=10
 # Region of the calorimeter where you want to fire your aprticle. 2 options possible: CENTRAL (-0.9 < eta < 0.9) or FORWARD (1.6 < eta < 2.4)
 REGION=FORWARD
 # ProdName to have a production with specific conditions
-PROD=PERFECT_LIGHT_COLL
+PROD=REALISTIC_LIGHT_COLLECTION_ETA23_WITH_SAMPLING_c0136
 #Number of files you want to generate
 NFILES=2
 #Numer of events per file
-NEVENTS=2000
+NEVENTS=4000
 # Produce those files (1) or create a source file (0) or launch the calo analyser (-1)?
-PRODUCE=1
+PRODUCE=-1
 # Production queue on CERN batch
 QUEUE=1nd
 
@@ -40,7 +44,7 @@ case $i in
 7) ENERGY=640;;
 esac
 
-../scripts/singleGun_Analyser.sh $REP $PART $ENERGY $REGION $NFILES $NEVENTS ${PRODUCE} $QUEUE ${PROD} 
+../scripts/singleGun_Analyser.sh $REP $PART $ENERGY $REGION $NFILES $NEVENTS ${PRODUCE} $QUEUE ${PROD} ${LABEL}
 
 i=$[i+1]
 done
