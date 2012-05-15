@@ -16,7 +16,7 @@ def myForwardECAL( process ):
 	# estimate the photo-electron fluctuations.
 	# Be carefull when you sumulate to keep: photoStatistics*lightColl*ParticleEnergy<2^31. Otherwise TRandom3 would refuse to
 	## photoStatistics = cms.double(50.E3),
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.photoStatistics = cms.double(2.26E+05)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.photoStatistics = cms.double(3.02E+05)
 	###    process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.photoStatistics = cms.double(1.E7)
 
 
@@ -27,16 +27,16 @@ def myForwardECAL( process ):
 	    #====== Global parameters of the material ========
 
 	# Interaction length in cm provided by A. Ledovskoy
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.interactionLength  = cms.double(18.65)
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.Aeff = cms.double(197.52)
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.Zeff = cms.double(78.44)
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.rho = cms.double(10.55)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.interactionLength  = cms.double(19.28)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.Aeff = cms.double(177.93)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.Zeff = cms.double(70.94)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.rho = cms.double(8.85)
 
 
 	# Radiation length in g/cm^2
 	# Interaction length in cm see Zhu "Crystal Calorimeters in the Next
 	# decade"
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.radLenIngcm2 = cms.double(6.59)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.radLenIngcm2 = cms.double(7.18)
 
 
 	# ===== Those parameters might be entered by hand
@@ -47,11 +47,12 @@ def myForwardECAL( process ):
 	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.radLenIncm = cms.double(-1)
 	# Critical energy in GeV. If value set to -1, FastSim uses internally the
 	# formula (2.66E-3*(x0*Z/A)^1.1): 8.74E-3 for ECAL EndCap
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.criticalEnergy = cms.double(0.0077)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.criticalEnergy = cms.double(0.0087)
 	# Moliere Radius in cm.If value set to -1, FastSim uses internally the
 	# formula : Es/criticalEnergy*X0 with Es=sqrt(4*Pi/alphaEM)*me*c^2=0.0212 GeV
 	# This value is known to be 2.190 cm for ECAL Endcap, but the formula gives 2.159 cm
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.moliereRadius = cms.double(1.70)
+#	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.moliereRadius = cms.double(1.80)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.moliereRadius = cms.double(1.90)
 	
 	# Is a homogenious detector?
 	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.bHom = cms.bool(False)
@@ -60,10 +61,11 @@ def myForwardECAL( process ):
 	
 	# Sampling Fraction: Fs = X0eff/(da+dp) where X0eff is the average X0
 	# of the active and passive media and da/dp their thicknesses
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.Fs = cms.double(0.62)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.Fs = cms.double(1.47)
 	
 	# e/mip for the calorimeter. May be estimated by 1./(1+0.007*(Zp-Za))
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.ehat = cms.double(0.85)
+#	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.ehat = cms.double(0.71)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.ehat = cms.double(0.795)
 	
 	# a rough estimate of ECAL resolution sigma/E = resE/sqrt(E)
 	# it is used to generate Nspots in radial profiles.
@@ -73,7 +75,7 @@ def myForwardECAL( process ):
 	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.da = cms.double(0.20)
 	
 	# the width in cm of the passive layer
-	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.dp = cms.double(0.80)
+	process.famosSimHits.Calorimetry.CalorimeterProperties.EndcapCalorimeterProperties.dp = cms.double(0.35)
 
 
 
