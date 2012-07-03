@@ -68,6 +68,10 @@
 #
 /test/histo/setRootName test_ele_30GeV.root
 #
+# Set Job run number (necessary for saving of random number):
+#------------------------------------------------------------
+#
+/test/histo/setRunNumber 100
 #
 # Set Ecal calorimeter: homogeneous or sampling (Shashlyk) type 
 #--------------------------------------------------------------
@@ -141,6 +145,21 @@
 # if (abs(charge) >= 2.) rkb /= birk3; // based on alpha particle data
 # weight = 1./(1.+rkb*dedx+c*dedx*dedx);
 # 
+# Set Birks or BirkL3 parametrization for Ecal
+#----------------------------------------------
+# setEcalBirkL3(0) - "off"(0) or "on"(>0) of L3 parametrization;
+# setEcalBirkL3(1) - birkSlope;
+# setEcalBirkL3(2) - birkCut;
+#
+/ecal/det/setEcalBirks  0.03333 0.00 1.00
+/ecal/det/setEcalBirkL3 1.0 0.253694 0.10
+# 
+# Birk L3 parametrization:
+#
+# weight = 1. - birkSlope*log(rkb*dedx); 
+# if (weight < birkCut) weight = birkCut;
+# else if (weight > 1.) weight = 1.;
+#
 # setHcalAbsMat - type of Hcal absorber material
 # (only Brass have been foreseen yet), needed for applying
 # different production cuts in Hcal absorber material
@@ -152,6 +171,14 @@
 #
 /run/setCutForRegion Brass 0.5 mm
 /run/setCutForRegion PbWO 0.1 mm
+#
+# Set type of Hcal sensitive material:
+#-------------------------------------
+# user can choose from the next list:
+# PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc.
+# Scintillator is used as default sensitive material.
+#
+##/ecal/det/setHcalSensMat LYSO
 #
 # Apply uniform magnetic field along beam direction (x-axis): 
 #------------------------------------------------------------
@@ -195,10 +222,18 @@
 #
 /run/initialize
 #
+# Restart run from saved seed:
+#-----------------------------
+##/random/resetEngineFrom run100.rndm
+#
 # Set number of simulated events:
 #--------------------------------
 #
 /run/beamOn 1
+#
+# Save the seed of this current run:
+#-----------------------------------
+##/random/saveThisRun
 #
 
 

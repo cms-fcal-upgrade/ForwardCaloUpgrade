@@ -59,7 +59,7 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   AirGapThickness   =   9.0*mm;
   WrapThickness     =   8.0*mm;
   GapThickness      =   6.0*mm;
-  SensThickness     =   3.7*mm;
+  HcalSensThickness =   3.7*mm;
   NbOfHcalLayers    =  17;
   CalorSizeYZ       = 100.0*cm;
 
@@ -74,11 +74,11 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   
 // dead material in front of HE
 //-----------------------------
-  CablesThickness   =  1.5*mm;
-  G10plateThickness =  2.5*mm;
-  SuppThickness     =  4.5*mm;
-  AluSeThickness    = 30.0*mm;
-  LeadSeThickness   = 15.0*mm;
+  CablesThickness   = 23.40*cm;
+  G10plateThickness = 2.5*mm;
+  SuppThickness     = 4.5*mm;
+  AluSeThickness    = 27.2*mm;
+  LeadSeThickness   = 13.0*mm;
 
 // Ecal default parameters
 //-----------------------
@@ -94,6 +94,7 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   SetHcalAbsMaterial("Brass_def");
   SetEcalAbsMaterial("Lead_def");
   SetEcalSensMaterial("PbWO_def");
+  SetHcalSensMaterial("Sci_def");
 
 // Total number and transverse size of Ecal cells 
 // for selected area ------------------------------
@@ -101,11 +102,23 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   NbOfEcalCells = 25;
   EcalCellSize  = 28.62*mm; 
 
-// Birks constrant for scintillator in Hcal
-//-----------------------------------------
-  HcalBirksConst[0] = 0.0052;
-  HcalBirksConst[1] = 0.142;
-  HcalBirksConst[2] = 1.75;
+// Birks constants for scintillator in Hcal (default)
+//---------------------------------------------------
+  HcalBirksConst[0] = 0.00;
+  HcalBirksConst[1] = 0.00;
+  HcalBirksConst[2] = 0.00;
+
+// Birks constants for Ecal (default)
+//------------------------------------
+  EcalBirksConst[0] = 0.00;  
+  EcalBirksConst[1] = 0.00; 
+  EcalBirksConst[2] = 0.00;
+
+// Birk L3 parametrization for Ecal (default)
+//-------------------------------------------               
+  EcalBirkL3Const[0] = 0.00;
+  EcalBirkL3Const[1] = 0.00;
+  EcalBirkL3Const[2] = 0.00;
 
 // create commands for interactive definition of the calorimeter
 //--------------------------------------------------------------
@@ -175,9 +188,24 @@ new G4Material("Tungsten", z=74., a=183.84*g/mole, density=19.25*g/cm3);
 // define a material from elements.   case 1: chemical molecule
 //--------------------------------------------------------------
 
+// define scintillator (C_9H_10)_n (default)
+//------------------------------------------
+pSci_d = 
+new G4Material("Sci_def", density= 1.032*g/cm3, ncomponents=2);
+pSci_d->AddElement(C, natoms=9);
+pSci_d->AddElement(H, natoms=10);
+
+const G4int nScid = 1;
+G4double eScid[nScid] = { 3.10*eV };
+G4double rScid[nScid] = { 1.58    };
+
+G4MaterialPropertiesTable* proScid = new G4MaterialPropertiesTable();
+proScid->AddProperty("RINDEX", eScid, rScid, nScid);
+pSci_d->SetMaterialPropertiesTable(proScid);
+
 // define scintillator (C_9H_10)_n
 //---------------------------------
-pSci = 
+pSci =
 new G4Material("Scintillator", density= 1.032*g/cm3, ncomponents=2);
 pSci->AddElement(C, natoms=9);
 pSci->AddElement(H, natoms=10);
@@ -185,14 +213,10 @@ pSci->AddElement(H, natoms=10);
 const G4int nSci = 1;
 G4double eSci[nSci] = { 3.10*eV };
 G4double rSci[nSci] = { 1.58    };
-
+ 
 G4MaterialPropertiesTable* proSci = new G4MaterialPropertiesTable();
 proSci->AddProperty("RINDEX", eSci, rSci, nSci);
 pSci->SetMaterialPropertiesTable(proSci);
-
-// Birks constant is 0.0052 [g/(MeV*cm2)] 
-//----------------------------------------
-pSci->GetIonisation()->SetBirksConstant(0.050*mm/MeV);
 
 // define a material from elements.   case 2: mixture by fractional mass
 //-----------------------------------------------------------------------
@@ -538,22 +562,22 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                false,                   //no boulean operat
                                0);                      //copy number
                                    
-// Sensitive Scintillator 3.9*mm thickness (inside air gap)
+// Sensitive Scintillator 3.7*mm thickness (inside air gap)
 //=========================================================
 
   solidSens=0; logicSens=0; physiSens=0;
 
   solidSens = new G4Box("Scintil",
-                         SensThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                         HcalSensThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
 
   logicSens = new G4LogicalVolume(solidSens,
-                                  pSci,
-                                 "Scintil");
+                                  HcalSensMaterial,
+                                  HcalSensMaterial->GetName());
 
   physiSens = new G4PVPlacement(0,                       //no rotation
                                 G4ThreeVector(0.,0.,0.), //its position
                                 logicSens,               //its logical volume$
-                               "Scintil",                //its name
+                                HcalSensMaterial->GetName(), //its name
                                 logicGap,                //its mother
                                 false,                   //no boulean operat
                                 0);                      //copy number
@@ -618,8 +642,8 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                   false,                  
                                   0);                      
 
-// Cables 1.5*mm (from ECAL) in front of HE (at -35.8*cm)
-//=======================================================
+// Cables 23.40*cm (from ECAL) in front of HE (at -18.00*cm)
+//===========================================================
 
   solidCables=0; logicCables=0; physiCables=0;
       
@@ -631,14 +655,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    "Cables");
                                    
   physiCables = new G4PVPlacement(0,                     
-                    G4ThreeVector(-35.8*cm, 0.0, 0.0), 
+                    G4ThreeVector(-18.00*cm, 0.0, 0.0), 
                                    logicCables,             
                                   "Cables",             
                                    logicWorld,            
                                    false,                 
                                    0);                   
 
-// G10 plate 2.5*mm behind of ECAL and in front of HE (at -39.80*cm)
+// G10 plate 2.5*mm behind of ECAL and in front of HE (at -26.70*cm)
 //===================================================================
 
   solidG10plate=0; logicG10plate=0; physiG10plate=0;
@@ -651,26 +675,26 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    "G10plate");
                                      
   physiG10plate = new G4PVPlacement(0,
-                      G4ThreeVector(-39.8*cm, 0.0, 0.0),
+                      G4ThreeVector(-32.00*cm, 0.0, 0.0),
                                      logicG10plate,  
+                                    "G10plate",
+                                     logicWorld,
+                                     false,
+                                     0);
+
+// G10 plate 2.5*mm (copy) in front of SE (at -101.425*cm)
+//========================================================
+  physiG10plate = new G4PVPlacement(0,
+                      G4ThreeVector(-101.42*cm, 0.0, 0.0),
+                                     logicG10plate,
                                     "G10plate",
                                      logicWorld,
                                      false,
                                      1);
 
-// G10 plate 2.5*mm (copy) in front of SE (at -101.425*cm)
-//=================================================
-
-  physiG10plate = new G4PVPlacement(0,
-                      G4ThreeVector(-101.425*cm, 0.0, 0.0),
-                                     logicG10plate,
-                                    "G10plate",
-                                     logicWorld,
-                                     false,
-                                     2);
-
 // Ecal calorimeter (total thickness must be <= 400.0 mm)
 //------------------------------------------------------- 
+
   solidEcal=0; logicEcal=0; physiEcal=0;
   solEcalLayer=0; logEcalLayer=0; phyEcalLayer=0;
   middleEcal = offsetEcal + EcalCalorThickness/2.; 
@@ -760,8 +784,8 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 
 
 
-// Al support 4.5*mm in front of ECAL (at -82.025*cm)
-//===================================================
+// Al support 4.5*mm in front of ECAL (at -85.00*cm)
+//=============================================================
 
   solidSupport=0; logicSupport=0; physiSupport=0;
     
@@ -773,34 +797,34 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                     "Support");
 
   physiSupport = new G4PVPlacement(0,
-                     G4ThreeVector(-82.025*cm, 0.0, 0.0),
+                     G4ThreeVector(-85.00*cm, 0.0, 0.0),
                                     logicSupport,
                                    "Support",
                                     logicWorld,
                                     false,
                                     0);
 
-// Alum. part of SE 3.0*cm in front of ECAL (at -98.3*cm)
-//=======================================================
+// Aluminium part of SE 27.2*mm in front of Ecal (at -103.0*cm)
+//=============================================================
 
   solidAluSe=0; logicAluSe=0; physiAluSe=0;
 
   solidAluSe = new G4Box("AlumSe",
                           AluSeThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
- 
+                          
   logicAluSe = new G4LogicalVolume(solidAluSe,
                                    pAlum,
                                   "AlumSe");
-
+                                  
   physiAluSe = new G4PVPlacement(0,
-                   G4ThreeVector(-98.3*cm, 0.0, 0.0),
+                   G4ThreeVector(-103.00*cm, 0.0, 0.0),
                                   logicAluSe,
-                                 "AlumSe",
+                                 "AlumSe",   
                                   logicWorld,
                                   false,
-                                  0);
+                                  0);   
 
-// Lead part of SE 1.5*cm in front of ECAL (at -100.55*cm)
+// Lead part of SE 1.3*cm in front of ECAL (at -100.55*cm)
 //========================================================
 
   solidLeadSe=0; logicLeadSe=0; physiLeadSe=0;
@@ -890,7 +914,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 //  logicCalor->SetVisAttributes(simpleBoxVisAtt);}
 
 
-// {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,0.0,0.0));
+// {G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.5,1.0,1.0));
 //  atb->SetForceSolid(true);
 //  logicLayer->SetVisAttributes(atb);}
 //  logicAbsorber->SetVisAttributes(atb);}
@@ -905,20 +929,19 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   atb->SetForceSolid(true);
   logSensZero->SetVisAttributes(atb);}
 
- {G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
+ {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
   atb->SetForceSolid(true);
   logicCables->SetVisAttributes(atb);}
 
- {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,0.0,0.0));
+ {G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.5,1.0,1.0));
   atb->SetForceSolid(true);
   logicG10plate->SetVisAttributes(atb);}
 
-// {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,1.0,0.0,0.5));
-//  atb->SetForceSolid(true);  
-//  logicEcal->SetVisAttributes(atb);} 
-//  logEcalSens->SetVisAttributes(atb);} 
+ {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,1.0,0.5));
+  atb->SetForceSolid(true);  
+  logEcalSens->SetVisAttributes(atb);} 
 
- {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,0.0,0.0));
+ {G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
   atb->SetForceSolid(true);  
   logicSupport->SetVisAttributes(atb);} 
 
@@ -930,7 +953,6 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   atb->SetForceSolid(true);
   logicLeadSe->SetVisAttributes(atb);}
 
-  
 // {//Set opacity = 0.2 then transparency = 1 - 0.2 = 0.8
 //  G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.0,0.0,1.0,0.2));
 //  atb->SetForceSolid(true);
@@ -957,15 +979,18 @@ void DetectorConstruction::PrintCalorParameters()
 {
   G4cout << "\n------------------------------------------------------------"
          << "\n---> The HCAL calorimeter is " << NbOfHcalLayers 
-         << " layers of: [ "
+         << " layers of:"
+         << "\n---> [ "
          << AbsorberThickness/mm << "mm of " << HcalAbsMaterial->GetName() 
          << " + "
-         << SensThickness/mm << "mm of " << "Scintillator" << " ] " 
+         << HcalSensThickness/mm << "mm of " << HcalSensMaterial->GetName()  
+         << " ] " 
          << "\n------------------------------------------------------------\n";
 
   G4cout << "\n------------------------------------------------------------"
          << "\n---> The ECAL calorimeter is " << NbOfEcalLayers
-         << " layers of: [ "
+         << " layers of:"
+         << "\n---> [ "
          << EcalAbsThickness/mm << "mm of " << EcalAbsMaterial->GetName()
          << " + "
          << EcalSensThickness/mm << "mm of " << EcalSensMaterial->GetName()  
@@ -1064,6 +1089,41 @@ void DetectorConstruction::SetEcalSensThickness(G4double val)
     }
 }
 
+// Set Hcal sensitive material
+//----------------------------
+void DetectorConstruction::SetHcalSensMaterial(G4String materialChoice)
+{
+  G4Material* pttoMaterial = G4Material::GetMaterial(materialChoice);
+  if (pttoMaterial) HcalSensMaterial = pttoMaterial;
+     
+  if( HcalSensMaterial->GetName() != "Sci_def" && HcalSensMaterial->GetName() != "LAG"
+    && HcalSensMaterial->GetName() != "YAG"  && HcalSensMaterial->GetName() != "LSO"
+    && HcalSensMaterial->GetName() != "YSO"  && HcalSensMaterial->GetName() != "LYSO"
+    && HcalSensMaterial->GetName() != "PbWO" && HcalSensMaterial->GetName() != "LYSOc")
+     { G4cout << "\n ===> Stop from DetectorConstruction::SetHcalSensMaterial(): "
+              << "\n HcalSensMaterial = " <<  HcalSensMaterial->GetName()
+              << "\n Please choose Hcal sensitive material from "
+              << "this possible list:"
+              << "\n PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc"
+              << G4endl;
+       exit(1);
+     }
+
+  if( EcalSensMaterial->GetName() == HcalSensMaterial->GetName() )
+    { G4cout << "\n ===> Stop from DetectorConstruction::SetHcalSensMaterial(): "
+             << "\n HcalSensMaterial = " <<  HcalSensMaterial->GetName()
+             << " is equal to " 
+             << "EcalSensMaterial = " <<  EcalSensMaterial->GetName()
+             << "\n Please choose another Hcal sensitive material from "
+             << "this possible list:"
+             << "\n PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc"
+             << G4endl;
+      exit(1);
+    }
+
+}
+
+
 // change Number of Ecal layers and recompute the calorimeter parameters
 //-----------------------------------------------------------------------
 void DetectorConstruction::SetNbOfEcalLayers(G4int val)
@@ -1114,6 +1174,24 @@ void DetectorConstruction::SetNbOfEcalLayers(G4int val)
     HcalBirksConst[0] = G4double(Value(0));
     HcalBirksConst[1] = G4double(Value(1));
     HcalBirksConst[2] = G4double(Value(2));
+  }
+
+// Set Birks constant for Ecal sensitive material
+//------------------------------------------------
+  void DetectorConstruction::SetEcalBirksConstant(G4ThreeVector Value)
+  {
+    EcalBirksConst[0] = G4double(Value(0));
+    EcalBirksConst[1] = G4double(Value(1));
+    EcalBirksConst[2] = G4double(Value(2));
+  }
+
+// Set Birk L3 constant for Ecal sensitive material
+//-------------------------------------------------
+  void DetectorConstruction::SetEcalBirkL3Constant(G4ThreeVector Value)
+  {
+    EcalBirkL3Const[0] = G4double(Value(0));
+    EcalBirkL3Const[1] = G4double(Value(1));
+    EcalBirkL3Const[2] = G4double(Value(2));
   }
 
 // Set magnetic field

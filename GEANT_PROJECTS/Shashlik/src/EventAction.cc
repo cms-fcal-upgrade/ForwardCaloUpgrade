@@ -25,18 +25,7 @@ EventAction::EventAction(RunAction* run,DetectorConstruction* det,HistoManager* 
 {}
 
 EventAction::~EventAction()
-{
-//delete dynamic bin arrays
-//-------------------------
- delete dEdL;
- delete dEdR;
- delete dEdLAbs;
- delete dEdRAbs;
- delete dEdRHcal;
- delete RangeEcalLay;
- delete dECellsEcal;
- delete dEHitsEcal;
-}
+{}
 
 // Member function which run at the start of each event
 
@@ -160,6 +149,18 @@ void EventAction::EndOfEventAction(const G4Event* evt)
        << G4endl;
 	  
   }
+
+// delete dynamic bin arrays
+//-------------------------
+  delete dEdL;
+  delete dEdR;
+  delete dEdLAbs;
+  delete dEdRAbs;
+  delete dEdRHcal;
+  delete RangeEcalLay;  
+  delete dECellsEcal;
+  delete dEHitsEcal;
+
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -9,7 +9,12 @@
 # Set name of ROOT output file:
 #------------------------------
 #
-/test/histo/setRootName test_temp_20GeV.root
+/test/histo/setRootName test_temp_pi_50GeV.root
+#
+# Set Job run number (necessary for saving of random number):
+#------------------------------------------------------------
+#
+/test/histo/setRunNumber 100
 #
 # Set Ecal calorimeter: homogeneous or sampling (Shashlyk) type 
 #--------------------------------------------------------------
@@ -77,6 +82,15 @@
 # setHcalBirks(2) - for alpha particle;
 #
 /ecal/det/setHcalBirks 0.0052 0.142 1.75
+#
+# Set Birks or BirkL3 parametrization for Ecal
+#----------------------------------------------
+# setEcalBirkL3(0) - "off"(0) or "on"(>0) of L3 parametrization;
+# setEcalBirkL3(1) - birkSlope;
+# setEcalBirkL3(2) - birkCut;
+#
+/ecal/det/setEcalBirks  0.03333 0.00 1.00
+/ecal/det/setEcalBirkL3 1.0 0.253694 0.10
 # 
 # Set type of Hcal absorber material:
 #------------------------------------
@@ -84,6 +98,14 @@
 # different production cuts in Hcal absorber material
 #
 /ecal/det/setHcalAbsMat Brass
+#
+# Set type of Hcal sensitive material:
+#-------------------------------------
+# user can choose from the next list:
+# PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc.
+# Scintillator is used as default sensitive material.
+#
+##/ecal/det/setHcalSensMat LYSO
 #
 # Apply uniform magnetic field along beam direction (x-axis): 
 #------------------------------------------------------------
@@ -134,8 +156,8 @@
 # x =  -81.8 cm only Ecal+Hcal+dead materials between will be simulated
 # x = -110.0 cm SE+Ecal+Hcal+dead materials (full setup) will be simulated
 #
-#/gun/position -81.8 0. 0. cm
 /gun/setVxPosition  -110.0 0.0 0.0 cm
+##/gun/setVxPosition  -81.8 0.0 0.0 cm
 #
 # Add primary vertex smearing in transverse (Y vs Z) plane:
 #-----------------------------------------------------------
@@ -145,8 +167,8 @@
 #
 /gun/setVxSmearing 0 0 50.0
 #
-# Set momentum direction of primary particle (x, y, and z):
-#-----------------------------------------------------------
+# Set momentum direction of primary particle (Px, Py, and Pz):
+#-------------------------------------------------------------
 # direction needs not to be a unit vector: px != 0 || py != 0 || pz != 0
 #
 /gun/direction  1.00 0.00 0.00
@@ -161,13 +183,21 @@
 # Set energy of primary particle:
 #--------------------------------
 #
-/gun/energy 20. GeV
-#
+/gun/energy 50. GeV
+# 
 /run/initialize
+#
+# Restart run from saved seed:
+#-----------------------------
+##/random/resetEngineFrom run100.rndm
 #
 # Set number of simulated events:
 #--------------------------------
 #
 /run/beamOn 10
+#
+# Save the seed of this current run:
+#-----------------------------------
+##/random/saveThisRun
 #
 #==========================================================================

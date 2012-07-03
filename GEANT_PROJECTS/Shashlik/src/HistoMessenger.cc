@@ -81,6 +81,12 @@ HistoMessenger::HistoMessenger(HistoManager * man)
   NoiseEcalCmd->SetRange("Noise>=0.0");
   NoiseEcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+  RunNumberCmd = new G4UIcmdWithAnInteger("/test/histo/setRunNumber",this);
+  RunNumberCmd->SetGuidance("Set Run Number for this job");
+  RunNumberCmd->SetParameterName("Run",false);
+  RunNumberCmd->SetRange("Run>0");
+  RunNumberCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -95,6 +101,7 @@ HistoMessenger::~HistoMessenger()
   delete RBinHcalCmd;
   delete RespEcalCmd;
   delete NoiseEcalCmd;
+  delete RunNumberCmd;
   delete FileNameCmd;  
   delete histoDir;
   delete testDir;  
@@ -128,6 +135,9 @@ void HistoMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
   if( command == NoiseEcalCmd )
    { histoManager->SetEcalCellNoise(NoiseEcalCmd->GetNewDoubleValue(newValue));}
+
+  if( command == RunNumberCmd )
+   { histoManager->SetJobRunNumber(RunNumberCmd->GetNewIntValue(newValue));}
   
 }
 

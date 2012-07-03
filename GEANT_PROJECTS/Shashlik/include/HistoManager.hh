@@ -57,6 +57,8 @@ class HistoManager
     void SetEcalResponse(G4ThreeVector);
     void SetEcalCellNoise(G4double);
 
+    void SetJobRunNumber(G4int);
+
     G4int       GetnLtot()           {return nLtot;};
     G4int       GetnRtot()           {return nRtot;};
     G4double    GetdLbin()           {return dLbin;};
@@ -70,6 +72,8 @@ class HistoManager
     G4int       GetHcalnRtot()       {return nRtotHcal;};
     G4double    GetHcaldRbin()       {return dRbinHcal;};
 
+    G4int       GetJobRunNumber()    {return RunNumber;};
+ 
     G4String    GetfileName()        {return fileName;};
 
   private:
@@ -97,6 +101,8 @@ class HistoManager
 
     G4int    nLtot,  nRtot,  nLtotAbs,  nRtotAbs,  nRtotHcal;       
     G4double dLbin,  dRbin,  dLbinAbs,  dRbinAbs,  dRbinHcal;      
+
+    G4int    RunNumber;
 
     G4String  fileName ;
     HistoMessenger* histoMessenger;

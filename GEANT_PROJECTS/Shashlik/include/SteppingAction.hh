@@ -6,6 +6,7 @@
 #define SteppingAction_h 1
 
 #include "G4UserSteppingAction.hh"
+#include "globals.hh"
 
 class DetectorConstruction;
 class EventAction;
@@ -20,6 +21,9 @@ public:
   virtual ~SteppingAction();
 
   void UserSteppingAction(const G4Step*);
+
+  G4double getAttenuation(const G4Step*, G4double, G4double, G4double);
+  G4double getBirkL3(const G4Step*, G4double, G4double, G4double);
 
 private:
   DetectorConstruction* detector;

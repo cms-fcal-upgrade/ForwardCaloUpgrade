@@ -38,6 +38,8 @@ HistoManager::HistoManager()
  LightCollUnif = 0.001;
  CellNoise     = 140.0*MeV; 
 
+ RunNumber = 0;
+
  gROOT->Reset();                         // ROOT style
 
  histoMessenger = new HistoMessenger(this);
@@ -439,6 +441,14 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   void HistoManager::SetEcalCellNoise(G4double Value)
   { 
     CellNoise = Value;
+  }
+
+// Set Job Run Number 
+//--------------------
+
+  void HistoManager::SetJobRunNumber(G4int Value)
+  {
+    RunNumber = Value;
   }
 
 // Set ROOT file name

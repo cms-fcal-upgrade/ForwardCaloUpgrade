@@ -10,6 +10,7 @@
 #include "G4Material.hh"
 #include "G4Step.hh"
 //#include "G4DynamicParticle.hh"
+#include "Randomize.hh"
 
 // Constructor determination with the pointers assignment
 //
@@ -76,7 +77,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
    {
      G4int nEcalLayer = touch->GetCopyNumber(1);
      if( edep > 0. ) {
-       G4ThreeVector aPoint  = prePoint + 0.5*(postPoint - prePoint);
+       G4ThreeVector aPoint  = prePoint + G4UniformRand()*(postPoint - prePoint);
        G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
        G4double offset = detector->GetEcalOffset();
 
@@ -87,8 +88,21 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        G4int RingNb  = int( radius / histo->GetdRbin() );        
        if( RingNb > histo->GetnRtot() ) RingNb = histo->GetnRtot();
 
-       eventaction->fillEcalStep(edep,SlideNb,RingNb);
-       eventaction->AddEcal(edep);
+       G4double response = edep;
+       G4double* birks = detector->GetEcalBirksConstant();
+       G4double* birkL3 = detector->GetEcalBirkL3Constant();
+
+       if(birks[0]*edep*stepl*charge != 0.) {
+         G4double density = mat->GetDensity() / (g/cm3);
+         G4double rkb     = birks[0]/density;
+         if( int(birkL3[0]) > 0 )
+           response = edep*getBirkL3(aStep, rkb, birkL3[1], birkL3[2]);
+         else 
+           response = edep*getAttenuation(aStep, rkb, birks[1], birks[2]);
+       }
+
+       eventaction->fillEcalStep(response,SlideNb,RingNb);
+       eventaction->AddEcal(response);
 
 // deposited energy in Ecal cells
 //-------------------------------
@@ -99,7 +113,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
          G4int iy_Ind = int( fabs(-maxSize-aPoint.y()) / DxCell );
          G4int iz_Ind = int( fabs(-maxSize-aPoint.z()) / DxCell );
          G4int cell_Ind = iz_Ind + iy_Ind*IndCell;
-         eventaction->fillEcalCell(cell_Ind,edep);
+         eventaction->fillEcalCell(cell_Ind,response);
        }
 
 // hit point (Y vs Z) of first point in Ecal  
@@ -113,7 +127,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
            G4int iy_Hit = int( fabs(-maxHit-aPoint.y()) / DxHits );
            G4int iz_Hit = int( fabs(-maxHit-aPoint.z()) / DxHits );
            G4int hit_Ind = iz_Hit + iy_Hit*IndHit;
-           eventaction->fillEcalHits(hit_Ind,edep);
+           eventaction->fillEcalHits(hit_Ind,response);
          }
        }
 
@@ -134,7 +148,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
    {
      G4int nEcalLayer = touch->GetCopyNumber(1);
      if( edep > 0. ) {  
-       G4ThreeVector aPoint  = prePoint + 0.5*(postPoint - prePoint);
+       G4ThreeVector aPoint  = prePoint + G4UniformRand()*(postPoint - prePoint);
        G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
        G4double offset = detector->GetEcalOffset();
        
@@ -154,21 +168,17 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
    if( volume == detector->GetHcal() ) {
      G4int nHcalLayer = touch->GetCopyNumber(3); 
      if( edep > 0. ) {
-       G4ThreeVector aPoint  = prePoint + 0.5*(postPoint - prePoint);
+       G4ThreeVector aPoint  = prePoint + G4UniformRand()*(postPoint - prePoint);
        G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
        G4int RingHcal  = int( radius / histo->GetHcaldRbin() );        
        if( RingHcal > histo->GetHcalnRtot() ) RingHcal = histo->GetHcalnRtot();
 
-//       G4double birk1  = mat->GetIonisation()->GetBirksConstant();
        G4double response = edep;
        G4double* birks = detector->GetHcalBirksConstant();
        if(birks[0]*edep*stepl*charge != 0.) {
          G4double density = mat->GetDensity() / (g/cm3);
          G4double rkb     = birks[0]/density;
-         G4double c       = birks[1]*rkb*rkb;
-         G4double dedx    = edep/(stepl / cm);
-         if( fabs(charge) >= 2. && birks[2] !=0. ) rkb /= birks[2];
-         response = edep/(1.+rkb*dedx+c*dedx*dedx);
+         response = edep*getAttenuation(aStep, rkb, birks[1], birks[2]);
        }
 
        eventaction->AddHcal(response);
@@ -189,10 +199,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      if(birks[0]*edep*stepl*charge != 0.) {
        G4double density = mat->GetDensity() / (g/cm3);
        G4double rkb     = birks[0]/density;
-       G4double c       = birks[1]*rkb*rkb;
-       G4double dedx    = edep/(stepl / cm);
-       if( fabs(charge) >= 2. && birks[2] !=0. ) rkb /= birks[2];
-       response = edep/(1.+rkb*dedx+c*dedx*dedx);
+       response = edep*getAttenuation(aStep, rkb, birks[1], birks[2]);
      }
      eventaction->AddZero(response);
    }
@@ -201,5 +208,40 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 //// if (condition) G4RunManager::GetRunManager()->rndmSaveThisEvent(); 
 }
 
+// Example of Birk attenuation law in organic scintillators.
+//-----------------------------------------------------------
+
+G4double SteppingAction::getAttenuation(const G4Step* aStep, G4double rkb, 
+                                            G4double birk2, G4double birk3)
+{
+   G4double weight  = 1.;
+   G4double destep  = aStep->GetTotalEnergyDeposit();
+   G4double stepl   = aStep->GetStepLength();  
+   G4double charge  = aStep->GetTrack()->GetDefinition()->GetPDGCharge();
+   G4double dedx    = destep/(stepl / cm); 
+   G4double c       = birk2*rkb*rkb;
+
+   if( fabs(charge) >= 2. && birk3 !=0. ) rkb /= birk3;
+   weight = 1./(1.+rkb*dedx+c*dedx*dedx); 
+
+   return weight;
+}
+
+G4double SteppingAction::getBirkL3(const G4Step* aStep, G4double rkb, 
+                                 G4double birkSlope, G4double birkCut)
+{    
+   G4double weight  = 1.;
+   G4double destep  = aStep->GetTotalEnergyDeposit();
+   G4double stepl   = aStep->GetStepLength();
+   G4double dedx    = destep/(stepl / cm);
+
+   if( dedx > 0 ) {
+      weight         = 1. - birkSlope*log(rkb*dedx);
+      if (weight < birkCut) weight = birkCut;
+      else if (weight > 1.) weight = 1.;
+   }       
+           
+   return weight;
+}      
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
