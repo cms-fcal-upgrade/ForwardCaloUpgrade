@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.16 $'),
+    version = cms.untracked.string('$Revision: 1.17 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -171,11 +171,20 @@ process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 #myForwardECAL( process )
 #from ForwardCaloUpgrade.FastSim.PBWO_cff import myForwardECAL
 #myForwardECAL( process )
-#from ForwardCaloUpgrade.FastSim.Shashlik_PbLSO_cff import myForwardECAL
+#from ForwardCaloUpgrade.FastSim.Shashlik_PbYAG_cff import myForwardECAL
 #myForwardECAL( process )
 
-from ForwardCaloUpgrade.FastSim.Shashlik_PbYAG_cff import myForwardECAL
+from ForwardCaloUpgrade.FastSim.Shashlik_PbLSO_cff import myForwardECAL
 myForwardECAL( process )
+
+#Set up the endcap HCAL parameterization
+
+#from ForwardCaloUpgrade.FastSim.DefaultHCAL_cff import myEndcapHCAL
+#myEndcapHCAL( process )
+
+from ForwardCaloUpgrade.FastSim.HCALWithECALPbLSO_cff import myEndcapHCAL
+myEndcapHCAL( process )
+
 
 	
 #---------------------------------------------------------------
