@@ -40,7 +40,7 @@ HistoManager::HistoManager()
 
  RunNumber = 0;
 
- gROOT->Reset();                         // ROOT style
+ //gROOT->Reset();                         // ROOT style
 
  histoMessenger = new HistoMessenger(this);
 }
@@ -177,7 +177,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
     
     hits = new TH2D("EcalHitPoint","Ecal Hit points",nRtot,-0.5*nRtot*dRbin,
                     0.5*nRtot*dRbin, nRtot,-0.5*nRtot*dRbin,0.5*nRtot*dRbin);
-    hits-> GetXaxis()-> SetTitle("Z - axis / mm");
+    hits-> GetXaxis()-> SetTitle("X - axis / mm");
     hits-> GetYaxis()-> SetTitle("Y - axis / mm");
     hits-> SetFillColor(kBlue);
     hits-> SetStats(1);
@@ -378,8 +378,8 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
      if( EdepEcalHits > 0. ) {
        for(G4int ij=0; ij<nRtot*nRtot; ij++) {
            G4int iy_ind = ij / nRtot;
-           G4int iz_ind = ij - iy_ind*nRtot; 
-           G4double xlbin = -0.5*dRbin*nRtot + dRbin*iz_ind + 0.5*dRbin;
+           G4int ix_ind = ij - iy_ind*nRtot; 
+           G4double xlbin = -0.5*dRbin*nRtot + dRbin*ix_ind + 0.5*dRbin;
            G4double ylbin = -0.5*dRbin*nRtot + dRbin*iy_ind + 0.5*dRbin;
            if( pa_lon[ij] > 0.0)  hits->Fill(xlbin,ylbin,pa_lon[ij]/EdepEcalHits);
        }

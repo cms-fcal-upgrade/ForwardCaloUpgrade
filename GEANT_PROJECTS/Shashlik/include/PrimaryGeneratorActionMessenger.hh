@@ -22,6 +22,7 @@ class PrimaryGeneratorActionMessenger: public G4UImessenger
    ~PrimaryGeneratorActionMessenger();
 
     void SetNewValue(G4UIcommand*, G4String);
+    G4String GetCurrentValue(G4UIcommand* command);
 
   private:
 
@@ -30,6 +31,8 @@ class PrimaryGeneratorActionMessenger: public G4UImessenger
 
     G4UIcmdWith3Vector*        SetVxSmearCmd;
     G4UIcmdWith3Vector*        SetVxPositionCmd;
+    G4UIdirectory*             dir;
+    G4UIcmdWithAString*        select;
 
 };
 

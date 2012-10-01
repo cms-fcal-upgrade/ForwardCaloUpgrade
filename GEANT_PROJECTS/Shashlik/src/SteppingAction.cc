@@ -78,10 +78,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      G4int nEcalLayer = touch->GetCopyNumber(1);
      if( edep > 0. ) {
        G4ThreeVector aPoint  = prePoint + G4UniformRand()*(postPoint - prePoint);
-       G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
+       G4double radius = std::sqrt(aPoint.x()*aPoint.x()+aPoint.y()*aPoint.y());
        G4double offset = detector->GetEcalOffset();
 
-       G4int SlideNb = int( (aPoint.x() - offset) / histo->GetdLbin() );
+       G4int SlideNb = int( (aPoint.z() - offset) / histo->GetdLbin() );
        if( SlideNb > histo->GetnLtot()   ) SlideNb = histo->GetnLtot();
        if( detector->GetNbOfEcalLayers() !=1) SlideNb = nEcalLayer; 
 
@@ -109,10 +109,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        G4int    IndCell = G4int( sqrt(detector->GetNbOfEcalCells()) );
        G4double DxCell  = detector->GetEcalCellSize();
        G4double maxSize = 0.5*DxCell*IndCell;
-       if( fabs(aPoint.y())<=maxSize && fabs(aPoint.z())<=maxSize) {
+       if( fabs(aPoint.x())<=maxSize && fabs(aPoint.y())<=maxSize) {
+         G4int ix_Ind = int( fabs(-maxSize-aPoint.x()) / DxCell );
          G4int iy_Ind = int( fabs(-maxSize-aPoint.y()) / DxCell );
-         G4int iz_Ind = int( fabs(-maxSize-aPoint.z()) / DxCell );
-         G4int cell_Ind = iz_Ind + iy_Ind*IndCell;
+         G4int cell_Ind = ix_Ind + iy_Ind*IndCell;
          eventaction->fillEcalCell(cell_Ind,response);
        }
 
@@ -123,10 +123,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
          G4int    IndHit = histo->GetnRtot();
          G4double DxHits = histo->GetdRbin();
          G4double maxHit = 0.5*DxHits*IndHit;
-         if( fabs(aPoint.y())<=maxHit && fabs(aPoint.z())<=maxHit ) {
+         if( fabs(aPoint.x())<=maxHit && fabs(aPoint.y())<=maxHit ) {
+           G4int ix_Hit = int( fabs(-maxHit-aPoint.x()) / DxHits );
            G4int iy_Hit = int( fabs(-maxHit-aPoint.y()) / DxHits );
-           G4int iz_Hit = int( fabs(-maxHit-aPoint.z()) / DxHits );
-           G4int hit_Ind = iz_Hit + iy_Hit*IndHit;
+           G4int hit_Ind = ix_Hit + iy_Hit*IndHit;
            eventaction->fillEcalHits(hit_Ind,response);
          }
        }
@@ -149,10 +149,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      G4int nEcalLayer = touch->GetCopyNumber(1);
      if( edep > 0. ) {  
        G4ThreeVector aPoint  = prePoint + G4UniformRand()*(postPoint - prePoint);
-       G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
+       G4double radius = std::sqrt(aPoint.x()*aPoint.x()+aPoint.y()*aPoint.y());
        G4double offset = detector->GetEcalOffset();
        
-       G4int SlideAbs = int( (aPoint.x() - offset) / histo->GetAbsdLbin() );
+       G4int SlideAbs = int( (aPoint.z() - offset) / histo->GetAbsdLbin() );
        if( SlideAbs > histo->GetAbsnLtot()  ) SlideAbs = histo->GetAbsnLtot();
        if( detector->GetNbOfEcalLayers() !=1) SlideAbs = nEcalLayer;
        G4int RingAbs  = int( radius / histo->GetAbsdRbin() );
@@ -169,7 +169,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
      G4int nHcalLayer = touch->GetCopyNumber(3); 
      if( edep > 0. ) {
        G4ThreeVector aPoint  = prePoint + G4UniformRand()*(postPoint - prePoint);
-       G4double radius = std::sqrt(aPoint.y()*aPoint.y()+aPoint.z()*aPoint.z());
+       G4double radius = std::sqrt(aPoint.x()*aPoint.x()+aPoint.y()*aPoint.y());
        G4int RingHcal  = int( radius / histo->GetHcaldRbin() );        
        if( RingHcal > histo->GetHcalnRtot() ) RingHcal = histo->GetHcalnRtot();
 

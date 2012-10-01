@@ -9,36 +9,38 @@
  1- GEOMETRY DEFINITION
  -----------------------
 
- 	The Hadron Endcap (HE) calorimeter is a box (149.6) along X-axis 
-        consist of 17 layers. The front of HE calorimeter starts from
-        x=0.0*cm and propagates to positive direction. The transverse
-        HE calorimeter size is 100.0*cm (Y-axis) and 100.0*cm (Z-axis). 
+ 	The Hadron Endcap (HE) calorimeter is a box (149.6) along Z-axis 
+        consisting of 17 layers. The front of HE calorimeter starts from
+        z=397.2*cm and propagates to positive direction. The transverse
+        HE calorimeter size is 540.0*cm (X-axis) and 540.0*cm (Y-axis). 
         Each HE layer (88.0*mm) consists of an absorber plate (79.0*mm Brass) 
         and of an air gap (9.0*mm). Inside air gap the aluminum wrapper 
         (8.0*mm) is placed. The sensitive plate of 3.7*mm thickness of 
-        scintillator is inside of aluminum wrapper. The layer is
- 	replicated.
+        scintillator is inside of aluminum wrapper. The layer is replicated.
  	
         In front of HE calorimeter the next materials are placed:
 
           a) Zero layer of HE calorimeter (15.0*mm aluminum wrapper
              with 9.0*mm sensitive scintillator material inside);
 
-          b) Cables from ECAL (1.5*mm of copper at x = -35.8*cm);
+          b) Dead material (cables from ECAL) (23.4*cm of copper at z = 366.675*cm);
+		      (since V00_03_00 this position is relative to ECAL size,
+              this was done to center dead material between ECAL and HCAL); 
 
-          c) G10 plate behind ECAL and in front of HE (2.5*mm at x = -59.80*cm);
-             (since V00_02_00 version this position was moved at x = -39.80*cm,
-              this was done to have possibility to increase Ecal size); 
+          c) G10 plate behind ECAL and in front of HE (2.5*mm at z = 337.525*cm);
+             (since V00_03_00 this position is relative to ECAL size,
+              this was done to have possibility to increase Ecal size
+			  and dead material size); 
 
-          d) ECAL itself (220.0*mm box of PbWO4 material at x = -70.80*cm);
+          d) ECAL itself (220.0*mm box of PbWO4 material at z = 326.4*cm);
 
-          e) Aluminum support in front of ECAL (4.5*mm at x = -82.025*cm);
+          e) Aluminum support in front of ECAL (4.5*mm at z = 312.2*cm);
 
-          f) Aluminum part of SE (photon preshower) (3.0*cm at x = -98.3*cm);
+          f) Aluminum part of SE (photon preshower) (2.72*cm at z = 298.9*cm);
 
-          g) Lead part of SE (photon preshower) (1.5*cm at x = 100.55*cm);
+          g) Lead part of SE (photon preshower) (1.3*cm at z = 296.65*cm);
 
-          h) G10 plate in front of SE (2.5*mm at x = -101.425*cm). 	
+          h) G10 plate in front of SE (2.5*mm at z = 295.775*cm). 	
 
     1a. The new option is introduced for the ECAL geometry:
     -------------------------------------------------------
@@ -52,189 +54,31 @@
              input file (hadr01.in); 
 
           c) also there is possibility to apply uniform magnetic field along 
-             x-axis; 
+             z-axis; 
  
           d) user can chose the value of production cuts for the different
              sensitive and absorber medias (Ecal and Hcal);
 
           e) since V00_02_00 release total size of ECAL can be extended 
-             till 400.0*mm along x-axis; 
+             till 400.0*mm along z-axis;
+		  
+		  f) since V00_03_00 total size of dead material can be extended
+		     to 400.0*mm along z-axis;
  
-          f) example how to set these parameters is presented below:
+          g) examples of how to set these parameters are presented in: ele01.in, hadr01.in
 
-#
-# Set name of ROOT output file:
-#------------------------------
-#
-/test/histo/setRootName test_ele_30GeV.root
-#
-# Set Job run number (necessary for saving of random number):
-#------------------------------------------------------------
-#
-/test/histo/setRunNumber 100
-#
-# Set Ecal calorimeter: homogeneous or sampling (Shashlyk) type 
-#--------------------------------------------------------------
-#
-# Absorber materials can be: Lead, Brass, Tungsten:
-#--------------------------------------------------
-#
-# Sensitive materials are: LAG, YAG, LSO, LYSO, LYSOc, YSO and PbWO:
-#-------------------------------------------------------------------
-# Sens1 = (LAG  = Lu3_Al5_O12  and density 6.7  g/cm3);
-# Sens2 = (YAG  = Y3_Al5_O12   and density 4.57 g/cm3);
-# Sens3 = (LSO  = Lu2_Si_O5    and density 7.41 g/cm3);
-# Sens4 = (LYSO = Lu2(1-x)_Y2x_Si_O5, x=0.1, density 7.11 g/cm3);
-# Sens5 = (LYSOc= Lu2(1-x)_Y2x_Si_O5:Ce, x=0.1,doped 0.05% Ce,density 7.11 g/cm3);
-# Sens6 = (YSO  = Y2_Si_O5     and density 4.54 g/cm3);
-# PbWO  = (PbWO = Pb_W_O4      and density 8.30 g/cm3);
-#------------------------------------------------------
-#
-# setNbOfLayers    - number of layers in sampling Ecal  
-# setEcalAbsMat    - type of Ecal absorber material
-# setEcalSensMat   - type of Ecal sensitive material
-# setEcalAbsThick  - thickness of Ecal absorber material in layer
-# setEcalSensThick - thickness of Ecal sensitive material in layer
-#
-# Total length of Ecal calorimeter L=(AbsThick+SensThick)*NbOfLayers
-# must be  <= 400.0 mm.
-#
-# If you want to simulate the homogeneous Ecal calorimeter 
-# please set NbOfLayers=1 and EcalAbsThick=0.0
-#
-# For preventing of warning messages when you set zero thickness 
-# (setEcalAbsThick=0.0 or setEcalSensMat=0.0),  it is recommended
-# to comment appropriate line /run/setCutForRegion for this 
-# material
-#
-/ecal/det/setNbOfLayers 100
-/ecal/det/setEcalAbsMat Lead
-/ecal/det/setEcalSensMat LYSO
-/ecal/det/setEcalAbsThick  1.1 mm
-/ecal/det/setEcalSensThick 1.1 mm
-#
-# Set number and transverse size of Ecal cells:
-#----------------------------------------------
-# setEcalCells(0) - number of cells (= 1x1, 2x2, 3x3, 4x4 or 5x5);
-# setEcalCells(1) - transverse size of cell in [mm].
-#
-/ecal/det/setEcalCells 9 28.0 
-#
-# Set energy response for individual Ecal cells:
-#------------------------------------------------
-# setEcalResponse(0) - photostatistics photons/GeV;
-# setEcalResponse(1) - light collection efficiency;
-# setEcalResponse(0) - light collection uniformity;
-#
-/test/histo/setEcalResponse 5.0E5 0.03 0.0001
-#
-# Set noise value [MeV] for individual Ecal cells:
-#-------------------------------------------------
-/test/histo/setEcalCellNoise 140.0 MeV
-# 
-# Set Birks-Chou constants for Hcal sensitive media:
-#---------------------------------------------------
-# setHcalBirks(0) - [g / MeV*cm2];
-# setHcalBirks(1) - [g / MeV*cm2]**2;
-# setHcalBirks(2) - for alpha particle;
-#
-/ecal/det/setHcalBirks 0.0052 0.142 1.75
-#
-# double rkb     = birk1/density;
-# double c       = birk2*rkb*rkb;
-# if (abs(charge) >= 2.) rkb /= birk3; // based on alpha particle data
-# weight = 1./(1.+rkb*dedx+c*dedx*dedx);
-# 
-# Set Birks or BirkL3 parametrization for Ecal
-#----------------------------------------------
-# setEcalBirkL3(0) - "off"(0) or "on"(>0) of L3 parametrization;
-# setEcalBirkL3(1) - birkSlope;
-# setEcalBirkL3(2) - birkCut;
-#
-/ecal/det/setEcalBirks  0.03333 0.00 1.00
-/ecal/det/setEcalBirkL3 1.0 0.253694 0.10
-# 
-# Birk L3 parametrization:
-#
-# weight = 1. - birkSlope*log(rkb*dedx); 
-# if (weight < birkCut) weight = birkCut;
-# else if (weight > 1.) weight = 1.;
-#
-# setHcalAbsMat - type of Hcal absorber material
-# (only Brass have been foreseen yet), needed for applying
-# different production cuts in Hcal absorber material
-#
-/ecal/det/setHcalAbsMat Brass
-#
-# Set special production cut for chosen medias:
-#-----------------------------------------------
-#
-/run/setCutForRegion Brass 0.5 mm
-/run/setCutForRegion PbWO 0.1 mm
-#
-# Set type of Hcal sensitive material:
-#-------------------------------------
-# user can choose from the next list:
-# PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc.
-# Scintillator is used as default sensitive material.
-#
-##/ecal/det/setHcalSensMat LYSO
-#
-# Apply uniform magnetic field along beam direction (x-axis): 
-#------------------------------------------------------------
-#
-/ecal/det/setMagField 0.0 kG
-#
-# Set primary particle position (x, y, z) [cm]:
-#----------------------------------------------
-# x =  -10.0 cm only Hcal will be simulated
-# x =  -81.8 cm only Ecal+Hcal+dead materials between will be simulated
-# x = -110.0 cm SE+Ecal+Hcal+dead materials (full setup) will be simulated
-#
-#/gun/position -81.8 0. 0. cm
-/gun/setVxPosition  -110.0 0.0 0.0 cm
-#
-# Add primary vertex smearing in transverse (Y vs Z) plane:
-#-----------------------------------------------------------
-# Smearing(0) - "off"(0) or "on"(>0) of smearing;  
-# Smearing(1) - "Type" of smearing area: 0 - ring, >0 - square;
-# Smearing(2) - ring radius or square side [mm] of smearing area.
-#
-/gun/setVxSmearing 1  0 50.0
-#
-# Set direction of primary particle (x, y, and z):
-#-------------------------------------------------
-# direction needs not to be a unit vector: px != 0 || py != 0 || pz != 0
-#
-/gun/direction  1.00 0.00 0.00
-#
-# Set type of particle:
-#----------------------
-#
-##/gun/particle pi-
-/gun/particle e-
-##/gun/particle mu-
-# 
-# Set energy of primary particle:
-#--------------------------------
-#
-/gun/energy 20. GeV
-#
-/run/initialize
-#
-# Restart run from saved seed:
-#-----------------------------
-##/random/resetEngineFrom run100.rndm
-#
-# Set number of simulated events:
-#--------------------------------
-#
-/run/beamOn 1
-#
-# Save the seed of this current run:
-#-----------------------------------
-##/random/saveThisRun
-#
+		  h) Notes on Birks' law parametrization:
+		  
+		     Chou-Birks law:
+             double rkb     = birk1/density;
+             double c       = birk2*rkb*rkb;
+             if (abs(charge) >= 2.) rkb /= birk3; // based on alpha particle data
+             weight = 1./(1.+rkb*dedx+c*dedx*dedx);
+			 
+			 L3 Birks law:
+             weight = 1. - birkSlope*log(rkb*dedx);
+             if (weight < birkCut) weight = birkCut;
+             else if (weight > 1.) weight = 1.;
 
 
  2- HISTOGRAMs
@@ -287,43 +131,10 @@
           b) EcalAbsMol  - distribution for Ecal absorber material;
 
        There is the possibility to change the bin width and total number 
-       of bins for these (shower profiles) histograms (see example below):
+       of bins for these (shower profiles) histograms. See examples: ele01.in, hadr01.in
 
-       The 2-dimentions (TH2D-histogram) with hit point distribution
-       on front of Ecal  
-
-
-# Set name of ROOT output file:
-#------------------------------
-#
-/test/histo/setRootName test_ele_20GeV.root
-#
-#
-# Set binning for Shower profile histos: 
-#---------------------------------------
-#
-# setHcalRbin(0) - number of bins for Hcal transverse shower profile
-# setHcalRbin(1) - bin width [mm] for Hcal transverse shower profile
-#
-# setSensRbin(0) - number of bins for Ecal transverse shower profile
-# setSensRbin(1) - bin width [mm] for Ecal transverse shower profile
-#
-# setSensLbin(0) - number of bins for Ecal longitudinal shower profile
-# setSensLbin(1) - bin width [mm] for Ecal longitudinal shower profile
-#
-# setAbsRbin(0) - number of bins for Ecal absorber transverse profile
-# setAbsRbin(1) - bin width [mm] for Ecal absorber transverse profile
-#
-# setAbsLbin(0) - number of bins for Ecal absorber longitudinal profile
-# setAbsLbin(1) - bin width [mm] for Ecal absorber longitudinal profile
-# ( if Ecal is sampling calorimeter ==> bin width = 1 layer )
-#
-/test/histo/setHcalRbin 100 5.0
-/test/histo/setSensLbin 100 5.0
-/test/histo/setSensRbin 100 1.0
-/test/histo/setAbsRbin  400 0.5
-/test/histo/setAbsLbin  160 2.0
-# 
+       The 2-dimensions (TH2D-histogram) with hit point distribution
+       on front of Eca
 
  3- CHANGE PHYSICS LIST
  ----------------------
@@ -337,27 +148,41 @@
      and
      runManager-> SetUserInitialization(new QGSP_BERT_EMV)
   
-
+ 4- Optional HepMC ASCII File Usage
+ ----------------------------------
+ 
+   Since V00_03_00 release, there is an option to use particles from an event 
+   generator like Pythia. Any events in the standardized HepMC format can be 
+   input through an ASCII text file. The folder UserCode/ForwardCaloUpgrade/Pythia 
+   shows an example of how to generate such a file. The sample input file 
+   hepmc01.in shows how to select the hepmcAscii primary generator and use the 
+   ascii file.
      	
- 4- HOW TO START 
+ 5- HOW TO START 
  ----------------
 
-  a) source /afs/cern.ch/sw/lcg/external/gcc/4.3.2/x86_64-slc5/setup.csh
+   Now all necessary environment settings are collected in
+   config.csh - file. User can change this setting for his choice.
 
-  b) setenv G4BASE /afs/cern.ch/sw/lcg/external/geant4
+  a) source config.csh
 
-  c) source $G4BASE/9.4.p02/x86_64-slc5-gcc43/setup.csh
+  c) gmake 
 
-  d) gmake 
+  e) Run program 
 
-  e) Run program
-
-     ~/geant4/9.4.p02/x86_64-slc5-gcc43/bin/Linux-g++/fcalor hadr01.in > test_out01
+     $MyGeant/fcalor hadr01.in > test_out01
 
 
- 5- INPUT and OUTPUT FILEs
- --------- ---------------
+ 6- SAMPLE INPUT FILEs
+ ---------------------
 
-    a) hadr01.in contains example of control lines for job running. 
+    a) hadr01.in  - example of control lines for job running with particle gun. 
 
-    b) test_ele_20GeV.root - output ROOT file with Tree's and histos.
+    b) ele01.in - another example of control lines for job running with particle gun. 
+       (see STEERING_CARDS - directory)
+
+    c) hepmc01.in - example of control lines for job running with HepMC ascii file.
+       (see STEERING_CARDS - directory)	
+
+    d) HepMCoutJets.dat - example of HepMC ascii file.
+       (see STEERING_CARDS - directory)

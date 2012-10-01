@@ -11,6 +11,7 @@
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
+#include "HepMCG4AsciiReader.hh"
 #include "Randomize.hh"
 
 #include <stdio.h>
@@ -22,7 +23,14 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
  zVertex(0.),dRwidth(5.0),vertexDefined(false)
 {
   G4int n_particle = 1;
-  particleGun  = new G4ParticleGun(n_particle);
+  
+// default generator is particle gun.
+//===================================
+  currentGenerator= particleGun= new G4ParticleGun(n_particle);
+  currentGeneratorName= "particleGun";
+  hepmcAscii= new HepMCG4AsciiReader();
+  gentypeMap["particleGun"]= particleGun;
+  gentypeMap["hepmcAscii"]= hepmcAscii;
   
 // default particle kinematic
 //============================
@@ -32,14 +40,14 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
 
   G4ParticleDefinition* particle
                     = particleTable->FindParticle(particleName="pi-");
-  particleGun->SetParticleDefinition(particle);
+  ((G4ParticleGun*)particleGun)->SetParticleDefinition(particle);
 
 // set particle energy and position
 //==================================
 
-  particleGun->SetParticleMomentumDirection(G4ThreeVector(1.0,0.0,0.0));
-  particleGun->SetParticleEnergy(10.*GeV);
-  particleGun->SetParticlePosition( G4ThreeVector(xVertex*cm,yVertex*cm,zVertex*cm) );
+  ((G4ParticleGun*)particleGun)->SetParticleMomentumDirection(G4ThreeVector(1.0,0.0,0.0));
+  ((G4ParticleGun*)particleGun)->SetParticleEnergy(10.*GeV);
+  ((G4ParticleGun*)particleGun)->SetParticlePosition( G4ThreeVector(xVertex*cm,yVertex*cm,zVertex*cm) );
 //  particleGun->SetParticlePosition(G4ThreeVector(-10.0*cm,0.0*cm,0.0*cm));
 
   actMessenger = new PrimaryGeneratorActionMessenger(this);
@@ -47,7 +55,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DetectorConstruction* det)
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
-  delete particleGun;
+  delete currentGenerator;
   delete actMessenger;
 }
 
@@ -80,7 +88,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
   } 
   particleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
-  particleGun->GeneratePrimaryVertex(anEvent);
+  
+  if(currentGenerator)
+    currentGenerator-> GeneratePrimaryVertex(anEvent);
+  else 
+    G4Exception("generator is not instantiated.");
 
 }
 

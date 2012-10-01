@@ -22,6 +22,15 @@
 PrimaryGeneratorActionMessenger::PrimaryGeneratorActionMessenger(PrimaryGeneratorAction* man)
 :PrimAction(man)
 { 
+  dir = new G4UIdirectory("/generator/");
+  dir->SetGuidance("Control commands for primary generator");
+
+  select = new G4UIcmdWithAString("/generator/select", this);
+  select->SetGuidance("select generator type");
+  select->SetParameterName("generator_type", false, false);
+  select->SetCandidates("particleGun hepmcAscii");
+  select->SetDefaultValue("particleGun");
+
   SetVxSmearCmd = new G4UIcmdWith3Vector("/gun/setVxSmearing",this);
   SetVxSmearCmd->SetGuidance("Set y-z smearing of the primary vertex.");
   SetVxSmearCmd->SetParameterName("OnOff","Type","dRwidth",true);
@@ -38,6 +47,8 @@ PrimaryGeneratorActionMessenger::~PrimaryGeneratorActionMessenger()
 {
   delete SetVxSmearCmd;
   delete SetVxPositionCmd;
+  delete select;
+  delete dir;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -48,7 +59,23 @@ void PrimaryGeneratorActionMessenger::SetNewValue(G4UIcommand* command,G4String 
    { PrimAction->SetVxSmearing(SetVxSmearCmd->GetNew3VectorValue(newValue));}
 
   if( command == SetVxPositionCmd ) 
-   { PrimAction->SetVxPosition(SetVxPositionCmd->GetNew3VectorValue(newValue));}    
+   { PrimAction->SetVxPosition(SetVxPositionCmd->GetNew3VectorValue(newValue));}
+   
+  if( command == select )
+   { PrimAction->SetGenerator(newValue);
+    G4cout << "current generator type: " << PrimAction->GetGeneratorName() << G4endl;}
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+G4String PrimaryGeneratorActionMessenger::GetCurrentValue(G4UIcommand* command)
+{
+  G4String cv, st;
+  if (command == select) {
+    cv = PrimAction->GetGeneratorName();
+  } 
+
+ return cv;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

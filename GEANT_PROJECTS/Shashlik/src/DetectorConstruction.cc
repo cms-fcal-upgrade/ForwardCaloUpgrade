@@ -61,7 +61,7 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   GapThickness      =   6.0*mm;
   HcalSensThickness =   3.7*mm;
   NbOfHcalLayers    =  17;
-  CalorSizeYZ       = 100.0*cm;
+  CalorSizeXY       = 540.0*cm;
 
   LayerThickness = AbsorberThickness + AirGapThickness;
   CalorThickness = NbOfHcalLayers*LayerThickness;
@@ -85,7 +85,8 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   EcalAbsThickness  =   0.0*mm;
   EcalSensThickness = 220.0*mm;
   NbOfEcalLayers    = 1;
-  offsetEcal        =-818.0*mm;
+  offsetEcal        = 315.4*cm; //distance from origin to front of ECAL
+  offsetHcal        = 81.8*cm; //distance from front of ECAL to front of HCAL
   ComputeEcalParameters();
 
 // materials
@@ -429,7 +430,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 //=======
 
   solidWorld = new G4Box("World",                       //its name
-                          200.0*cm, 75.0*cm, 75.0*cm);  //its size
+                          300.0*cm, 300.0*cm, 600.0*cm);  //its size
                          
   logicWorld = new G4LogicalVolume(solidWorld,		//its solid
                                    defaultMaterial,	//its material
@@ -449,14 +450,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solidCalor=0; logicCalor=0; physiCalor=0;
   
   solidCalor = new G4Box("Calorimeter",		        //its name
-    		   CalorThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); //size
+    		   CalorSizeXY/2.,CalorSizeXY/2.,CalorThickness/2.); //size
     			     
   logicCalor = new G4LogicalVolume(solidCalor,  	//its solid
       			           defaultMaterial,	//its material
       		     	          "Calorimeter");	//its name
     				       
   physiCalor = new G4PVPlacement(0,			//no rotation
-                   G4ThreeVector(CalorThickness/2.,0.0,0.0), //at (74.80,0,0)
+                   G4ThreeVector(0.0,0.0,offsetEcal + offsetHcal + CalorThickness/2.), //at (0,0,397.2+74.8)
                                  logicCalor,	        //its logical volume
                                 "Calorimeter",	        //its name
                                  logicWorld,	        //its mother  volume
@@ -469,7 +470,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solidLayer=0; logicLayer=0; physiLayer=0;
 
   solidLayer = new G4Box("Layer",			//its name
-                   LayerThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); //size
+                   CalorSizeXY/2.,CalorSizeXY/2.,LayerThickness/2.); //size
                        
   logicLayer = new G4LogicalVolume(solidLayer,	//its solid
                                    pAir,	        //its material
@@ -478,7 +479,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   physiLayer = new G4PVReplica("Layer",		        //its name
     		                logicLayer,	        //its logical volume
       		                logicCalor,	        //its mother
-                                kXAxis,		        //axis of replication
+                                kZAxis,		        //axis of replication
                                 NbOfHcalLayers,	        //number of replica
                                 LayerThickness);	//width of replica
 
@@ -508,14 +509,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solidAbsorber=0; logicAbsorber=0; physiAbsorber=0;  
   
   solidAbsorber = new G4Box("HcalAbs",   	                //its name
-                      AbsorberThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); 
+                      CalorSizeXY/2.,CalorSizeXY/2.,AbsorberThickness/2.); 
                           
   logicAbsorber = new G4LogicalVolume(solidAbsorber,                //its solid
       			              HcalAbsMaterial,             //its material
       			              HcalAbsMaterial->GetName()); //name
       			                  
   physiAbsorber = new G4PVPlacement(0,		                 //no rotation
-        	      G4ThreeVector(-AirGapThickness/2.,0.,0.),  //its position
+        	      G4ThreeVector(0.,0.,-AirGapThickness/2.),  //its position
                                      logicAbsorber,              //logical volume
                                      HcalAbsMaterial->GetName(), //its name
                                      logicLayer,                 //its mother
@@ -528,14 +529,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solidWrap=0; logicWrap=0; physiWrap=0;
       
   solidWrap = new G4Box("Wrapper",
-                         WrapThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                         CalorSizeXY/2.,CalorSizeXY/2.,WrapThickness/2.);
   
   logicWrap = new G4LogicalVolume(solidWrap,
                                   pAlum,
                                  "Wrapper");
                                    
   physiWrap = new G4PVPlacement(0,                     //no rotation
-                  G4ThreeVector(AbsorberThickness/2.,0.,0.), //its position
+                  G4ThreeVector(0.,0.,AbsorberThickness/2.), //its position
                                 logicWrap,             //its logical volume$
                                "Wrapper",              //its name
                                 logicLayer,            //its mother
@@ -548,7 +549,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solidGap=0; logicGap=0; physiGap=0;
                                   
   solidGap = new G4Box("Gap",
-                        GapThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                        CalorSizeXY/2.,CalorSizeXY/2.,GapThickness/2.);
      
   logicGap = new G4LogicalVolume(solidGap,
                                  pAir,
@@ -568,7 +569,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solidSens=0; logicSens=0; physiSens=0;
 
   solidSens = new G4Box("Scintil",
-                         HcalSensThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                         CalorSizeXY/2.,CalorSizeXY/2.,HcalSensThickness/2.);
 
   logicSens = new G4LogicalVolume(solidSens,
                                   HcalSensMaterial,
@@ -588,14 +589,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solWrapZero=0; logWrapZero=0; phyWrapZero=0;
       
   solWrapZero = new G4Box("Zwrapper",
-                           WrapThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                           CalorSizeXY/2.,CalorSizeXY/2.,ZeroWrapThick/2.);
   
   logWrapZero = new G4LogicalVolume(solWrapZero,
                                     pAlum,
                                    "Zwrapper");
                                    
   phyWrapZero = new G4PVPlacement(0,                       //no rotation
-                  G4ThreeVector(-ZeroWrapThick/2.,0.,0.),  //position
+                  G4ThreeVector(0.,0.,offsetEcal + offsetHcal - ZeroWrapThick/2.),  //position
                                  logWrapZero,              //logical volume
                                 "Zwrapper",                //name
                                  logicWorld,               //mother
@@ -608,7 +609,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solGapZero=0; logGapZero=0; phyGapZero=0;
                                   
   solGapZero = new G4Box("ZeroGap",
-                          ZeroGapThick/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                          CalorSizeXY/2.,CalorSizeXY/2.,ZeroGapThick/2.);
      
   logGapZero = new G4LogicalVolume(solGapZero,
                                  pAir,
@@ -628,7 +629,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solSensZero=0; logSensZero=0; phySensZero=0;
 
   solSensZero = new G4Box("ZeroScin",
-                           ZeroSensThick/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                           CalorSizeXY/2.,CalorSizeXY/2.,ZeroSensThick/2.);
 
   logSensZero = new G4LogicalVolume(solSensZero,
                                     pSci,
@@ -642,55 +643,49 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                   false,                  
                                   0);                      
 
-// Cables 23.40*cm (from ECAL) in front of HE (at -18.00*cm)
-//===========================================================
+// Cables 23.40*cm centered between ECAL and HCAL
+//===============================================
 
   solidCables=0; logicCables=0; physiCables=0;
       
   solidCables = new G4Box("Cables",
-                           CablesThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                           CalorSizeXY/2.,CalorSizeXY/2.,CablesThickness/2.);
   
   logicCables = new G4LogicalVolume(solidCables,
                                     pCab,
                                    "Cables");
-                                   
+  
+  //centered between ECAL G10 plate and zero layer
+  middleCables = offsetEcal + EcalCalorThickness + G10plateThickness + 
+				((offsetHcal - ZeroWrapThick) - (EcalCalorThickness + G10plateThickness))/2.;
+								   
   physiCables = new G4PVPlacement(0,                     
-                    G4ThreeVector(-18.00*cm, 0.0, 0.0), 
+                    G4ThreeVector(0.0, 0.0, middleCables), 
                                    logicCables,             
                                   "Cables",             
                                    logicWorld,            
                                    false,                 
                                    0);                   
 
-// G10 plate 2.5*mm behind of ECAL and in front of HE (at -26.70*cm)
-//===================================================================
+// G10 plate 2.5*mm behind of ECAL and in front of HE (directly behind ECAL)
+//==========================================================================
 
   solidG10plate=0; logicG10plate=0; physiG10plate=0;
 
   solidG10plate = new G4Box("G10plate",
-                      G10plateThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                      CalorSizeXY/2.,CalorSizeXY/2.,G10plateThickness/2.);
 
   logicG10plate = new G4LogicalVolume(solidG10plate,
                                     pG10,
                                    "G10plate");
                                      
   physiG10plate = new G4PVPlacement(0,
-                      G4ThreeVector(-32.00*cm, 0.0, 0.0),
+                      G4ThreeVector(0.0, 0.0,offsetEcal + EcalCalorThickness + G10plateThickness/2.),
                                      logicG10plate,  
                                     "G10plate",
                                      logicWorld,
                                      false,
                                      0);
-
-// G10 plate 2.5*mm (copy) in front of SE (at -101.425*cm)
-//========================================================
-  physiG10plate = new G4PVPlacement(0,
-                      G4ThreeVector(-101.42*cm, 0.0, 0.0),
-                                     logicG10plate,
-                                    "G10plate",
-                                     logicWorld,
-                                     false,
-                                     1);
 
 // Ecal calorimeter (total thickness must be <= 400.0 mm)
 //------------------------------------------------------- 
@@ -701,7 +696,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   
   if (EcalCalorThickness > 0.)  
     { solidEcal = new G4Box("Ecal",                                  
-                      EcalCalorThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                      CalorSizeXY/2.,CalorSizeXY/2.,EcalCalorThickness/2.);
                              
       logicEcal = new G4LogicalVolume(solidEcal,                 
                                       defaultMaterial,           
@@ -709,7 +704,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                        
       physiEcal = new G4PVPlacement(0,                
 //                                    G4ThreeVector(-70.8*cm, 0.0, 0.0),        
-                                    G4ThreeVector(middleEcal, 0.0, 0.0),        
+                                    G4ThreeVector(0.0, 0.0, middleEcal),        
                                     logicEcal,       
                                     "Ecal",          
                                     logicWorld,       
@@ -719,7 +714,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 // Ecal layer
 //------------
       solEcalLayer = new G4Box("EcLayer",                 
-                     EcalLayerThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); 
+                     CalorSizeXY/2.,CalorSizeXY/2.,EcalLayerThickness/2.); 
                        
       logEcalLayer = new G4LogicalVolume(solEcalLayer,      
                                          defaultMaterial,
@@ -728,7 +723,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
         phyEcalLayer = new G4PVReplica("EcLayer",           
                                         logEcalLayer,        
                                         logicEcal,       
-                                        kXAxis,            
+                                        kZAxis,            
                                         NbOfEcalLayers,        
                                         EcalLayerThickness);   
       else
@@ -747,14 +742,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   
   if (EcalAbsThickness > 0.) 
     { solEcalAbs = new G4Box("EcalAbs",            
-                              EcalAbsThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.); 
+                              CalorSizeXY/2.,CalorSizeXY/2.,EcalAbsThickness/2.); 
                           
       logEcalAbs = new G4LogicalVolume(solEcalAbs,    
                                        EcalAbsMaterial, 
                                        EcalAbsMaterial->GetName()); 
                                           
       phyEcalAbs = new G4PVPlacement(0,                 
-                       G4ThreeVector(-EcalSensThickness/2.,0.,0.), 
+                       G4ThreeVector(0.,0.,-EcalSensThickness/2.), 
                                       logEcalAbs,                 
                                       EcalAbsMaterial->GetName(), 
                                       logEcalLayer,       
@@ -767,14 +762,14 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
   solEcalSens=0; logEcalSens=0; phyEcalSens=0; 
   if (EcalSensThickness > 0.)
     { solEcalSens = new G4Box("EcalSens",
-                        EcalSensThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                        CalorSizeXY/2.,CalorSizeXY/2.,EcalSensThickness/2.);
                            
       logEcalSens = new G4LogicalVolume(solEcalSens,
                                         EcalSensMaterial,
                                         EcalSensMaterial->GetName());
                                      
       phyEcalSens = new G4PVPlacement(0,                     
-                        G4ThreeVector(EcalAbsThickness/2.,0.,0.),  
+                        G4ThreeVector(0.,0.,EcalAbsThickness/2.),  
                                       logEcalSens,                       
                                       EcalSensMaterial->GetName(), 
                                       logEcalLayer,             
@@ -782,67 +777,75 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                       0);                     
     }
 
-
-
-// Al support 4.5*mm in front of ECAL (at -85.00*cm)
+// Al support 4.5*mm in front of ECAL (at 3.2*cm in front of ECAL)
 //=============================================================
 
   solidSupport=0; logicSupport=0; physiSupport=0;
     
   solidSupport = new G4Box("Support",
-                            SuppThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                            CalorSizeXY/2.,CalorSizeXY/2.,SuppThickness/2.);
 
   logicSupport = new G4LogicalVolume(solidSupport,
                                      pAlum,
                                     "Support");
 
   physiSupport = new G4PVPlacement(0,
-                     G4ThreeVector(-85.00*cm, 0.0, 0.0),
+                     G4ThreeVector(0.0, 0.0, offsetEcal - 3.2*cm),
                                     logicSupport,
                                    "Support",
                                     logicWorld,
                                     false,
                                     0);
 
-// Aluminium part of SE 27.2*mm in front of Ecal (at -103.0*cm)
+// Aluminium part of SE 27.2*mm in front of Ecal (at -16.5*cm from ECAL front)
 //=============================================================
 
   solidAluSe=0; logicAluSe=0; physiAluSe=0;
 
   solidAluSe = new G4Box("AlumSe",
-                          AluSeThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                          CalorSizeXY/2.,CalorSizeXY/2.,AluSeThickness/2.);
                           
   logicAluSe = new G4LogicalVolume(solidAluSe,
                                    pAlum,
                                   "AlumSe");
                                   
   physiAluSe = new G4PVPlacement(0,
-                   G4ThreeVector(-103.00*cm, 0.0, 0.0),
+                   G4ThreeVector(0.0, 0.0, offsetEcal - 16.5*cm),
                                   logicAluSe,
                                  "AlumSe",   
                                   logicWorld,
                                   false,
                                   0);   
 
-// Lead part of SE 1.3*cm in front of ECAL (at -100.55*cm)
+// Lead part of SE 1.3*cm in front of ECAL (at -18.75*cm from ECAL front)
 //========================================================
 
   solidLeadSe=0; logicLeadSe=0; physiLeadSe=0;
                                 
   solidLeadSe = new G4Box("LeadSe",
-                           LeadSeThickness/2.,CalorSizeYZ/2.,CalorSizeYZ/2.);
+                           CalorSizeXY/2.,CalorSizeXY/2.,LeadSeThickness/2.);
                                 
   logicLeadSe = new G4LogicalVolume(solidLeadSe,
                                     pLead,
                                    "LeadSe");
 
   physiLeadSe = new G4PVPlacement(0,
-                    G4ThreeVector(-100.55*cm, 0.0, 0.0),
+                    G4ThreeVector(0.0, 0.0, offsetEcal - 18.75*cm),
                                    logicLeadSe,
                                   "LeadSe",
                                    logicWorld,
                                    false,
                                    0);
+
+// G10 plate 2.5*mm (copy) in front of SE (at -19.625*cm from ECAL front)
+//========================================================
+  physiG10plate = new G4PVPlacement(0,
+                      G4ThreeVector(0.0, 0.0, offsetEcal - 19.625*cm),
+                                     logicG10plate,
+                                    "G10plate",
+                                     logicWorld,
+                                     false,
+                                     1);								   
 
   PrintCalorParameters();     
 
@@ -1156,17 +1159,32 @@ void DetectorConstruction::SetNbOfEcalLayers(G4int val)
        exit(1);
     }
 
-    if( EcalCellSize*NbOfEcalCells > CalorSizeYZ*mm ) {
+    if( EcalCellSize*NbOfEcalCells > CalorSizeXY*mm ) {
        G4cout << "\n ===> Stop from DetectorConstruction::SetEcalCells(): "
               << "\n EcalCellSize*NbOfEcalCells = " << EcalCellSize*NbOfEcalCells
               << " mm, greater "
-              << " CalorSizeYZ = " << CalorSizeYZ*mm
+              << " CalorSizeXY = " << CalorSizeXY*mm
               << "\n Check values in setEcalCells."
               << G4endl;
        exit(1);
     }
   }
 
+// change dead material thickness
+//-------------------------------
+void DetectorConstruction::SetDeadThickness(G4double val)
+{
+  CablesThickness = val;
+  if (CablesThickness > 400.0)
+    { G4cout << "\n ===> Stop from DetectorConstruction::SetDeadThickness(): " 
+             << "\n CablesThickness = " << CablesThickness  
+             << " mm, greater than 400.0 mm "
+             << "\n Check value of CablesThickness. "  
+             << G4endl;
+      exit(1);
+    }
+}  
+  
 // Set Birks constant for Hcal sensitive material
 //------------------------------------------------
   void DetectorConstruction::SetHcalBirksConstant(G4ThreeVector Value)
@@ -1210,7 +1228,7 @@ void DetectorConstruction::SetMagField(G4double fieldValue)
   if(magField) delete magField;         //delete the existing magn field
 
   if(fieldValue!=0.)                    // create a new one if non nul
-  { magField = new G4UniformMagField(G4ThreeVector(fieldValue, 0., 0.));
+  { magField = new G4UniformMagField(G4ThreeVector(0., 0., fieldValue));
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
   } else {
@@ -1220,7 +1238,7 @@ void DetectorConstruction::SetMagField(G4double fieldValue)
 
    G4cout << "\n---------------------------------------------------------------"
           << "\n===> You chose uniform magnetic field Value = "
-          << fieldValue << " [kG] along X-axis "  
+          << fieldValue << " [kG] along Z-axis "  
           << "\n---------------------------------------------------------------\n";
 }
 
