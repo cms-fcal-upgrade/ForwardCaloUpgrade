@@ -16,7 +16,7 @@
 //
 // Original Author:  Maxime Gouzevitch,40 4-B16,+41227671558,
 //         Created:  Wed Oct 19 15:43:22 CEST 2011
-// $Id: CaloAnalyzer.h,v 1.2 2011/10/25 20:36:15 mgouzevi Exp $
+// $Id$
 //
 //
 
@@ -30,24 +30,18 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/Framework/interface/ESHandle.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-
-//Ecal Rec hits 
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
 #include "TString.h"
 
 //
 // class declaration
 //
+
 class TH1F;
 class TH2F;
-
-
-class CaloGeometry;
 
 class CaloAnalyzer : public edm::EDAnalyzer {
    public:
@@ -67,18 +61,10 @@ class CaloAnalyzer : public edm::EDAnalyzer {
       virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
 
-      // --------
-
-      virtual double fillEB(edm::Handle<EcalRecHitCollection> EBRecHits);
-      virtual double fillEE(edm::Handle<EcalRecHitCollection> EERecHits);
-
       // ----------member data ---------------------------
 
       std::map<TString, TH1F*> hMap;
       std::map<TString, TH2F*> hMap2D;
-
-      edm::ESHandle<CaloGeometry> geometry;
-
       TString outfilename;
 };
 
