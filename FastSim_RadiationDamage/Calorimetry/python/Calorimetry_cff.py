@@ -56,8 +56,8 @@ FamosCalorimetryBlock = cms.PSet(
             HCAL_PiOverE = cms.double(0.2),
             # HCAL_PiOverE = cms.double(0.4)
 
-	    # ECAL Aging parameters
-	    ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
+	        # ECAL Aging parameters
+	        ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
 
             BarrelCalorimeterProperties = cms.PSet(
 

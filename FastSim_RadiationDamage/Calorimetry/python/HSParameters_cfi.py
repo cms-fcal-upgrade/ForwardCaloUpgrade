@@ -11,7 +11,8 @@ HSParameterBlock = cms.PSet(
         transRparam = cms.double(1.0),
         nDepthSteps = cms.int32(10),
         maxTRfactor = cms.double(4.0),
-        criticalHDEnergy = cms.double(3.0)
+        criticalHDEnergy = cms.double(3.0),
+		debug = cms.untracked.int32(0)
     )
 )
 

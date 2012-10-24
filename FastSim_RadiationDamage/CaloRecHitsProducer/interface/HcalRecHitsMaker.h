@@ -49,6 +49,8 @@ class HcalRecHitsMaker
   void cleanSubDet(std::vector<float>& hits,std::vector<int>& cells);
   // conversion for digitization
   int fCtoAdc(double fc) const;
+  //calculate dark correction factors
+  void darkCorrInit(edm::ParameterSet const & p);
 
  private:
   unsigned det_;
@@ -66,12 +68,16 @@ class HcalRecHitsMaker
   bool noiseFromDb_;
   double refactor_;
   double refactor_mean_;
+  double lumiDarkening;
+  bool isDamaged;
   std::string hcalfileinpath_;
 
   std::vector<float> hcalRecHits_;
 
   std::vector<int> firedCells_;
 
+  std::vector<double> darkCorr;
+  
   static std::vector<HcalDetId> theDetIds_;
   static std::vector<float> miscalib_;
 

@@ -27,11 +27,11 @@ class HSParameters
   inline double getHDmaxTRfactor     ()  const {return maxTRfactor_;}
   inline double getHDbalanceEH       ()  const {return balanceEH_;}
   inline double getHDhcalDepthFactor ()  const {return hcalDepthFactor_;}
-
+  inline int    getHDdebug           ()  const {return debug_;}
 
  private:
   //FamosHDshower-related group of parameters
-  int    lossesOpt_,  nDepthSteps_,    nTRsteps_;
+  int    lossesOpt_,  nDepthSteps_,    nTRsteps_, debug_;
   double transParam_, eSpotSize_, depthStep_, criticalEnergy_, maxTRfactor_;
   double balanceEH_, hcalDepthFactor_;
   

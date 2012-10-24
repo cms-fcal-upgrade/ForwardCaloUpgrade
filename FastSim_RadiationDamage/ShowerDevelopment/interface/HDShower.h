@@ -3,7 +3,6 @@
 
 //FastSimulation Headers
 #include "FastSimulation/ShowerDevelopment/interface/HDShowerParametrization.h"
-
 #include "DataFormats/Math/interface/Vector3D.h"
 
 #include <vector>
@@ -36,9 +35,9 @@ class HDShower
 	   HDShowerParametrization* myParam,
 	   EcalHitMaker* myGrid, 
 	   HcalHitMaker* myHcalHitMaker,
-	   int onECAL, 
+	   int onECAL,
 	   double epart,
-           DQMStore * const dbeIn);
+       DQMStore * const dbeIn);
 
   int getmip() {return mip;}
 
@@ -48,7 +47,7 @@ class HDShower
   bool compute();
 
  private:
-
+ 
   // The longitudinal development ersatzt.
   double gam(double x, double a) const { return pow(x,a-1.)*exp(-x); }
 
@@ -64,6 +63,9 @@ class HDShower
 
   int indexFinder(double x, const std::vector<double> & Fhist);  
 
+  // debugging flag ( 0, 1, 2, 3)
+  int debug;  
+  
   // The parametrization
   HDShowerParametrization* theParam;
 
@@ -130,7 +132,7 @@ class HDShower
   
   //DQM for distribution histos
   DQMStore * dbe;
-
+  
   //calorimeter depths
   double depthECAL, depthGAP, depthGAPx0, depthHCAL, depthToHCAL;
 };

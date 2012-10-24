@@ -10,6 +10,7 @@
 
 #include "FastSimulation/CaloHitMakers/interface/EcalHitMaker.h"
 #include "FastSimulation/CaloHitMakers/interface/HcalHitMaker.h"
+#include "DataFormats/HcalDetId/interface/HcalDetId.h"
 
 // CMSSW headers
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -25,8 +26,8 @@
 
 // number attempts for transverse distribution if exit on a spec. condition
 #define infinity 10000
-// debugging flag ( 0, 1, 2, 3)
-#define debug 0
+
+typedef math::XYZVector XYZPoint;
 
 using namespace edm;
 
@@ -59,7 +60,8 @@ HDShower::HDShower(const RandomEngine* engine,
   maxTRfactor     = myParam->hsParameters()->getHDmaxTRfactor();
   balanceEH       = myParam->hsParameters()->getHDbalanceEH();
   hcalDepthFactor = myParam->hsParameters()->getHDhcalDepthFactor();
-
+  debug           = myParam->hsParameters()->getHDdebug();
+  
   // Special tr.size fluctuations 
   transParam *= (1. + random->flatShoot()); 
 
@@ -481,8 +483,8 @@ bool HDShower::compute() {
     }
     
     // Longitudinal steps
-    for (int i = 0; i < numLongit ; i++) {
-      
+    for (int i = 0; i < numLongit ; i++) {	
+	
       double currentDepthL0 = lamtotal[i] - 0.5 * lamstep[i];
       // vary the longitudinal profile if needed
       if(detector[i] != 1) currentDepthL0 *= hcalDepthFactor;                     
@@ -510,19 +512,6 @@ bool HDShower::compute() {
 
 	    theHcalHitMaker->setSpotEnergy(espot);
 		
-	    //fill hcal longitudinal distribution histogram
-        if (dbe) {
-	      dbe->cd();             
-	      if (!dbe->get("HDShower/LongitudinalShapeHCAL")) {}//std::cout << "NOT FOUND IN Shower.cc" << std::endl;}
-	      else {
-	        //bins of 0.1 L0
-	        double dt = 0.1;
-	        // eStep is a real energy - scale by particle energy e
-			// subtract distance to hcal from current depth
-	        dbe->get("HDShower/LongitudinalShapeHCAL")->Fill(currentDepthL0 - depthToHCAL, 1/e*eStep[i]/dt);
-	      }
-        }
-		
       }
       else {
 	    ecal = 1;
@@ -544,18 +533,6 @@ bool HDShower::compute() {
 	    }
 
         theGrid->setSpotEnergy(espot);
-		
-	    //fill ecal longitudinal distribution histogram
-        if (dbe) {
-	      dbe->cd();             
-	      if (!dbe->get("HDShower/LongitudinalShapeECAL")) {}//std::cout << "NOT FOUND IN Shower.cc" << std::endl;}
-	      else {
-	        //bins of 0.1 L0
-	        double dt = 0.1;
-	        // eStep is a real energy - scale by particle energy e
-	        dbe->get("HDShower/LongitudinalShapeECAL")->Fill(currentDepthL0, 1/e*eStep[i]/dt);
-	      }
-        }
       }  
       
       // Transverse distribition
@@ -584,40 +561,63 @@ bool HDShower::compute() {
 	  
 	      if(debug == 2) LogInfo("FastCalorimetry") << " FamosHDShower::compute - " << " theGrid->addHit result = " << result << std::endl;
 		  
-		  //fill ecal transverse distribution histogram
+		  //fill ecal distribution histograms
           if (dbe) {
-            dbe->cd();             
+            dbe->cd();
+			
+			//transverse
 	        if (!dbe->get("HDShower/TransverseShapeECAL")) {}//std::cout << "NOT FOUND IN Shower.cc" << std::endl;}
 	        else {
 		      double drho = 0.1;
 		      // espot is a real energy - scale by particle energy
 		      dbe->get("HDShower/TransverseShapeECAL")->Fill(radius,1/e*espot/drho);
 	        }
+			
+			//longitudinal
+			if (!dbe->get("HDShower/LongitudinalShapeECAL")) {}//std::cout << "NOT FOUND IN Shower.cc" << std::endl;}
+	        else {
+	          //bins of 0.1 L0
+	          double dt = 0.1;
+	          // espot is a real energy - scale by particle energy e
+	          dbe->get("HDShower/LongitudinalShapeECAL")->Fill(currentDepthL0, 1/e*espot/dt);
+	        }
 	      }
 	    }
 	    else {
+		  XYZPoint point = theHcalHitMaker->getPoint(radius,phi,0);
+		  double r = std::sqrt(point.X()*point.X() + point.Y()*point.Y());
+		  
 	      result = theHcalHitMaker->addHit(radius,phi,0); 
  
 	      if(debug == 2) LogInfo("FastCalorimetry") << " FamosHDShower::compute - " << " theHcalHitMaker->addHit result = " << result << std::endl;
 		  
-		  //fill hcal transverse distribution histogram
+		  //fill hcal distribution histograms
           if (dbe) {
-            dbe->cd();             
+            dbe->cd();
+			
+			//transverse
 	        if (!dbe->get("HDShower/TransverseShapeHCAL")) {}//std::cout << "NOT FOUND IN Shower.cc" << std::endl;}
 	        else {
 		      double drho = 0.1;
-		      // espot is a real energy - scale by particle energy
-		      dbe->get("HDShower/TransverseShapeHCAL")->Fill(radius,1/e*espot/drho);
+		      // (weighted) espot is a real energy - scale by particle energy
+		      dbe->get("HDShower/TransverseShapeHCAL")->Fill(r/lambdaHD, 1/e*espot/drho);
+	        }
+			
+			//longitudinal
+	        if (!dbe->get("HDShower/LongitudinalShapeHCAL")) {}//std::cout << "NOT FOUND IN Shower.cc" << std::endl;}
+	        else {
+	          //bins of 0.1 L0
+	          double dt = 0.1;
+	          // (weighted) espot is a real energy - scale by particle energy e
+			  // subtract distance to hcal from current depth
+	          dbe->get("HDShower/LongitudinalShapeHCAL")->Fill(currentDepthL0 - depthToHCAL, 1/e*espot/dt);
 	        }
 	      }
-	    }    
+	    }
 	    
 		if(result) nok ++; 
 
-
-
       } // end of tranverse simulation
-	  
 	  
       if(count == infinity) { 
 	    if(debug) LogInfo("FastCalorimetry") << " FamosHDShower::compute " << " maximum number of" 

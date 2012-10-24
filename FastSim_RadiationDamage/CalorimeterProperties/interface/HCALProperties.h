@@ -65,6 +65,10 @@ class HCALProperties : public CalorimeterProperties
   /// Spot fraction wrt ECAL 
   inline double spotFraction() const {return spotFrac;}
 
+  //radiation damage darkening luminosity
+  inline double lumiDarkening() const {return lumi;}
+  inline bool isDamaged() const {return isDam;}
+  
   double getHcalDepth(double) const;  
 
   int eta2ieta(double eta) const; 
@@ -72,6 +76,8 @@ class HCALProperties : public CalorimeterProperties
  private:
   double hOPi;
   double spotFrac;
+  double lumi;
+  bool isDam;
 
 
   double etatow[42];      // HCAL towers eta edges

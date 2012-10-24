@@ -65,11 +65,16 @@ HcalRecHitsMaker::HcalRecHitsMaker(edm::ParameterSet const & p, int det,
   hcalfileinpath_= RecHitsParameters.getParameter<std::string> ("fileNameHcal");  
   inputCol_=RecHitsParameters.getParameter<edm::InputTag>("MixedSimHits");
   nhbcells_=nhecells_=nhocells_=nhfcells_=0;
-
+  isDamaged = false;
+  lumiDarkening = 0.0;
+  
   if(det_==4)
     {
       hbhi_.reserve(2600);
       hehi_.reserve(2600);
+	  isDamaged = (RecHitsParameters.getParameter<edm::ParameterSet>("ECALRadiationDamage")).getParameter<bool>("isDamaged");
+	  lumiDarkening = (RecHitsParameters.getParameter<edm::ParameterSet>("ECALRadiationDamage")).getParameter<double>("lumiTotal");
+	  if(isDamaged && lumiDarkening > 0) darkCorrInit(p);
     }
   else if (det_==5)
     hohi_.reserve(2200);
@@ -107,7 +112,7 @@ HcalRecHitsMaker::HcalRecHitsMaker(edm::ParameterSet const & p, int det,
 	  }
 	  else
 	    {
-	      hcalHotFraction_.push_back(0.5-0.5*myErf(threshold_[inoise]/noise_[inoise]/sqrt(2.)));
+	      hcalHotFraction_[inoise] = 0.5-0.5*myErf(threshold_[inoise]/noise_[inoise]/sqrt(2.));
 	      myGaussianTailGenerators_[inoise]=new GaussianTail(random_,noise_[inoise],threshold_[inoise]);
 	    }
 	}   
@@ -402,11 +407,16 @@ void HcalRecHitsMaker::loadHcalRecHits(edm::Event &iEvent,HBHERecHitCollection& 
       const HcalDetId& detid  = theDetIds_[cellhashedindex];
       unsigned subdet=(detid.subdet()==HcalBarrel) ? 0: 1;	
 
-      // Check if it is above the threshold
-      if(hcalRecHits_[cellhashedindex]<threshold_[subdet]) continue; 
-      float energy=hcalRecHits_[cellhashedindex];
+	  // apply dark correction for HE (1 for HB) if lumiDarkening is set
+	  // apply before threshold is checked
+	  float energy=hcalRecHits_[cellhashedindex];
+	  if(isDamaged && lumiDarkening > 0) { energy *= darkCorr[detid.ietaAbs()]; }//std::cout << "ieta = " << detid.ietaAbs() << ", corr = " << darkCorr[detid.ietaAbs()] << std::endl; }
+      
+	  // Check if it is above the threshold
+      if(energy<threshold_[subdet]) continue; 
       // apply RespCorr only to the RecHit
       energy *= myRespCorr->getValues(theDetIds_[cellhashedindex])->getValue();
+
       // poor man saturation
       if(energy>sat_[cellhashedindex]) 
 	{
@@ -581,7 +591,7 @@ void HcalRecHitsMaker::noisify()
 	  total+=noisifySubdet(hcalRecHits_,firedCells_,hbhi_,nhbcells_,hcalHotFraction_[0],myGaussianTailGenerators_[0],noise_[0],threshold_[0]);
 	}
 	// do the HE
-	if(noise_[1] != 0.) {	 
+	if(noise_[1] != 0.) {
 	  total+=noisifySubdet(hcalRecHits_,firedCells_,hehi_,nhecells_,hcalHotFraction_[1],myGaussianTailGenerators_[1],noise_[1],threshold_[1]);
 	}
       }
@@ -647,7 +657,9 @@ unsigned HcalRecHitsMaker::noisifySubdet(std::vector<float>& theMap, std::vector
 	  if(hcalRecHits_[cellhashedindex]==0.) // new cell
 	    {
 	      
-	      sigma=noisesigma_[cellhashedindex];
+		  //only use noisesigma if it has been filled from the DB
+		  //otherwise, leave sigma alone (default is user input value)
+	      if(noiseFromDb_) sigma=noisesigma_[cellhashedindex];
 
 	      double noise =random_->gaussShoot(0.,sigma);
 	      if(noise>threshold)
@@ -733,4 +745,37 @@ double HcalRecHitsMaker::noiseInfCfromDB(const HcalDbService * conditions,const 
   //  const HcalGain*  gain = conditions->getGain(detId); 
   //  double noise_rms_GeV = noise_rms_fC * gain->getValue(0); // Noise RMS (GeV) for detId channel
   return noise_rms_fC;
+}
+
+void HcalRecHitsMaker::darkCorrInit(edm::ParameterSet const & p){
+  edm::ParameterSet pset=p.getParameter<edm::ParameterSet>("DarkCorrection");
+  
+  int minHEeta = pset.getParameter<int>("minHEeta");
+  int maxHEeta = pset.getParameter<int>("maxHEeta");
+  double lumiStep = pset.getParameter<double>("lumiStep");
+  int maxHDlumi = abs((int)(pset.getParameter<double>("maxHDlumi") / lumiStep)) + 1; //add 1 because this is the max index
+  std::vector<double> darkCorrFactors = pset.getParameter<std::vector<double> >("darkCorrFactors");
+  
+  int ilumi = abs((int)lumiDarkening/lumiStep);
+  if(ilumi >= maxHDlumi-1) ilumi = maxHDlumi - 2; // more than maximum - extrapolation with last interv.
+  else if (ilumi < 0) ilumi = 0; // less than minimal - back extrapolation with the 1st interval
+  
+  darkCorr = std::vector<double>(maxHEeta,0);
+  
+  for(int i = 0; i < maxHEeta; i++){
+    if(i<minHEeta) darkCorr[i] = 1.0; //no correction in HB
+    else { //interpolate correction factors in HE
+	  double x1, x2;
+      x1 = ilumi*lumiStep;
+      x2 = (ilumi+1)*lumiStep;
+      double y1, y2;
+      y1 = darkCorrFactors[(i-minHEeta)*maxHDlumi + ilumi];
+      y2 = darkCorrFactors[(i-minHEeta)*maxHDlumi + ilumi+1];
+      
+      darkCorr[i] = (y1*(x2-lumiDarkening)+y2*(lumiDarkening-x1))/(x2-x1);
+	}
+	//std::cout << darkCorr[i] << ", ";
+  }
+  //std::cout << std::endl;
+  
 }

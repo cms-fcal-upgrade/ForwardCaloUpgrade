@@ -140,7 +140,7 @@ CalorimetryManager::CalorimetryManager(FSimEvent * aSimEvent,
 
     dbe->book1D("TransverseShapeECAL","ECAL Transverse Shape; #rho / #lambda_{int}; 1/E dE/d#rho",70, 0., 7.);
     dbe->book1D("LongitudinalShapeECAL","ECAL Longitudinal Shape; z / #lambda_{int}; 1/E dE/dz",20, 0., 2.);
-    dbe->book1D("TransverseShapeHCAL","HCAL Transverse Shape; #rho / #lambda_{int}; 1/E dE/d#rho",70, 0., 7.);
+    dbe->book1D("TransverseShapeHCAL","HCAL Transverse Shape; #rho / #lambda_{int}; 1/E dE/d#rho",200, 0., 20.);
     dbe->book1D("LongitudinalShapeHCAL","HCAL Longitudinal Shape; z / #lambda_{int}; 1/E dE/dz",120, 0., 12.);       
     dbe->book1D("ParticlesEnergy","Log Particles Energy; log10(E / GeV); #Particles", 30, 0, 3);
 
@@ -1027,21 +1027,21 @@ void CalorimetryManager::HDShowerSimulation(const FSimTrack& myTrack)
 	  }
 	}
       }
-      
+	  
       // Save HCAL hits
       endmapitr=myHcalHitMaker.getHits().end();
       for(mapitr=myHcalHitMaker.getHits().begin(); mapitr!=endmapitr; ++mapitr) {
-	double energy = mapitr->second;
-	EpH += energy;
-	energy *= correction;               // RESCALING 
-	energy *= hcorr;
-	EsH += energy;
-
-	updateMap(HcalDetId(mapitr->first).hashed_index(),energy,myTrack.id(),HMapping_,firedCellsHCAL_);
-	if(debug_)
-	  LogInfo("FastCalorimetry") << " HCAL cell "  
-	       << mapitr->first << " added    E = " 
-	       << mapitr->second << std::endl;  
+	    double energy = mapitr->second;
+	    EpH += energy;
+	    energy *= correction;               // RESCALING 
+	    energy *= hcorr;
+	    EsH += energy;
+        
+	    updateMap(HcalDetId(mapitr->first).hashed_index(),energy,myTrack.id(),HMapping_,firedCellsHCAL_);
+	    if(debug_)
+	      LogInfo("FastCalorimetry") << " HCAL cell "  
+	           << mapitr->first << " added    E = " 
+	           << mapitr->second << std::endl;  
       }
 	  
 	  if(useDQM_){

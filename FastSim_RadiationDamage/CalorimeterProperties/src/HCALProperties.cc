@@ -10,6 +10,8 @@ HCALProperties::HCALProperties(const edm::ParameterSet& fastDet) : CalorimeterPr
 {
   hOPi = fastDet.getParameter<double>("HCAL_PiOverE");
   spotFrac= fastDet.getParameter<double>("HCAL_Sampling");
+  lumi = (fastDet.getParameter<edm::ParameterSet>("ECALRadiationDamage")).getParameter<double>("lumiTotal");
+  isDam = (fastDet.getParameter<edm::ParameterSet>("ECALRadiationDamage")).getParameter<bool>("isDamaged");
 
   // splitting of  28-th tower is taken into account (2.65-2.853-3.0)
   double etatow_ [42] = {

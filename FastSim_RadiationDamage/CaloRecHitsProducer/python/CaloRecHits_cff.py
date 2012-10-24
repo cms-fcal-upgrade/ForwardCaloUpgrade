@@ -12,6 +12,9 @@ from SimCalorimetry.HcalSimProducers.hcalSimParameters_cfi import *
 # This includes is needed for the ECAL digis
 from SimCalorimetry.EcalTrigPrimProducers.ecalTriggerPrimitiveDigis_cff import *
 
+# needed for HEDarkening response corrections
+from FastSimulation.CaloRecHitsProducer.DarkCorrection_cfi import *
+
 # These includes are needed for ECAL aging
 from FastSimulation.CalorimeterProperties.RadiationDamage_cff import ECALRadiationDamageBlock
 from FastSimulation.Calorimetry.Calorimetry_cff import FamosCalorimetryBlock
@@ -31,16 +34,16 @@ ecalRecHit = cms.EDProducer("CaloRecHitsProducer",
                                                        NoiseADC = cms.double(1.054),
                                                        HighNoiseParameters = cms.vdouble(2.56,0.51,0.0086),
                                                        Threshold = cms.double(0.1),
-						       SRThreshold = cms.double(1.),
-#						       SREtaSize = cms.untracked.int32(1),
-#						       SRPhiSize = cms.untracked.int32(1),
+						                               SRThreshold = cms.double(1.),
+#						                               SREtaSize = cms.untracked.int32(1),
+#						                               SRPhiSize = cms.untracked.int32(1),
                                                        Refactor = cms.double(1.),
                                                        Refactor_mean = cms.double(1.),
                                                        MixedSimHits = cms.InputTag("mix","famosSimHitsEcalHitsEB"),
                                                        ContFact = cms.PSet(ecal_notCont_sim),
-						       ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
-						       photoStatistics = BarrelCaloProp.photoStatistics,
-						       lightColl = BarrelCaloProp.lightColl),
+													   ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
+                                                       photoStatistics = BarrelCaloProp.photoStatistics,
+                                                       lightColl = BarrelCaloProp.lightColl),
                                                        
                                                        ECALEndcap = cms.PSet(
                                                        Noise = cms.double(-1.),
@@ -52,9 +55,9 @@ ecalRecHit = cms.EDProducer("CaloRecHitsProducer",
                                                        Refactor_mean = cms.double(1.),
                                                        MixedSimHits = cms.InputTag("mix","famosSimHitsEcalHitsEE"),
                                                        ContFact = cms.PSet(ecal_notCont_sim),
-						       ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
-						       photoStatistics = EndcapCaloProp.photoStatistics,
-						       lightColl = EndcapCaloProp.lightColl),
+													   ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
+                                                       photoStatistics = EndcapCaloProp.photoStatistics,
+                                                       lightColl = EndcapCaloProp.lightColl),
                                                        ))
 
 
@@ -78,7 +81,9 @@ hbhereco = cms.EDProducer("CaloRecHitsProducer",
                           doMiscalib = cms.bool(False),
                           
                           RecHitsFactory = cms.PSet(
+						                   DarkCorrectionBlock,
                                            HCAL = cms.PSet(
+										   ECALRadiationDamage = cms.PSet(ECALRadiationDamageBlock),
                                            Noise = cms.vdouble(-1.,-1.),
                                            Threshold = cms.vdouble(-0.5,-0.5),
                                            MixedSimHits = cms.InputTag("mix","famosSimHitsHcalHits"),
