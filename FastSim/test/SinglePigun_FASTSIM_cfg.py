@@ -49,7 +49,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.17 $'),
+    version = cms.untracked.string('$Revision: 1.18 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -130,9 +130,9 @@ process.hbhereco.doMiscalib = True
 process.horeco.doMiscalib = True
 process.hfreco.doMiscalib = True
 
-process.hbhereco.RecHitsFactory.Noise = cms.vdouble(0, 0)
-process.horeco.RecHitsFactory.Noise = cms.vdouble(0)
-process.hfreco.RecHitsFactory.Noise = cms.vdouble(0)
+process.hbhereco.RecHitsFactory.HCAL.Noise = cms.vdouble(0, 0)
+process.horeco.RecHitsFactory.HCAL.Noise = cms.vdouble(0)
+process.hfreco.RecHitsFactory.HCAL.Noise = cms.vdouble(0)
 
 # -----------------------------------------------------------------------------
 # Switch off interactions in the CMS tracker
