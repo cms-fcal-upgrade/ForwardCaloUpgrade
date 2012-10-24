@@ -26,13 +26,6 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* aRun)
 { 
-
-// Set Job Run Number from input cards
-
-  G4int JobRunNumber = myana->GetJobRunNumber();
-  ((G4Run *)(aRun))->SetRunID(JobRunNumber);
-
-  G4cout << "### Run " << JobRunNumber << " start." << G4endl;
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
 //inform the runManager to save random number seed

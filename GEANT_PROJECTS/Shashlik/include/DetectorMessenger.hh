@@ -32,18 +32,13 @@ class DetectorMessenger: public G4UImessenger
     G4UIdirectory*             ecalDir;
     G4UIdirectory*             detDir;
     G4UIcmdWithAnInteger*      NbLayersCmd;
-    G4UIcmdWithAString*        HcalAbsMaterCmd;
-    G4UIcmdWithAString*        HcalSensMaterCmd;
-    G4UIcmdWithAString*        EcalAbsMaterCmd;
-    G4UIcmdWithAString*        EcalSensMaterCmd;
-    G4UIcmdWithADoubleAndUnit* EcalAbsThickCmd;
-    G4UIcmdWithADoubleAndUnit* EcalSensThickCmd;
+    G4UIcmdWithAString*        HcaMaterCmd;
+    G4UIcmdWithAString*        AbsMaterCmd;
+    G4UIcmdWithAString*        SensMaterCmd;
+    G4UIcmdWithADoubleAndUnit* AbsThickCmd;
+    G4UIcmdWithADoubleAndUnit* SensThickCmd;
     G4UIcmdWithADoubleAndUnit* MagFieldCmd;
     G4UIcmdWithoutParameter*   UpdateCmd;
-    G4UIcmdWith3Vector*        NbCellEcalCmd;
-    G4UIcmdWith3Vector*        BirksConsHcalCmd;
-    G4UIcmdWith3Vector*        BirksConsEcalCmd;
-    G4UIcmdWith3Vector*        BirkL3ConsEcalCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

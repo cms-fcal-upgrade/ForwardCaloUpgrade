@@ -29,7 +29,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   public:
 
      void SetHcalAbsMaterial (G4String);     
-     void SetHcalSensMaterial(G4String);
 
      void SetEcalAbsMaterial (G4String);     
      void SetEcalAbsThickness(G4double);     
@@ -37,16 +36,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      void SetEcalSensMaterial (G4String);     
      void SetEcalSensThickness(G4double);
      
-     void SetDeadThickness(G4double);
-	 
      void SetNbOfEcalLayers (G4int);   
      void ComputeEcalParameters();   
-
-     void SetEcalCells(G4ThreeVector);
-
-     void SetHcalBirksConstant(G4ThreeVector);
-     void SetEcalBirksConstant(G4ThreeVector);
-     void SetEcalBirkL3Constant(G4ThreeVector);
 
      void SetMagField(G4double);
 
@@ -66,17 +57,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
      G4int       GetNbOfEcalLayers()    {return NbOfEcalLayers;}; 
      G4double    GetEcalOffset()        {return offsetEcal;};
-     G4double    GetHcalOffset()        {return offsetHcal;};
-     G4int       GetNbOfEcalCells()     {return NbOfEcalCells;};
-     G4double    GetEcalCellSize()      {return EcalCellSize;};
-     G4double*   GetHcalBirksConstant() {return HcalBirksConst;};
-     G4double*   GetEcalBirksConstant() {return EcalBirksConst;};
-     G4double*   GetEcalBirkL3Constant(){return EcalBirkL3Const;};
 
   private:
 
      G4Material*        HcalAbsMaterial;
-     G4Material*        HcalSensMaterial;
 
      G4Material*        EcalAbsMaterial;
      G4double           EcalAbsThickness;
@@ -86,23 +70,16 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double           EcalLayerThickness;
      G4double           EcalCalorThickness;
      G4double           offsetEcal;
-     G4double           offsetHcal;
      G4double           middleEcal;
-     G4double		middleCables;
-     G4int              NbOfEcalCells;
-     G4double           EcalCellSize;
-     G4double           HcalBirksConst[3];
-     G4double           EcalBirksConst[3];
-     G4double           EcalBirkL3Const[3];
       
      G4double           LayerThickness;
      G4double           AbsorberThickness;
      G4double           WrapThickness;
      G4double           AirGapThickness;
      G4double           GapThickness;
-     G4double           HcalSensThickness;
+     G4double           SensThickness;
      G4int              NbOfHcalLayers;
-     G4double           CalorSizeXY;
+     G4double           CalorSizeYZ;
      G4double           CalorThickness;
      
      G4Material*        defaultMaterial;
@@ -118,7 +95,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Material*        pPwo_d;
      G4Material*        pLead_d;
      G4Material*        pBra_d;
-     G4Material*        pSci_d;
 
      G4Material*        pSens1;
      G4Material*        pSens2;

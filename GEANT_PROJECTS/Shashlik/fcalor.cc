@@ -11,7 +11,6 @@
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "Randomize.hh"
-#include "time.h"
 
 // user application
 // -----------------
@@ -53,11 +52,6 @@ int main(int argc,char** argv)
 // Choose the Random engine
 
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
-
-// Set random seed with system time
-
-  G4long seed = time(NULL);
-  CLHEP::HepRandom::setTheSeed(seed);
   
 // Construct the default run manager, which manages start
 // and stop simulation

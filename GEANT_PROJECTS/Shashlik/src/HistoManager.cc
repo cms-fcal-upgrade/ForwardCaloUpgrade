@@ -4,8 +4,6 @@
 #include "HistoManager.hh"
 #include "HistoMessenger.hh"
 #include "RunAction.hh"
-#include "Randomize.hh"
-#include "G4Poisson.hh"
 
 // ROOT headers
 #include "TROOT.h"
@@ -21,26 +19,17 @@
 HistoManager::HistoManager()
 {
  for(G4int ih=0; ih<nhist; ih++) histo[ih]=0;
- hits = 0; 
 
  tree_tot  = 0;
  tree_vec  = 0;
  tree_ran  = 0;
- tree_cell = 0;
 
  fileName = "test_01.root";
  
  nLtot = nRtot = nLtotAbs = nRtotAbs = nRtotHcal = 200;
  dLbin = dRbin = dLbinAbs = dRbinAbs = dRbinHcal = 2.0;  
 
- LightYield    = 5.0E5;
- LightCollEff  = 0.03;
- LightCollUnif = 0.001;
- CellNoise     = 140.0*MeV; 
-
- RunNumber = 0;
-
- //gROOT->Reset();                         // ROOT style
+ gROOT->Reset();                         // ROOT style
 
  histoMessenger = new HistoMessenger(this);
 }
@@ -48,12 +37,10 @@ HistoManager::HistoManager()
 HistoManager::~HistoManager()
 {
   for(G4int ih=0; ih<nhist; ih++) delete histo[ih];
-  delete hits;
 
   delete tree_tot;
   delete tree_vec;
   delete tree_ran;
-  delete tree_cell;
   delete histoMessenger;
 }
 
@@ -92,13 +79,6 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
 
   tree_vec = new TTree("Vector", "Layer energy info");
   tree_vec-> Branch("e_vec",e_vec,"e_vec[17]/D");
-
-  tree_cell = new TTree("Cell", "Cell energy info");
-  tree_cell-> Branch("n_cells",&n_cells,"n_cells/I");
-  tree_cell-> Branch("e_dep",  e_dep,  "e_dep[n_cells]/D");
-  tree_cell-> Branch("e_phot", e_phot,"e_phot[n_cells]/D");
-  tree_cell-> Branch("e_unif", e_unif,"e_unif[n_cells]/D");
-  tree_cell-> Branch("e_eff" , e_eff , "e_eff[n_cells]/D");
 
 // Ecal transverse shower profile  in [mm]
 //-----------------------------------------
@@ -172,16 +152,6 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
     histo[10]-> SetFillColor(kBlue);
     histo[10]-> SetStats(1);
 
-// Ecal sensitive transverse hit points distributions (Y vs Z) 
-//-------------------------------------------------------------
-    
-    hits = new TH2D("EcalHitPoint","Ecal Hit points",nRtot,-0.5*nRtot*dRbin,
-                    0.5*nRtot*dRbin, nRtot,-0.5*nRtot*dRbin,0.5*nRtot*dRbin);
-    hits-> GetXaxis()-> SetTitle("X - axis / mm");
-    hits-> GetYaxis()-> SetTitle("Y - axis / mm");
-    hits-> SetFillColor(kBlue);
-    hits-> SetStats(1);
-
   return;
 }
 
@@ -190,12 +160,10 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   void HistoManager::Clear()
 {
   for(G4int ih=0;ih<nhist;ih++) histo[ih]=0;
-  hits = 0;
 
   tree_tot = 0;
   tree_vec = 0;
   tree_ran = 0;
-  tree_cell= 0;
 
   return;
 }
@@ -209,12 +177,10 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   TFile* file = new TFile(fileName, "RECREATE", "Geant4 ROOT analysis");
 
   for(G4int ih=0; ih<nhist; ih++) histo[ih]->Write();
-  hits->Write();
 
   tree_tot->  Write();
   tree_vec->  Write();
   tree_ran->  Write();
-  tree_cell-> Write();
 
   file-> Close();
   delete file;
@@ -247,31 +213,6 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
      r_ecal = recal;
      tree_ran-> Fill();
    }  
-
-// Fill Ecal cells
-//----------------
-   void HistoManager::FillCells(G4int ncells, G4double* p_cell)
-   {
-     n_cells = ncells;
-     for( G4int ic=0; ic<n_cells; ic++) { 
-       G4double EffLight = 0.001*LightYield*LightCollEff;  // photos/MeV
-       G4double MeanNbPhotons = EffLight * p_cell[ic];
-       G4int NbPhotons = G4Poisson(MeanNbPhotons);
-
-       G4double z0 = G4RandGauss::shoot(0.0,1.0); 
-       G4double ecell_unif = 0.0;
-       if( EffLight > 0.0) ecell_unif = (NbPhotons/EffLight)*(1.+z0*LightCollUnif);
-
-       G4double sigma = G4RandGauss::shoot(0.0,CellNoise); 
-       G4double ecell_eff = ecell_unif + sigma;
-
-       e_dep[ic]  = p_cell[ic];
-       e_phot[ic] = G4double(NbPhotons);
-       e_unif[ic] = ecell_unif;
-       e_eff[ic]  = ecell_eff;
-     }
-     tree_cell-> Fill();
-   }
 
 // Fill Ecal transverse shower profile in sensitive material
 //-----------------------------------------------------------
@@ -369,23 +310,6 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
      }
    }
 
-// Fill Ecal hit point distribution in sensitive media
-//---------------------------------------------------
-   void HistoManager::FillEcalTransHits(G4double* pa_lon)
-   {   
-     EdepEcalHits = 0.;
-     for(G4int ij=0; ij<nRtot*nRtot; ij++) EdepEcalHits += pa_lon[ij];
-     if( EdepEcalHits > 0. ) {
-       for(G4int ij=0; ij<nRtot*nRtot; ij++) {
-           G4int iy_ind = ij / nRtot;
-           G4int ix_ind = ij - iy_ind*nRtot; 
-           G4double xlbin = -0.5*dRbin*nRtot + dRbin*ix_ind + 0.5*dRbin;
-           G4double ylbin = -0.5*dRbin*nRtot + dRbin*iy_ind + 0.5*dRbin;
-           if( pa_lon[ij] > 0.0)  hits->Fill(xlbin,ylbin,pa_lon[ij]/EdepEcalHits);
-       }
-     }
-   }
-
 // Set binning for Ecal transverse shower profile
 //------------------------------------------------
   void HistoManager::SetSensRBining(G4ThreeVector Value)
@@ -424,31 +348,6 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   {
     nLtotAbs   = Value(0);
     dLbinAbs   = Value(1)*mm;
-  }
-
-// Set Ecal response parameter (light yield, light collection efficiency
-// and light collection ununiformity) ----------------------------------
-//------------------------------------
-  void HistoManager::SetEcalResponse(G4ThreeVector Value)
-  {
-    LightYield      = Value(0);
-    LightCollEff    = Value(1);
-    LightCollUnif   = Value(2);
-  }
-
-// Set Ecal cell noise [MeV]
-//--------------------------
-  void HistoManager::SetEcalCellNoise(G4double Value)
-  { 
-    CellNoise = Value;
-  }
-
-// Set Job Run Number 
-//--------------------
-
-  void HistoManager::SetJobRunNumber(G4int Value)
-  {
-    RunNumber = Value;
   }
 
 // Set ROOT file name
