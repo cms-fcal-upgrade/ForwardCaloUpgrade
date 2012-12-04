@@ -22,6 +22,23 @@ process.load('FastSimulation.Configuration.HLT_GRun_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
 process.load('DQMServices.Components.DQMFileSaver_cfi')
+#process.GlobalTag.globaltag = 'MC_50_V13::All'
+process.GlobalTag.globaltag = 'MC_42_V15A::All'
+#process.GlobalTag.globaltag = 'MC_60_V4::All'
+
+
+# -------- This is what you would need if you want to do the multilayers ECAL ---------- 
+#from Configuration.AlCa.GlobalTag import GlobalTag
+#process.GlobalTag = GlobalTag(process.GlobalTag, 'MC_60_V4::All', '')
+#process.GlobalTag.toGet = cms.VPSet(
+#	    cms.PSet(record = cms.string('PEcalEndcapRcd'),
+#				                          tag = cms.string('EERECO_Geometry_newTag'),
+#				                          connect = cms.untracked.string('sqlite_file:/afs/cern.ch/user/m/mgouzevi/scratch0/GEOMETRY/FINAL/CMSSW_6_0_0/src/ForwardCaloUpgrade/FastSim/test/EERECO_Geometry.db')
+#				                                                   )
+#		)       
+
+
+
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(50)
@@ -49,7 +66,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.18 $'),
+    version = cms.untracked.string('$Revision: 1.19 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -80,9 +97,6 @@ process.HLTEndSequence = cms.Sequence(process.reconstructionWithFamos)
 process.Realistic7TeVCollisionVtxSmearingParameters.type = cms.string("BetaFunc")
 process.famosSimHits.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
 process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingParameters
-#process.GlobalTag.globaltag = 'MC_50_V13::All'
-process.GlobalTag.globaltag = 'MC_42_V15A::All'
-
 
 
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
@@ -147,6 +161,7 @@ process.famosSimHits.MaterialEffects.EnergyLoss = False
 process.famosSimHits.MaterialEffects.MultipleScattering = False
 process.famosSimHits.MaterialEffects.NuclearInteraction = False
 
+# --------- You may need to uncomment MultipleScattering and NuclearInteraction in some CMSSW version otherwise it crashes
 
 #-------------------------------------------------------------------------
 # Switch off the preshower
@@ -166,6 +181,17 @@ process.famosSimHits.Calorimetry.ECAL.TailIntervals = cms.vdouble(100.0, 1.0)
 process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
 #Set up the LSO detector for the forward ECAL
+
+#-------------- Containment corrections ----------#:
+# SimCalorimetry/EcalSimProducers/python/ecalNotContainmentSim_cff.py
+# you may change this factor. It shall take in account calibration for the non containement in 5*5 superhits
+#process.ecalRecHit.RecHitsFactory.ECALEndcap.ContFact.ecal_notCont_sim.EEs25notContainment = cms.double(0.975)
+
+#------------- This is for miscalib if you put it like this it would do no miscalib
+# FastSimulation/CaloRecHitsProducer/python/CaloRecHits_cff.py
+#process.ecalRecHit.RecHitsFactory.ECALEndcap.Refactor = cms.double(0.),
+#process.ecalRecHit.RecHitsFactory.ECALEndcap.Refactor_mean = cms.double(1.),
+
      
 #from ForwardCaloUpgrade.FastSim.LSO_cff import myForwardECAL
 #myForwardECAL( process )
