@@ -66,7 +66,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.20 $'),
+    version = cms.untracked.string('$Revision: 1.21 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -185,13 +185,18 @@ process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 #-------------- Containment corrections ----------#:
 # SimCalorimetry/EcalSimProducers/python/ecalNotContainmentSim_cff.py
 # In this file the factor is: 0.975
-# If you uncomment the following line the containment correction would be switched off
+# If you uncomment the following line the containment correction would be switched off. Those corrections
+# are used to multiply the ECAL Sim energy by 1/0.975
+
 #process.ecalRecHit.RecHitsFactory.ECALEndcap.ContFact.ecal_notCont_sim.EEs25notContainment = cms.double(1.0)
 
 
 #------------- This is the way that the miscalibration is introduced
 # FastSimulation/CaloRecHitsProducer/python/CaloRecHits_cff.py
 # if you uncomment the following lines you remove the miscalibration
+# inside FastSimulation/CaloRecHitsProducer/src/EcalEndcapRecHitsMaker.cc
+# those factors contribute to modify a bit the 1/0.975 factor
+
 #process.ecalRecHit.RecHitsFactory.ECALEndcap.Refactor = cms.double(0.),
 #process.ecalRecHit.RecHitsFactory.ECALEndcap.Refactor_mean = cms.double(1.),
 
