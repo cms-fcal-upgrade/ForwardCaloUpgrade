@@ -66,7 +66,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.21 $'),
+    version = cms.untracked.string('$Revision: 1.22 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -180,7 +180,12 @@ process.famosSimHits.Calorimetry.ECAL.TailIntervals = cms.vdouble(100.0, 1.0)
 #void EMShower::prepareSteps() from FastSimulation/ShowerDevelopment/src
 process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
-#Set up the LSO detector for the forward ECAL
+#--------------------------------
+#--------------------------------
+#Set up the Shashlik PbLSO detector for the forward ECAL
+#--------------------------------
+#--------------------------------
+
 
 #-------------- Containment corrections ----------#:
 # SimCalorimetry/EcalSimProducers/python/ecalNotContainmentSim_cff.py
