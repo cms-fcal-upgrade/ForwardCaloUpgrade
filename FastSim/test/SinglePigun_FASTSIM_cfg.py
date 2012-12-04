@@ -66,7 +66,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.19 $'),
+    version = cms.untracked.string('$Revision: 1.20 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -101,8 +101,8 @@ process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingP
 
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
-	MinE = cms.double(9.999),
-        MaxE = cms.double(10.001),
+	MinE = cms.double(159.999),
+        MaxE = cms.double(160.001),
 	# Pion = 211, nu_e = 12, e = 11
         PartID = cms.vint32(11),
 	# Eta limits set up to be in the end-cap
@@ -158,8 +158,8 @@ process.hfreco.RecHitsFactory.HCAL.Noise = cms.vdouble(0)
 process.famosSimHits.MaterialEffects.PairProduction = False
 process.famosSimHits.MaterialEffects.Bremsstrahlung = False
 process.famosSimHits.MaterialEffects.EnergyLoss = False
-process.famosSimHits.MaterialEffects.MultipleScattering = False
-process.famosSimHits.MaterialEffects.NuclearInteraction = False
+#process.famosSimHits.MaterialEffects.MultipleScattering = False
+#process.famosSimHits.MaterialEffects.NuclearInteraction = False
 
 # --------- You may need to uncomment MultipleScattering and NuclearInteraction in some CMSSW version otherwise it crashes
 
@@ -184,11 +184,14 @@ process.famosSimHits.Calorimetry.ECAL.GridSize = cms.int32(7)
 
 #-------------- Containment corrections ----------#:
 # SimCalorimetry/EcalSimProducers/python/ecalNotContainmentSim_cff.py
-# you may change this factor. It shall take in account calibration for the non containement in 5*5 superhits
-#process.ecalRecHit.RecHitsFactory.ECALEndcap.ContFact.ecal_notCont_sim.EEs25notContainment = cms.double(0.975)
+# In this file the factor is: 0.975
+# If you uncomment the following line the containment correction would be switched off
+#process.ecalRecHit.RecHitsFactory.ECALEndcap.ContFact.ecal_notCont_sim.EEs25notContainment = cms.double(1.0)
 
-#------------- This is for miscalib if you put it like this it would do no miscalib
+
+#------------- This is the way that the miscalibration is introduced
 # FastSimulation/CaloRecHitsProducer/python/CaloRecHits_cff.py
+# if you uncomment the following lines you remove the miscalibration
 #process.ecalRecHit.RecHitsFactory.ECALEndcap.Refactor = cms.double(0.),
 #process.ecalRecHit.RecHitsFactory.ECALEndcap.Refactor_mean = cms.double(1.),
 
