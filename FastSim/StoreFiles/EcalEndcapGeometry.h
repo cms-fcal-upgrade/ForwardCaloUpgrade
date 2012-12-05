@@ -40,7 +40,7 @@ class EcalEndcapGeometry : public CaloSubdetectorGeometry
 
       enum { k_NumberOfCellsForCorners = EEDetId::kSizeForDenseIndexing } ;
 
-      enum { k_NumberOfShapes = 1 } ;
+      enum { k_NumberOfShapes = 2 } ;
 
       enum { k_NumberOfParametersPerShape = 11 } ;
 
@@ -96,10 +96,6 @@ class EcalEndcapGeometry : public CaloSubdetectorGeometry
 			    const CCGFloat*    parm ,
 			    const DetId&       detId   ) ;
 
-      virtual void getSummary( TrVec&  trVector,
-			       IVec&   iVector,
-			       DimVec& dimVector   ) const ;
-
    protected:
 
       virtual const CaloCellGeometry* cellGeomPtr( uint32_t index ) const ;
@@ -123,7 +119,7 @@ class EcalEndcapGeometry : public CaloSubdetectorGeometry
       unsigned int xindex( CCGFloat x, CCGFloat z ) const ;
       unsigned int yindex( CCGFloat y, CCGFloat z ) const ;
 
-      EEDetId gId( float x, float y, float z ) const ;
+//      EEDetId gId( float x, float y, float z ) const ;
 
       mutable EZMgrFL<EBDetId>*     m_borderMgr ;
 
