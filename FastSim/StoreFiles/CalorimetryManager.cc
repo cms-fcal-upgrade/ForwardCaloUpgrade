@@ -579,7 +579,7 @@ void CalorimetryManager::EMShowerSimulation(const FSimTrack& myTrack) {
 
     }
 
-  std::cout << "Total energy = " << totEnergy << std::endl;
+  //  std::cout << "Total energy = " << totEnergy << std::endl;
 
   // Now fill the HCAL hits
   endmapitr=myHcalHitMaker.getHits().end();

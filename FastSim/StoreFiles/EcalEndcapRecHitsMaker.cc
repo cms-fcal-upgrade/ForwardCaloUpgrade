@@ -223,7 +223,7 @@ void EcalEndcapRecHitsMaker::loadPCaloHits(const edm::Event & iEvent)
   noisifyTriggerTowers();
   randomNoisifier();
 
-  std:: cout << "doMisCalib_ = " << doMisCalib_ << " TotEnergyCalib = " << totEnergyCalib << std::endl;
+  //  std:: cout << "doMisCalib_ = " << doMisCalib_ << " TotEnergyCalib = " << totEnergyCalib << std::endl;
 
   //  std:: cout << "doMisCalib_ = " << doMisCalib_ << " TotEnergy = " << totEnergy << " totEnergyCalib = " << totEnergyCalib << " totEnergyCalibSinTheta = " << totEnergyCalibSinTheta << std::endl;
 
@@ -397,21 +397,16 @@ void EcalEndcapRecHitsMaker::init(const edm::EventSetup &es,bool doDigis,bool do
 
   edm::ESHandle<CaloGeometry> pG;
   es.get<CaloGeometryRecord>().get(pG);   
-  std::cout<<"extracting TT map "<<std::endl;
   edm::ESHandle<EcalTrigTowerConstituentsMap> hetm;
   es.get<IdealGeometryRecord>().get(hetm);
   eTTmap_ = &(*hetm);
 
-  std::cout<<"extracting DetIDs "<<std::endl;
 
   const EcalEndcapGeometry * myEcalEndcapGeometry = dynamic_cast<const EcalEndcapGeometry*>(pG->getSubdetectorGeometry(DetId::Ecal,EcalEndcap));
   const std::vector<DetId>& vec(myEcalEndcapGeometry->getValidDetIds(DetId::Ecal,EcalEndcap));
   unsigned size=vec.size();  
-  std::cout<<"size of DetID is "<<size<<std::endl;  
   for(unsigned ic=0; ic<size; ++ic) 
     {
-
-       if(ic==0) std::cout<<"inside loop "<<std::endl;
 
       EEDetId myDetId(vec[ic]);
       int cellhashedindex=myDetId.hashedIndex();
@@ -453,12 +448,14 @@ void EcalEndcapRecHitsMaker::init(const edm::EventSetup &es,bool doDigis,bool do
 	schi=SChashedIndex(EEDetId(vec[ic]));
       }
 
+      /*
       if(schi<0) 
 	{
 	  std::cout << " OOps " << schi << std::endl;
 	  EEDetId myID(vec[ic]);
 	  std::cout << " DetId " << myID << " " << myID.isc() << " " <<  myID.zside() <<  " " << myID.isc()+(myID.zside()+1)*158 << std::endl;
 	}
+      */
 
       theTTDetIds_[tthashedindex]=towid1;
 
@@ -481,7 +478,6 @@ void EcalEndcapRecHitsMaker::init(const edm::EventSetup &es,bool doDigis,bool do
       if(itcheck==TTofSC_[schi].end())
 	TTofSC_[schi].push_back(tthashedindex);
     }
-    std::cout << " Made the array " << std::endl;
   // Stores the miscalibration constants
   if(doMisCalib_||noise_==-1.)
     {
