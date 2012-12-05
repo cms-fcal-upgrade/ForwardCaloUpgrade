@@ -35,7 +35,7 @@ ecalRecHit = cms.EDProducer("CaloRecHitsProducer",
                                                        Refactor_mean = cms.double(1.),
                                                        MixedSimHits = cms.InputTag("mix","famosSimHitsEcalHitsEE"),
                                                        ContFact = cms.PSet(ecal_notCont_sim),
-                                                       doMultiLayers = cms.bool(False)
+                                                       doMultiLayers = cms.bool(True)
                                                        )))
 
 
