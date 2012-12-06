@@ -23,19 +23,20 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('FastSimulation.Configuration.EventContent_cff')
 process.load('DQMServices.Components.DQMFileSaver_cfi')
 #process.GlobalTag.globaltag = 'MC_50_V13::All'
-process.GlobalTag.globaltag = 'MC_42_V15A::All'
-#process.GlobalTag.globaltag = 'MC_60_V4::All'
+#process.GlobalTag.globaltag = 'MC_42_V15A::All'
+process.GlobalTag.globaltag = 'MC_60_V4::All'
 
 
 # -------- This is what you would need if you want to do the multilayers ECAL ---------- 
-#from Configuration.AlCa.GlobalTag import GlobalTag
-#process.GlobalTag = GlobalTag(process.GlobalTag, 'MC_60_V4::All', '')
-#process.GlobalTag.toGet = cms.VPSet(
-#	    cms.PSet(record = cms.string('PEcalEndcapRcd'),
-#				                          tag = cms.string('EERECO_Geometry_newTag'),
-#				                          connect = cms.untracked.string('sqlite_file:/afs/cern.ch/user/m/mgouzevi/scratch0/GEOMETRY/FINAL/CMSSW_6_0_0/src/ForwardCaloUpgrade/FastSim/test/EERECO_Geometry.db')
-#				                                                   )
-#		)       
+## from Configuration.AlCa.GlobalTag import GlobalTag
+## process.GlobalTag = GlobalTag(process.GlobalTag, 'MC_60_V4::All', '')
+## process.GlobalTag.toGet = cms.VPSet(
+## 	    cms.PSet(record = cms.string('PEcalEndcapRcd'),
+## 				                          tag = cms.string('EERECO_Geometry_newTag'),
+## 				                          connect = cms.untracked.string('sqlite_file:/afs/cern.ch/user/m/mgouzevi/scratch0/GEOMETRY/INTERMEDIATE/CMSSW_6_0_0/src/ForwardCaloUpgrade/FastSim/test/EERECO_Geometry.db')
+## 				                                                   )
+## 		) 
+
 
 
 
@@ -66,7 +67,7 @@ process.options = cms.untracked.PSet()
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.22 $'),
+    version = cms.untracked.string('$Revision: 1.23 $'),
     annotation = cms.untracked.string('SinglePiPt1_cfi.py nevts:10'),
     name = cms.untracked.string('PyReleaseValidation')
 )
@@ -101,8 +102,8 @@ process.famosPileUp.VertexGenerator = process.Realistic7TeVCollisionVtxSmearingP
 
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
-	MinE = cms.double(159.999),
-        MaxE = cms.double(160.001),
+	MinE = cms.double(39.999),
+        MaxE = cms.double(40.001),
 	# Pion = 211, nu_e = 12, e = 11
         PartID = cms.vint32(11),
 	# Eta limits set up to be in the end-cap
@@ -158,8 +159,8 @@ process.hfreco.RecHitsFactory.HCAL.Noise = cms.vdouble(0)
 process.famosSimHits.MaterialEffects.PairProduction = False
 process.famosSimHits.MaterialEffects.Bremsstrahlung = False
 process.famosSimHits.MaterialEffects.EnergyLoss = False
-#process.famosSimHits.MaterialEffects.MultipleScattering = False
-#process.famosSimHits.MaterialEffects.NuclearInteraction = False
+process.famosSimHits.MaterialEffects.MultipleScattering = False
+process.famosSimHits.MaterialEffects.NuclearInteraction = False
 
 # --------- You may need to uncomment MultipleScattering and NuclearInteraction in some CMSSW version otherwise it crashes
 
