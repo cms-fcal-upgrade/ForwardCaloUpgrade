@@ -585,7 +585,7 @@ EMShower::compute() {
 	
       }
 
-      if(detailedShowerTail)
+      if(detailedShowerTail || detailedShower_)
 	myGammaGenerator->setParameters(floor(a[i]+0.5),b[i],t-dt);
 	
 
