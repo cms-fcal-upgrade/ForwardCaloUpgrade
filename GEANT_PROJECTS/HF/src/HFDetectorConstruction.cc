@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: HFDetectorConstruction.cc,v 1.1 2013/03/13 10:34:16 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -32,6 +32,7 @@
 #include <iostream>
 
 #include "HFDetectorConstruction.hh"
+#include "HFStackingAction.hh"
 
 #include "G4RunManager.hh"
 
@@ -57,6 +58,7 @@
 
 HFDetectorConstruction::HFDetectorConstruction()
 :m_isConstructed(false), m_nRods(20),m_rRod(2.5*mm),m_nFib(1.457),m_nClad(1.42)
+,m_stacking(NULL)
 {
 
   m_expHall_z = 20.0*cm;
@@ -398,6 +400,10 @@ void HFDetectorConstruction::SetFibreIndex(double n)
   G4MaterialPropertiesTable *qProps = new G4MaterialPropertiesTable();
   qProps->AddProperty("RINDEX",energies,qRindex,nEnergies);
   m_quartz->SetMaterialPropertiesTable(qProps);
+
+  if ( m_stacking ) {
+    m_stacking->SetFibreIndex(n);
+  }
   
   G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
 
@@ -406,6 +412,9 @@ void HFDetectorConstruction::SetFibreIndex(double n)
 void HFDetectorConstruction::SetCladIndex(double n)
 {
   m_nClad = n;
+  if ( m_stacking ) {
+    m_stacking->SetCladIndex(n);
+  }
 }
 
 
@@ -447,6 +456,12 @@ void HFDetectorConstruction::ClearLogicalVolumes()
   //delete m_expHall_log;
   //delete m_expHall_box;
 
+}
+
+
+void HFDetectorConstruction::SetStackingAction( HFStackingAction *sa )
+{
+  m_stacking = sa;
 }
 
 

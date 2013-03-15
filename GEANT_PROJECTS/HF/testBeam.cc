@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: testBeam.cc,v 1.1 2013/03/13 10:34:11 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -42,6 +42,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include <fstream>
+#include <unistd.h>
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
@@ -70,6 +71,15 @@
 #include "G4UIExecutive.hh"
 #endif
 
+// print help message
+void printUsage(int argc, char **argv)
+{
+  if ( argv ) std::cout << argv[0] << " ";
+  std::cout << " [options] [macroFile]" << std::endl;
+  std::cout << "\t -o outputFile\t the name of the output ROOT file\n"
+            << "\t -h\t print this help message and quit" << std::endl;
+}
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int main(int argc,char** argv)
@@ -82,8 +92,42 @@ int main(int argc,char** argv)
   randRead.read((char*)(&myseed),4);
   CLHEP::HepRandom::setTheSeed(myseed);
 
+  std::string outputFileName("output.root");
+  std::string macro("b.mac");
+  std::string physName("");
+
+  //--------- command line argument parsing
+  int c;
+  while ((c = getopt(argc,argv,"o:p:h")) != -1 )
+    switch (c) {
+      case 'h':
+  	printUsage(argc,argv);
+	return 0;
+      case 'o':
+	outputFileName = optarg;
+	break;
+      case 'p':
+	physName = optarg;
+	break;
+    }
+  
+  const unsigned nIndex = argc-optind+1U;
+  //char *nArgv[nIndex];
+  std::vector<char *> nArgv(nIndex);
+  nArgv[0] = argv[0];
+
+  unsigned p=1;
+  for ( int i = optind; i < argc; i++ ) {
+    if ( i == optind ) macro = argv[i];
+
+    nArgv[p++] = argv[i];
+  } 
+
+  
+  
+
   // data format
-  HFDataFormat df("output.root");
+  HFDataFormat df(outputFileName.c_str());
 
   
   G4PhysListFactory factory;
@@ -91,8 +135,6 @@ int main(int argc,char** argv)
   for ( unsigned n=0; n != names.size(); n++ ) {
     G4cout << "PhysicsList: " << names[n] << G4endl;
   }
-  G4String physName = "";
-  if ( argc == 3 ) { physName = argv[2]; }
 
   if ( "" == physName ) { 
     char * path = getenv("PHYSLIST");
@@ -100,7 +142,7 @@ int main(int argc,char** argv)
   }
 
   if ( "" == physName || factory.IsReferencePhysList(physName)) {
-    physName = "FTFP_BERT_EMV";
+    physName = "LHEP";
   } 
   
 
@@ -135,6 +177,8 @@ int main(int argc,char** argv)
   //
   G4UserStackingAction* stacking_action = new HFStackingAction(&df);
   runManager->SetUserAction(stacking_action);
+
+  dynamic_cast<HFDetectorConstruction*>(detector)->SetStackingAction(dynamic_cast<HFStackingAction*>(stacking_action));
   
   // UserAction classes
   //
@@ -157,10 +201,10 @@ int main(int argc,char** argv)
   //
   G4UImanager* UImanager = G4UImanager::GetUIpointer(); 
    
-  if (argc==1)   // Define UI session for interactive mode
+  if (nIndex == 1)   // Define UI session for interactive mode
     {
 #ifdef G4UI_USE
-      G4UIExecutive * ui = new G4UIExecutive(argc,argv);
+      G4UIExecutive * ui = new G4UIExecutive(nIndex,&nArgv[0]);
 #ifdef G4VIS_USE
       UImanager->ApplyCommand("/control/execute vis.mac");     
 #endif
@@ -171,7 +215,7 @@ int main(int argc,char** argv)
   else         // Batch mode
     {
       G4String command = "/control/execute ";
-      G4String fileName = argv[1];
+      G4String fileName = macro;
       UImanager->ApplyCommand(command+fileName);
     }
    

@@ -2,8 +2,8 @@
 #/testBeam/rRod 2.5 mm
 
 # setup the particle gun
-/gun/particle e-
-/gun/energy 80 GeV
+/gun/particle pi-
+/gun/energy 500 GeV
 
 #
 /run/beamOn 100

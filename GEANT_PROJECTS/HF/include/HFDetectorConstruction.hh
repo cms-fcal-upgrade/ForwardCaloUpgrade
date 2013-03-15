@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: HFDetectorConstruction.hh,v 1.1 2013/03/13 10:34:13 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -41,6 +41,8 @@ class G4PhysicalVolume;
 class G4Material;
 class G4Box;
 class G4Tubs;
+
+class HFStackingAction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -67,6 +69,9 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
 
     // set the cladding index of refraction
     void SetCladIndex(double n);
+
+    // allow access to the user stacking action class HFStackingAction
+    void SetStackingAction( HFStackingAction * sa);
 
     // ---- accessor methods -----
     inline void PrintCalorParameters() const { return; }
@@ -131,6 +136,7 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_fibres;
 
     HFMessenger *m_messenger;
+    HFStackingAction * m_stacking;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

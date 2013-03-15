@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id$
+// $Id: HFStackingAction.hh,v 1.1 2013/03/13 10:34:15 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -34,6 +34,8 @@
 #include "globals.hh"
 #include "G4UserStackingAction.hh"
 #include "HFDataFormat.hh"
+
+class HFDetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -49,7 +51,32 @@ class HFStackingAction : public G4UserStackingAction
     void PrepareNewEvent();
 
     // set the fibre index of refraction
-    inline void SetFibreIndex(double n) { m_nFibre = n; }
+    inline void SetFibreIndex(double n) 
+      { 
+	m_nFibre = n; 
+	m_fibreNA = -1.; // force recalculation
+      }
+
+    // set the cladding index of refraction
+    inline void SetCladIndex(double n) 
+      { 
+	m_nClad = n; 
+	m_fibreNA = -1.;
+      }
+  
+    // set the low end of the optical photon wavelength cutoff
+    inline void SetOptLowCut(double c) { m_lCutLow = c; }
+
+    // -- accessor methods
+    // get the fibre index of refraction
+    inline double GetFibreIndex() const { return m_nFibre; }
+
+    // get the cladding index of refraction
+    inline double GetCladIndex() const { return m_nClad; }
+
+    // get the low wavelength cutoff for optical photons
+    inline double GetOptLowCut() const { return m_lCutLow; }
+
 
   private:
     G4int gammaCounter;

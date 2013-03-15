@@ -23,12 +23,14 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id$
+// $Id: HFStackingAction.cc,v 1.1 2013/03/13 10:34:18 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+#include <iostream>
 #include "HFStackingAction.hh"
+#include "HFDetectorConstruction.hh"
 
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
@@ -44,7 +46,8 @@ HFStackingAction::HFStackingAction(HFDataFormat *df)
 , m_nFibre(1.457)
 , m_nClad(1.419)
 , m_df(df)
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -76,19 +79,36 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const double E = aParticle->GetTotalEnergy();
       const double lambda = hbarc*twopi/E*1.e+6;
       const G4ThreeVector & mom = aTrack->GetMomentumDirection();
-      const double x = mom.x();
-      const double y = mom.y();
-      const double na = sqrt(x*x+y*y);
+      const double px = mom.x();
+      const double py = mom.y();
+      const double na = sqrt(px*px+py*py);
+      
+      const G4ThreeVector & pos = aTrack->GetPosition();
+      const double x = pos.x();
+      const double y = pos.y();
      
 
       if ( lambda > m_lCutLow && na < m_fibreNA ) { 
         gammaCounter++;
-	StackingStruct st(lambda,E,na);
+	StackingStruct st(lambda,E,na,x,y);
         m_df->fillStackingAction(st);
       } 
     }
 
+  } else if ( aTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() ) {
+
+    const G4DynamicParticle * particle = aTrack->GetDynamicParticle();
+    const double E = particle->GetTotalEnergy();
+    const int pdgId = particle->GetPDGcode();
+    const G4ThreeVector & mom = aTrack->GetMomentum();
+    const G4ThreeVector & pos = aTrack->GetPosition();
+
+    ParticleStruct pt(pdgId,mom,pos,E);
+    m_df->fillParticle(pt);
+
   }
+
+
   return classification;
 }
 
