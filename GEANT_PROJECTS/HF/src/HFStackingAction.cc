@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.cc,v 1.1 2013/03/13 10:34:18 cowden Exp $
+// $Id: HFStackingAction.cc,v 1.2 2013/03/15 11:23:31 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -104,7 +104,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     const G4ThreeVector & pos = aTrack->GetPosition();
 
     ParticleStruct pt(pdgId,mom,pos,E);
-    m_df->fillParticle(pt);
+    //m_df->fillParticle(pt);
 
   }
 

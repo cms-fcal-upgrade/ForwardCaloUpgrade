@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.cc,v 1.1 2013/03/13 10:34:16 cowden Exp $
+// $Id: HFDetectorConstruction.cc,v 1.2 2013/03/15 11:23:31 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -65,7 +65,7 @@ HFDetectorConstruction::HFDetectorConstruction()
   m_expHall_x = 5.*cm;
   m_expHall_y = 5.*cm;
 
-  m_length = 15.*cm;
+  m_length = 50.*cm;
 
   m_messenger = new HFMessenger(this);
 }

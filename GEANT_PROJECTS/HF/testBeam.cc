@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: testBeam.cc,v 1.1 2013/03/13 10:34:11 cowden Exp $
+// $Id: testBeam.cc,v 1.2 2013/03/15 11:23:31 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -144,7 +144,8 @@ int main(int argc,char** argv)
   if ( "" == physName || factory.IsReferencePhysList(physName)) {
     physName = "LHEP";
   } 
-  
+ 
+  std::cout << "Using physics list: " << physName << std::endl; 
 
   // User Verbose output class
   //
