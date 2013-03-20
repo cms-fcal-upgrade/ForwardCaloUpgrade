@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: testBeam.cc,v 1.2 2013/03/15 11:23:31 cowden Exp $
+// $Id: testBeam.cc,v 1.3 2013/03/19 21:53:25 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -77,6 +77,7 @@ void printUsage(int argc, char **argv)
   if ( argv ) std::cout << argv[0] << " ";
   std::cout << " [options] [macroFile]" << std::endl;
   std::cout << "\t -o outputFile\t the name of the output ROOT file\n"
+	    << "\t -p physics\t the name of the physics list [default: LHEP]\n"
             << "\t -h\t print this help message and quit" << std::endl;
 }
 
@@ -169,8 +170,12 @@ int main(int argc,char** argv)
   runManager-> SetUserInitialization(physics);
   //runManager->SetUserInitialization(new QGSP_BERT);
   //
-  G4VUserPrimaryGeneratorAction* gen_action = new HFPrimaryGeneratorAction;
+
+  // setup the particle gun
+  G4VUserPrimaryGeneratorAction* gen_action = new HFPrimaryGeneratorAction(dynamic_cast<HFDetectorConstruction*>(detector)->GetLength());
   runManager->SetUserAction(gen_action);
+  dynamic_cast<HFDetectorConstruction*>(detector)->SetParticleGun(dynamic_cast<HFPrimaryGeneratorAction*>(gen_action));
+  
 
   G4UserEventAction *event_action = new HFEventAction(&df);
   runManager->SetUserAction(event_action);

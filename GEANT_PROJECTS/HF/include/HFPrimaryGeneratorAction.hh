@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: HFPrimaryGeneratorAction.hh,v 1.1 2013/03/13 10:34:15 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -45,6 +45,7 @@ class HFPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
   public:
     HFPrimaryGeneratorAction();
+    HFPrimaryGeneratorAction( double l);
    ~HFPrimaryGeneratorAction();
 
   public:
@@ -52,10 +53,16 @@ class HFPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
     void SetOptPhotonPolar();
     void SetOptPhotonPolar(G4double);
+    void SetInitDist(double);
 
   private:
+
+    void initialize();
+
     G4ParticleGun* particleGun;
     HFPrimaryGeneratorMessenger* gunMessenger;
+
+    double m_initDist; // initial distance from the origin
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

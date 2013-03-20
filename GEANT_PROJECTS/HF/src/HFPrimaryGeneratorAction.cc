@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: HFPrimaryGeneratorAction.cc,v 1.1 2013/03/13 10:34:17 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -43,6 +43,27 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 HFPrimaryGeneratorAction::HFPrimaryGeneratorAction()
+:m_initDist(50.*cm)
+{
+  initialize();
+}
+
+
+HFPrimaryGeneratorAction::HFPrimaryGeneratorAction(double l)
+:m_initDist(l)
+{
+  initialize();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+HFPrimaryGeneratorAction::~HFPrimaryGeneratorAction()
+{
+  delete particleGun;
+  delete gunMessenger;
+}
+
+void HFPrimaryGeneratorAction::initialize()
 {
   G4int n_particle = 1;
   particleGun = new G4ParticleGun(n_particle);
@@ -57,17 +78,9 @@ HFPrimaryGeneratorAction::HFPrimaryGeneratorAction()
 
   particleGun->SetParticleDefinition(particle);
   particleGun->SetParticleTime(0.0*ns);
-  particleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,15.0*cm));
+  particleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,m_initDist));
   particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,-1.));
   particleGun->SetParticleEnergy(500.0*MeV);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-HFPrimaryGeneratorAction::~HFPrimaryGeneratorAction()
-{
-  delete particleGun;
-  delete gunMessenger;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -107,6 +120,12 @@ void HFPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle)
  
  G4ThreeVector polar = std::cos(angle)*e_paralle + std::sin(angle)*e_perpend;
  particleGun->SetParticlePolarization(polar);
+}
+
+void HFPrimaryGeneratorAction::SetInitDist(double dist)
+{ 
+  m_initDist = dist;
+  particleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,m_initDist));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

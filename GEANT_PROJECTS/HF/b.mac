@@ -3,7 +3,7 @@
 
 # setup the particle gun
 /gun/particle pi-
-/gun/energy 500 GeV
+/gun/energy 200 GeV
 
 #
 /run/beamOn 100

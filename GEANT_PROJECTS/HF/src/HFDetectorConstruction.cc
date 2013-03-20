@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.cc,v 1.2 2013/03/15 11:23:31 cowden Exp $
+// $Id: HFDetectorConstruction.cc,v 1.3 2013/03/19 21:53:25 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -33,6 +33,7 @@
 
 #include "HFDetectorConstruction.hh"
 #include "HFStackingAction.hh"
+#include "HFPrimaryGeneratorAction.hh"
 
 #include "G4RunManager.hh"
 
@@ -58,12 +59,12 @@
 
 HFDetectorConstruction::HFDetectorConstruction()
 :m_isConstructed(false), m_nRods(20),m_rRod(2.5*mm),m_nFib(1.457),m_nClad(1.42)
-,m_stacking(NULL)
+,m_stacking(NULL),m_gun(NULL)
 {
 
-  m_expHall_z = 20.0*cm;
-  m_expHall_x = 5.*cm;
-  m_expHall_y = 5.*cm;
+  m_expHall_z = 100.0*cm;
+  m_expHall_x = 50.*cm;
+  m_expHall_y = 50.*cm;
 
   m_length = 50.*cm;
 
@@ -320,9 +321,7 @@ void HFDetectorConstruction::CalculateConstants()
   m_l = 2.*sqrt(3.)*m_rRod/3;
   m_rFib = 0.99*(m_l-m_rRod);
 
-  m_length2 = m_length/2.;
-
-  if ( m_length2 > m_expHall_z ) m_expHall_z = 1.10*m_length2;
+  if ( m_length > m_expHall_z ) m_expHall_z = 1.10*m_length;
   const double width = m_nRods*m_rRod;
   if ( width > m_expHall_x ) { 
     m_expHall_x =  1.10*width;
@@ -382,6 +381,10 @@ void HFDetectorConstruction::SetLength(double l)
   CalculateConstants();
   SetupGeometry();
   SetupDetectors(); 
+
+  if ( m_gun ) {
+    m_gun->SetInitDist(m_length);
+  }
 
   G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
 
@@ -462,6 +465,12 @@ void HFDetectorConstruction::ClearLogicalVolumes()
 void HFDetectorConstruction::SetStackingAction( HFStackingAction *sa )
 {
   m_stacking = sa;
+}
+
+
+void HFDetectorConstruction::SetParticleGun( HFPrimaryGeneratorAction *gun )
+{
+  m_gun = gun;
 }
 
 

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.hh,v 1.1 2013/03/13 10:34:13 cowden Exp $
+// $Id: HFDetectorConstruction.hh,v 1.2 2013/03/15 11:23:31 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -43,6 +43,7 @@ class G4Box;
 class G4Tubs;
 
 class HFStackingAction;
+class HFPrimaryGeneratorAction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -72,6 +73,9 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
 
     // allow access to the user stacking action class HFStackingAction
     void SetStackingAction( HFStackingAction * sa);
+
+    // allow access to the particle gun
+    void SetParticleGun( HFPrimaryGeneratorAction *gun);
 
     // ---- accessor methods -----
     inline void PrintCalorParameters() const { return; }
@@ -137,6 +141,7 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
 
     HFMessenger *m_messenger;
     HFStackingAction * m_stacking;
+    HFPrimaryGeneratorAction *m_gun;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

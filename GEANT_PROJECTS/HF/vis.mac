@@ -1,5 +1,6 @@
 #/testBeam/nRods 4
-/testBeam/rRod 2.5 mm
+#/testBeam/rRod 2.5 mm
+/testBeam/length 10 cm
 
 
 # Use this open statement to create an OpenGL view:
