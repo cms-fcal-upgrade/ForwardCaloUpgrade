@@ -24,13 +24,14 @@
 // ********************************************************************
 //
 //
-// $Id: HFPrimaryGeneratorAction.cc,v 1.1 2013/03/13 10:34:17 cowden Exp $
+// $Id: HFPrimaryGeneratorAction.cc,v 1.2 2013/03/20 16:38:48 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #include "HFPrimaryGeneratorAction.hh"
 #include "HFPrimaryGeneratorMessenger.hh"
+#include "HFDataFormat.hh"
 
 #include "Randomize.hh"
 
@@ -43,14 +44,16 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 HFPrimaryGeneratorAction::HFPrimaryGeneratorAction()
-:m_initDist(50.*cm)
+:m_initDist(50.*cm),m_beamWidth(10.0*mm)
+,m_df(NULL)
 {
   initialize();
 }
 
 
 HFPrimaryGeneratorAction::HFPrimaryGeneratorAction(double l)
-:m_initDist(l)
+:m_initDist(l),m_beamWidth(10.0*mm)
+,m_df(NULL)
 {
   initialize();
 }
@@ -87,7 +90,20 @@ void HFPrimaryGeneratorAction::initialize()
 
 void HFPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+
+  const double halfWidth = m_beamWidth/2.;
+  
+  const double x = CLHEP::RandFlat::shoot(-halfWidth,halfWidth);
+  const double y = CLHEP::RandFlat::shoot(-halfWidth,halfWidth);
+
+  if ( m_df ) {
+    GeneratorStruct gs(x,y);
+    m_df->fillGenerator(gs);
+  }
+
+  particleGun->SetParticlePosition(G4ThreeVector(x,y,m_initDist));
   particleGun->GeneratePrimaryVertex(anEvent);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -126,6 +142,11 @@ void HFPrimaryGeneratorAction::SetInitDist(double dist)
 { 
   m_initDist = dist;
   particleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,m_initDist));
+}
+
+void HFPrimaryGeneratorAction::SetBeamWidth(double width)
+{
+  m_beamWidth = width;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

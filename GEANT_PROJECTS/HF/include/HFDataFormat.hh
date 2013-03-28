@@ -30,11 +30,13 @@ struct StackingStruct {
   double na;
   double x;
   double y;
+  double z;
+  double t;
 
 
-  inline StackingStruct(double w, double e, double n,double gx, double gy)
+  inline StackingStruct(double w, double e, double n,double gx, double gy,double gz, double gt)
     :wavelength(w),energy(e),na(n)
-    ,x(gx),y(gy)
+    ,x(gx),y(gy),z(gz),t(gt)
     { }
 };
 
@@ -62,6 +64,19 @@ struct ParticleStruct {
 
 };
 
+///
+/// The GeneratorStruct helps to pass data about the intial particle
+/// to the ntuple
+struct GeneratorStruct {
+  double x;
+  double y;
+
+  inline GeneratorStruct(double gx, double gy)
+    :x(gx),y(gy)
+    { }
+  
+};
+
 
 class HFDataFormat {
 
@@ -75,12 +90,14 @@ public:
 
 
   // fill from SteppingAction
-  // fill from StackingAction
   void fillStackingAction(const StackingStruct &);
   // fill from EventAction 
 
   // fill shower particles when new track is created
   void fillParticle(const ParticleStruct &);
+
+  // fill from primary generator action
+  void fillGenerator(const GeneratorStruct &);
   
 
   // store event in tree, and clear vectors
@@ -103,6 +120,8 @@ private:
   void clearStacking();
   // clear particle vectors
   void clearParticle();
+  // clear generator vectors
+  void clearGenerator();
 
   // ------------------- member data -------------------
   TFile * m_file;
@@ -116,7 +135,8 @@ private:
   std::vector<double> * m_opt_na;
   std::vector<double> * m_opt_fx;
   std::vector<double> * m_opt_fy;
-
+  std::vector<double> * m_opt_fz;
+  std::vector<double> * m_opt_t;
 
   // shower particle branches
   std::vector<int> * m_part_pdgId;
@@ -127,6 +147,10 @@ private:
   std::vector<double> * m_part_y;
   std::vector<double> * m_part_z;
   std::vector<double> * m_part_e;
+
+  // generator (beam) parameters
+  std::vector<double> * m_gen_x;
+  std::vector<double> * m_gen_y;
 
 
 };

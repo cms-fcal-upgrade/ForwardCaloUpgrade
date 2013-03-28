@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: HFPrimaryGeneratorMessneger.cc,v 1.1 2013/03/13 10:34:17 cowden Exp $
 //
 // 
 
@@ -55,6 +55,14 @@ HFPrimaryGeneratorMessenger::HFPrimaryGeneratorMessenger(
   polarCmd->SetDefaultValue(-360.0);
   polarCmd->SetDefaultUnit("deg");
   polarCmd->AvailableForStates(G4State_Idle);
+
+  widthCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/beamWidth",this);
+  widthCmd->SetGuidance("Set the width of the beam");
+  widthCmd->SetParameterName("width",true);
+  widthCmd->SetUnitCategory("Length");
+  widthCmd->SetDefaultValue(10.0);
+  widthCmd->SetDefaultUnit("mm");
+  widthCmd->AvailableForStates(G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -77,6 +85,9 @@ void HFPrimaryGeneratorMessenger::SetNewValue(
       } else {
          HFAction->SetOptPhotonPolar(angle);
       }
+  } else if ( command == widthCmd ) {
+    G4double width = widthCmd->GetNewDoubleValue(newValue);
+    HFAction->SetBeamWidth(width);
   }
 }
 

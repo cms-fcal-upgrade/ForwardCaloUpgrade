@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFPrimaryGeneratorAction.hh,v 1.1 2013/03/13 10:34:15 cowden Exp $
+// $Id: HFPrimaryGeneratorAction.hh,v 1.2 2013/03/20 16:38:48 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -38,6 +38,7 @@
 class G4ParticleGun;
 class G4Event;
 class HFPrimaryGeneratorMessenger;
+class HFDataFormat;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -54,6 +55,9 @@ class HFPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetOptPhotonPolar();
     void SetOptPhotonPolar(G4double);
     void SetInitDist(double);
+    void SetBeamWidth(double);
+
+    inline void SetDataFormat(HFDataFormat *df) { m_df = df; }
 
   private:
 
@@ -63,6 +67,9 @@ class HFPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     HFPrimaryGeneratorMessenger* gunMessenger;
 
     double m_initDist; // initial distance from the origin
+    double m_beamWidth; // make a square beam of this width
+
+    HFDataFormat * m_df;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.cc,v 1.3 2013/03/19 21:53:25 cowden Exp $
+// $Id: HFStackingAction.cc,v 1.4 2013/03/20 16:38:48 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -86,11 +86,13 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const G4ThreeVector & pos = aTrack->GetPosition();
       const double x = pos.x();
       const double y = pos.y();
+      const double z = pos.z();
+      const double t = aTrack->GetGlobalTime();
      
 
       if ( lambda > m_lCutLow && na < m_fibreNA ) { 
         gammaCounter++;
-	StackingStruct st(lambda,E,na,x,y);
+	StackingStruct st(lambda,E,na,x,y,z,t);
         m_df->fillStackingAction(st);
       } 
     }

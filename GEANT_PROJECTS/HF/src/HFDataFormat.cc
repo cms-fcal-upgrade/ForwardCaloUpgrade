@@ -5,18 +5,20 @@
 
 HFDataFormat::HFDataFormat():m_file(NULL),m_event(NULL)
 ,m_opt_wavelength(NULL),m_opt_energy(NULL),m_opt_na(NULL)
-,m_opt_fx(NULL),m_opt_fy(NULL)
+,m_opt_fx(NULL),m_opt_fy(NULL),m_opt_fz(NULL),m_opt_t(NULL)
 ,m_part_pdgId(NULL),m_part_px(NULL),m_part_py(NULL)
 ,m_part_pz(NULL),m_part_x(NULL),m_part_y(NULL),m_part_z(NULL)
 ,m_part_e(NULL)
+,m_gen_x(NULL),m_gen_y(NULL)
 { }
 
 HFDataFormat::HFDataFormat(const std::string &fileName):
 m_opt_wavelength(NULL),m_opt_energy(NULL),m_opt_na(NULL)
-,m_opt_fx(NULL),m_opt_fy(NULL)
+,m_opt_fx(NULL),m_opt_fy(NULL),m_opt_fz(NULL),m_opt_t(NULL)
 ,m_part_pdgId(NULL),m_part_px(NULL),m_part_py(NULL)
 ,m_part_pz(NULL),m_part_x(NULL),m_part_y(NULL),m_part_z(NULL)
 ,m_part_e(NULL)
+,m_gen_x(NULL),m_gen_y(NULL)
 { 
   SetFileName(fileName);
 }
@@ -35,6 +37,8 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st)
   m_opt_na->push_back(st.na);
   m_opt_fx->push_back(st.x);
   m_opt_fy->push_back(st.y);
+  m_opt_fz->push_back(st.z);
+  m_opt_t->push_back(st.t);
 }
 
 // fill particle
@@ -53,6 +57,12 @@ void HFDataFormat::fillParticle(const ParticleStruct &pt)
   m_part_e->push_back(pt.e);
 }
 
+void HFDataFormat::fillGenerator(const GeneratorStruct &gn)
+{
+  m_gen_x->push_back(gn.x);
+  m_gen_y->push_back(gn.y);
+}
+
 
 void HFDataFormat::store()
 {
@@ -60,6 +70,7 @@ void HFDataFormat::store()
 
   clearStacking();
   clearParticle();
+  clearGenerator();
 }
 
 
@@ -83,6 +94,8 @@ void HFDataFormat::generateTrees()
   m_event->Branch("opt_na",&m_opt_na);
   m_event->Branch("opt_fx",&m_opt_fx);
   m_event->Branch("opt_fy",&m_opt_fy);
+  m_event->Branch("opt_fz",&m_opt_fz);
+  m_event->Branch("opt_t",&m_opt_t);
 
   m_event->Branch("part_pdgId",&m_part_pdgId);
   m_event->Branch("part_px",&m_part_px);
@@ -92,6 +105,9 @@ void HFDataFormat::generateTrees()
   m_event->Branch("part_y",&m_part_y);
   m_event->Branch("part_z",&m_part_z);
   m_event->Branch("part_e",&m_part_e);
+
+  m_event->Branch("gen_x",&m_gen_x);
+  m_event->Branch("gen_y",&m_gen_y);
 
 }
 
@@ -113,6 +129,8 @@ void HFDataFormat::clearStacking()
   m_opt_na->clear();
   m_opt_fx->clear();
   m_opt_fy->clear();
+  m_opt_fz->clear();
+  m_opt_t->clear();
 }
 
 void HFDataFormat::clearParticle()
@@ -126,3 +144,10 @@ void HFDataFormat::clearParticle()
   m_part_z->clear();
   m_part_e->clear();
 }
+
+void HFDataFormat::clearGenerator()
+{
+  m_gen_x->clear();
+  m_gen_y->clear();
+}
+

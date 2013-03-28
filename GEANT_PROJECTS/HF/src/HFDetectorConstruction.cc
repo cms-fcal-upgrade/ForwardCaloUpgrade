@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.cc,v 1.3 2013/03/19 21:53:25 cowden Exp $
+// $Id: HFDetectorConstruction.cc,v 1.4 2013/03/20 16:38:48 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -126,6 +126,7 @@ void HFDetectorConstruction::DefineMaterials()
   // Tungsten
   // 
   m_tungsten = new G4Material("Tungsten", z=74, a=183.19*g/mole, density=19.25*g/cm3);
+  //m_tungsten = new G4Material("Iron", z=26, a=55.845*g/mole, density=7.874*g/cm3);
 
   // Quartz
   //

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id$
+// $Id: HFPrimaryGeneratorMessenger.hh,v 1.1 2013/03/13 10:34:15 cowden Exp $
 //
 // 
 
@@ -55,6 +55,7 @@ class HFPrimaryGeneratorMessenger: public G4UImessenger
     HFPrimaryGeneratorAction* HFAction;
     G4UIdirectory*               gunDir; 
     G4UIcmdWithADoubleAndUnit*   polarCmd;
+    G4UIcmdWithADoubleAndUnit*   widthCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

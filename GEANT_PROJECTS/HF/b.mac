@@ -1,9 +1,10 @@
 #/testBeam/nRods 4
 #/testBeam/rRod 2.5 mm
+#/testBeam/beamWidth 0 mm
 
 # setup the particle gun
 /gun/particle pi-
 /gun/energy 200 GeV
 
 #
-/run/beamOn 100
+/run/beamOn 10
