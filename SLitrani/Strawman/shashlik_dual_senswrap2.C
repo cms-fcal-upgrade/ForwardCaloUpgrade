@@ -11,6 +11,9 @@
 //how to run:
 //SLitrani 'shashlik_dual_senswrap.C(1e5,0,15)'
 
+////////Original creator of this code: Kevin Pedro
+//////Modified by Shilpi Jain
+
 void shashlik_dual_senswrap2(int nphot, bool draw = false, unsigned layer = 1, unsigned nlayers = 28, double lyso_att_length = 100){
 	if(layer > nlayers+1){
 		cout << "You requested layer " << layer << ", but only " << nlayers+1 << "total layers" << endl;
