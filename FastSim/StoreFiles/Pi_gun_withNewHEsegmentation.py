@@ -89,7 +89,7 @@ process.HcalTopologyIdealEP.Eta17 = cms.untracked.vint32(1,1,2,2,3,3,4,4,5,5,6,6
 process.HcalTopologyIdealEP.Eta18 = cms.untracked.vint32(1,1,2,2,2,3,3,4,5,5,6,6,7,7,8,8,8,8,8)
 #
 process.source = cms.Source("EmptySource")
-process.p1 = cms.Path(process.generator*process.simulationSequence*process)
+process.p1 = cms.Path(process.generator*process.simulationSequence)
 #
 # "famosSimulationSequence" produces also caloRecHits. For running this
 # sequence please don't forget add in FastSimulation/CaloRecHitsProducer/src
