@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.hh,v 1.1 2013/03/13 10:34:15 cowden Exp $
+// $Id: HFStackingAction.hh,v 1.2 2013/03/15 11:23:31 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -51,41 +51,41 @@ class HFStackingAction : public G4UserStackingAction
     void PrepareNewEvent();
 
     // set the fibre index of refraction
-    inline void SetFibreIndex(double n) 
+    void SetFibreIndex(G4double n) 
       { 
 	m_nFibre = n; 
 	m_fibreNA = -1.; // force recalculation
       }
 
     // set the cladding index of refraction
-    inline void SetCladIndex(double n) 
+    void SetCladIndex(G4double n) 
       { 
 	m_nClad = n; 
 	m_fibreNA = -1.;
       }
   
     // set the low end of the optical photon wavelength cutoff
-    inline void SetOptLowCut(double c) { m_lCutLow = c; }
+    void SetOptLowCut(G4double c) { m_lCutLow = c; }
 
     // -- accessor methods
     // get the fibre index of refraction
-    inline double GetFibreIndex() const { return m_nFibre; }
+    G4double GetFibreIndex() const { return m_nFibre; }
 
     // get the cladding index of refraction
-    inline double GetCladIndex() const { return m_nClad; }
+    G4double GetCladIndex() const { return m_nClad; }
 
     // get the low wavelength cutoff for optical photons
-    inline double GetOptLowCut() const { return m_lCutLow; }
+    G4double GetOptLowCut() const { return m_lCutLow; }
 
 
   private:
     G4int gammaCounter;
 
-    double m_lCutLow; // cut off on low end of wavelength
-    double m_fibreNA; // quartz fibre numerical aperature
+    G4double m_lCutLow; // cut off on low end of wavelength
+    G4double m_fibreNA; // quartz fibre numerical aperature
 
-    double m_nFibre;
-    double m_nClad;
+    G4double m_nFibre;
+    G4double m_nClad;
 
     HFDataFormat * m_df;
 };

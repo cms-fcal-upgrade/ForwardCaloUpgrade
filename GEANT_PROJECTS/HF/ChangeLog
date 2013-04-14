@@ -1,0 +1,24 @@
+04/15/2013  Hengne Li Hengne.Li@cern.ch
+            - Moved the 1 meter long stack of the tungsten to 7.2 meters 
+              positive Z axis, i.e. starting at 6.7 meters.
+            - Increased the volume to cover |eta|>3.0, i.e. 268 rods in X.
+            - Changed all those variables that associated with an unit to 
+              G4 variable, e.g. those "double" to "G4double".
+            - Changed some "inline" functions to be not "inline", they are 
+              just not needed to be called outside their class.
+            - The file "HFPrimaryGeneratorMessneger.cc" is a typo, replaced 
+              with the right one "HFPrimaryGeneratorMessenger.cc" 
+            - Removed the hard coded flat smearing while introduced a more 
+              completed class "ParticleGunGenerator" to do all kinds of 
+              smearings. E.g. position smearing, direction angular smearing,
+              momentum smearing, and two smearing options "uniform" and  
+              "gaussian".
+            - Copied over the HepMC interface from the Shashlik project for 
+              reading in event generator files that are stored in HepMC format. 
+              This requires additional installation of the HepMC package. 
+              For the installation, please refer to:
+               http://lcgapp.cern.ch/project/simu/HepMC/
+            - Prepared a CMakeLists.txt that can be installed using cmake.
+              An installation recipy using CMake is documented in INSTALL.cmake
+
+

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: testBeam.cc,v 1.4 2013/03/20 16:38:48 cowden Exp $
+// $Id: testBeam.cc,v 1.5 2013/03/28 20:25:12 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -171,11 +171,11 @@ int main(int argc,char** argv)
   //runManager->SetUserInitialization(new QGSP_BERT);
   //
 
-  // setup the particle gun
-  G4VUserPrimaryGeneratorAction* gen_action = new HFPrimaryGeneratorAction(dynamic_cast<HFDetectorConstruction*>(detector)->GetLength());
+  // setup generator
+  G4VUserPrimaryGeneratorAction* gen_action = new HFPrimaryGeneratorAction();
   runManager->SetUserAction(gen_action);
-  dynamic_cast<HFDetectorConstruction*>(detector)->SetParticleGun(dynamic_cast<HFPrimaryGeneratorAction*>(gen_action));
-  dynamic_cast<HFPrimaryGeneratorAction*>(gen_action)->SetDataFormat(&df);
+  //dynamic_cast<HFDetectorConstruction*>(detector)->SetParticleGun(dynamic_cast<HFPrimaryGeneratorAction*>(gen_action));
+  //dynamic_cast<HFPrimaryGeneratorAction*>(gen_action)->SetDataFormat(&df);
   
 
   G4UserEventAction *event_action = new HFEventAction(&df);

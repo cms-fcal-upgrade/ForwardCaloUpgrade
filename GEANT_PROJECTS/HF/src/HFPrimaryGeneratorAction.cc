@@ -1,152 +1,57 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-// $Id: HFPrimaryGeneratorAction.cc,v 1.2 2013/03/20 16:38:48 cowden Exp $
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #include "HFPrimaryGeneratorAction.hh"
 #include "HFPrimaryGeneratorMessenger.hh"
 #include "HFDataFormat.hh"
 
-#include "Randomize.hh"
+#include "ParticleGunGenerator.hh"
+#include "HepMCG4AsciiReader.hh"
 
 #include "G4Event.hh"
-#include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-HFPrimaryGeneratorAction::HFPrimaryGeneratorAction()
-:m_initDist(50.*cm),m_beamWidth(10.0*mm)
-,m_df(NULL)
+HFPrimaryGeneratorAction::HFPrimaryGeneratorAction(void)
 {
-  initialize();
+  fMessenger = new HFPrimaryGeneratorMessenger(this);
+  fPrimaryGenerator = new ParticleGunGenerator();
 }
 
-
-HFPrimaryGeneratorAction::HFPrimaryGeneratorAction(double l)
-:m_initDist(l),m_beamWidth(10.0*mm)
-,m_df(NULL)
+HFPrimaryGeneratorAction::~HFPrimaryGeneratorAction(void)
 {
-  initialize();
+  if (fPrimaryGenerator) delete fPrimaryGenerator;
+  delete fMessenger;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-HFPrimaryGeneratorAction::~HFPrimaryGeneratorAction()
+void HFPrimaryGeneratorAction::SetGenerator(G4String genname)
 {
-  delete particleGun;
-  delete gunMessenger;
+
+  fGenName = genname;
+
+  if (fPrimaryGenerator) {
+    // First dispose of the old generator
+    delete fPrimaryGenerator;
+  }
+
+  if (fGenName == "particleGun") {
+    fPrimaryGenerator = new ParticleGunGenerator();
+  }
+  else if (fGenName == "hepmcAscii") {
+    fPrimaryGenerator = new HepMCG4AsciiReader();
+  }
+  else {
+    G4cout << "Abort: " << fGenName << "is not available. Please use particleGun and hepmcAscii." << G4endl;
+    abort();
+  }
+
 }
-
-void HFPrimaryGeneratorAction::initialize()
-{
-  G4int n_particle = 1;
-  particleGun = new G4ParticleGun(n_particle);
-  
-  //create a messenger for this class
-  gunMessenger = new HFPrimaryGeneratorMessenger(this);
-  
-  //default kinematic
-  //
-  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* particle = particleTable->FindParticle("e+");
-
-  particleGun->SetParticleDefinition(particle);
-  particleGun->SetParticleTime(0.0*ns);
-  particleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,m_initDist));
-  particleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,-1.));
-  particleGun->SetParticleEnergy(500.0*MeV);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void HFPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-
-  const double halfWidth = m_beamWidth/2.;
-  
-  const double x = CLHEP::RandFlat::shoot(-halfWidth,halfWidth);
-  const double y = CLHEP::RandFlat::shoot(-halfWidth,halfWidth);
-
-  if ( m_df ) {
-    GeneratorStruct gs(x,y);
-    m_df->fillGenerator(gs);
-  }
-
-  particleGun->SetParticlePosition(G4ThreeVector(x,y,m_initDist));
-  particleGun->GeneratePrimaryVertex(anEvent);
-
+  if (fPrimaryGenerator)
+    fPrimaryGenerator->GeneratePrimaryVertex(anEvent);
+  //else
+    //G4Exception("generator is not instantiated.");
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void HFPrimaryGeneratorAction::SetOptPhotonPolar()
-{
- G4double angle = G4UniformRand() * 360.0*deg;
- SetOptPhotonPolar(angle);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void HFPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle)
-{
- if (particleGun->GetParticleDefinition()->GetParticleName() != "opticalphoton")
-   {
-     G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
-               "the particleGun is not an opticalphoton" << G4endl;
-     return;
-   }
-                    
- G4ThreeVector normal (1., 0., 0.);
- G4ThreeVector kphoton = particleGun->GetParticleMomentumDirection();
- G4ThreeVector product = normal.cross(kphoton); 
- G4double modul2       = product*product;
- 
- G4ThreeVector e_perpend (0., 0., 1.);
- if (modul2 > 0.) e_perpend = (1./std::sqrt(modul2))*product; 
- G4ThreeVector e_paralle    = e_perpend.cross(kphoton);
- 
- G4ThreeVector polar = std::cos(angle)*e_paralle + std::sin(angle)*e_perpend;
- particleGun->SetParticlePolarization(polar);
-}
-
-void HFPrimaryGeneratorAction::SetInitDist(double dist)
-{ 
-  m_initDist = dist;
-  particleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,m_initDist));
-}
-
-void HFPrimaryGeneratorAction::SetBeamWidth(double width)
-{
-  m_beamWidth = width;
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

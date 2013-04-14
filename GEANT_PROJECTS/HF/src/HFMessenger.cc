@@ -24,7 +24,7 @@ HFMessenger::HFMessenger(HFDetectorConstruction *det)
   m_nRodCmd = new G4UIcmdWithAnInteger("/testBeam/nRods",this);
   m_nRodCmd->SetGuidance("Set number of rods along diagonal");
   m_nRodCmd->SetParameterName("nRods",false);
-  m_nRodCmd->SetDefaultValue(20);
+  m_nRodCmd->SetDefaultValue(268);
   m_nRodCmd->AvailableForStates(G4State_Idle);
   
 
@@ -38,7 +38,7 @@ HFMessenger::HFMessenger(HFDetectorConstruction *det)
   m_lengthCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/length",this);
   m_lengthCmd->SetGuidance("Set the Length of the calorimeter");
   m_lengthCmd->SetParameterName("length",false);
-  m_lengthCmd->SetDefaultValue(15);
+  m_lengthCmd->SetDefaultValue(100);
   m_lengthCmd->SetDefaultUnit("cm");
   m_lengthCmd->AvailableForStates(G4State_Idle);
 
@@ -73,20 +73,15 @@ void HFMessenger::SetNewValue(G4UIcommand* cmd,G4String newValue)
   m_nRodCmd << " " << m_rRodCmd << std::endl;
 
   if ( cmd == m_nRodCmd ) {
-    const unsigned nRod = m_nRodCmd->GetNewIntValue(newValue);
-    m_detector->SetNRods(nRod);
+    m_detector->SetNRods(m_nRodCmd->GetNewIntValue(newValue));
   } else if ( cmd == m_rRodCmd ) {
-    const double rRod = m_rRodCmd->GetNewDoubleValue(newValue); 
-    m_detector->SetRRod(rRod);
+    m_detector->SetRRod(m_rRodCmd->GetNewDoubleValue(newValue));
   } else if ( cmd == m_lengthCmd ) {
-    const double length = m_lengthCmd->GetNewDoubleValue(newValue);
-    m_detector->SetLength(length);
+    m_detector->SetLength(m_lengthCmd->GetNewDoubleValue(newValue));
   } else if ( cmd == m_fibreIndexCmd ) {
-    const double nFib = m_fibreIndexCmd->GetNewDoubleValue(newValue);
-    m_detector->SetFibreIndex(nFib);
+    m_detector->SetFibreIndex(m_fibreIndexCmd->GetNewDoubleValue(newValue));
   } else if ( cmd == m_cladIndexCmd ) {
-    const double nClad = m_cladIndexCmd->GetNewDoubleValue(newValue);
-    m_detector->SetCladIndex(nClad);
+    m_detector->SetCladIndex(m_cladIndexCmd->GetNewDoubleValue(newValue));
   }
 
 

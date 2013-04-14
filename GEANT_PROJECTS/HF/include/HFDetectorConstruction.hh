@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.hh,v 1.2 2013/03/15 11:23:31 cowden Exp $
+// $Id: HFDetectorConstruction.hh,v 1.3 2013/03/20 16:38:48 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -57,19 +57,19 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* Construct();
 
     //  set the number of W rods across the main row
-    void SetNRods(unsigned n);
+    void SetNRods(G4int n);
 
     // set the radius of the tungsten rod (the fibre radius is selected to fill the gap)
-    void SetRRod(double r);
+    void SetRRod(G4double r);
 
     // set the length of the calorimeter (longitudinal)
-    void SetLength(double l);
+    void SetLength(G4double l);
 
     // set the fibre index of refraction
-    void SetFibreIndex(double n);
+    void SetFibreIndex(G4double n);
 
     // set the cladding index of refraction
-    void SetCladIndex(double n);
+    void SetCladIndex(G4double n);
 
     // allow access to the user stacking action class HFStackingAction
     void SetStackingAction( HFStackingAction * sa);
@@ -78,14 +78,14 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     void SetParticleGun( HFPrimaryGeneratorAction *gun);
 
     // ---- accessor methods -----
-    inline void PrintCalorParameters() const { return; }
+    void PrintCalorParameters() { return; }
     
     // 
-    inline double GetNRods() const { return m_nRods; }
-    inline double GetRRod() const { return m_rRod; }
-    inline double GetLength() const { return m_length; }
-    inline double GetFibreIndex() const { return m_nFib; }
-    inline double GetCladIndex() const { return m_nClad; }
+    G4int GetNRods() { return m_nRods; }
+    G4double GetRRod() { return m_rRod; }
+    G4double GetLength() { return m_length; }
+    G4double GetFibreIndex() { return m_nFib; }
+    G4double GetCladIndex() { return m_nClad; }
 
   private:
    // -------------- private member functions --------
@@ -100,29 +100,30 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
 
 
    //  ------------- private data -------------------
-   bool m_isConstructed;
+   G4bool m_isConstructed;
 
     // parameters
     G4double m_expHall_x;
     G4double m_expHall_y;
     G4double m_expHall_z;
 
-    unsigned m_nRods;
-    double m_rRod;
-    double m_nFib;
-    double m_nClad;
-    double m_length;
-    double m_length2;
+    G4int m_nRods;
+    G4double m_rRod;
+    G4double m_nFib;
+    G4double m_nClad;
+    G4double m_length;
+    G4double m_length2;
 
-    double m_h;
-    double m_l;
-    double m_y;
-    double m_rFib;
+    G4double m_h;
+    G4double m_l;
+    G4double m_y;
+    G4double m_rFib;
 
     // materials
     G4Material * m_air;
     G4Material * m_quartz;
     G4Material * m_tungsten;
+    G4Material * m_iron;
 
     // primitives
     G4Box * m_expHall_box;

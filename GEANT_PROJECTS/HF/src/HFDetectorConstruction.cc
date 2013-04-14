@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.cc,v 1.4 2013/03/20 16:38:48 cowden Exp $
+// $Id: HFDetectorConstruction.cc,v 1.5 2013/03/28 20:25:13 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -58,15 +58,16 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 HFDetectorConstruction::HFDetectorConstruction()
-:m_isConstructed(false), m_nRods(20),m_rRod(2.5*mm),m_nFib(1.457),m_nClad(1.42)
-,m_stacking(NULL),m_gun(NULL)
+:m_isConstructed(false), m_nRods(268),m_rRod(2.5*mm),m_nFib(1.457),m_nClad(1.42)
+,m_stacking(NULL)
+//,m_gun(NULL)
 {
 
-  m_expHall_z = 100.0*cm;
-  m_expHall_x = 50.*cm;
-  m_expHall_y = 50.*cm;
+  m_expHall_z = 20.0*m;
+  m_expHall_x = 5.0*m;
+  m_expHall_y = 5.0*m;
 
-  m_length = 50.*cm;
+  m_length = 100.*cm;
 
   m_messenger = new HFMessenger(this);
 }
@@ -126,7 +127,9 @@ void HFDetectorConstruction::DefineMaterials()
   // Tungsten
   // 
   m_tungsten = new G4Material("Tungsten", z=74, a=183.19*g/mole, density=19.25*g/cm3);
-  //m_tungsten = new G4Material("Iron", z=26, a=55.845*g/mole, density=7.874*g/cm3);
+
+  // Iron
+  m_iron = new G4Material("Iron", z=26, a=55.845*g/mole, density=7.874*g/cm3);
 
   // Quartz
   //
@@ -180,7 +183,7 @@ void HFDetectorConstruction::SetupWorld()
     = new G4LogicalVolume(m_expHall_box,m_air,"World",0,0,0);
 
   m_expHall_phys
-    = new G4PVPlacement(0,G4ThreeVector(),m_expHall_log,"World",0,false,0);
+    = new G4PVPlacement(0,G4ThreeVector(0, 0, 0),m_expHall_log,"World",0,false,0);
 
 }
 
@@ -211,52 +214,54 @@ void HFDetectorConstruction::SetupGeometry()
 void HFDetectorConstruction::SetupDetectors()
 { 
 
-
+  G4double zPos = 7.2*m;
+  
   const unsigned n = m_nRods;
   //const unsigned nRods = 2*(n*(n+1)/2-n*(n/2+1)/4)-n;
-  unsigned count=0U;
+  int count=0;
 
   // create main row
-  const double xStart = m_rRod*(n-1);
+  G4double xStart = m_rRod*(n-1);
   for ( unsigned i=0; i != n; i++ ) {
-    const double xPos = 2*i*m_rRod-xStart;
+    G4double xPos = 2*i*m_rRod-xStart;
     char name[6];
     sprintf(name,"rod%d",count);
 
-    m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,0.,0.),m_tungRod_log,name,m_expHall_log,false,count++,true));
+    m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,0.,zPos),m_tungRod_log,name,m_expHall_log,false,count++,false));
   }
 
   // create upper portion
   const unsigned nd2 = n/2;
   for ( unsigned row = 0; row != nd2; row++ ) {
-    const double xStartr = xStart-(row+1)*m_rRod;
-    const double yPos = m_h*(row+1);
-    const unsigned nR = n-row-1U;
+    G4double xStartr = xStart-(row+1)*m_rRod;
+    G4double yPos = m_h*(row+1);
+    const unsigned nR = n-row-1;
     for ( unsigned i=0; i != nR; i++ ) {
-      const double xPos = 2*i*m_rRod-xStartr;
+      G4double xPos = 2*i*m_rRod-xStartr;
       char name[6];
       sprintf(name,"rod%d",count);
       
-      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_tungRod_log,name,m_expHall_log,false,count++,true));
+      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,zPos),m_tungRod_log,name,m_expHall_log,false,count++,false));
     }
   }
 
   // create lower portion
   for ( unsigned row = 0; row != nd2; row++ ) {
-    const double xStartr = xStart-(row+1)*m_rRod;
-    const double yPos = -m_h*(row+1U);
-    const unsigned nR = n-row-1U;
+    G4double xStartr = xStart-(row+1)*m_rRod;
+    G4double yPos = -m_h*(row+1);
+    const unsigned nR = n-row-1;
     for ( unsigned i=0; i != nR; i++ ) {
-      const double xPos = 2*i*m_rRod-xStartr;
+      G4double xPos = 2*i*m_rRod-xStartr;
       char name[6];
       sprintf(name,"rod%d",count);
       
-      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_tungRod_log,name,m_expHall_log,false,count++,true));
+      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,zPos),m_tungRod_log,name,m_expHall_log,false,count++,false));
     }
   }
 
 
-
+  // 
+  G4cout << "Total Number of rods: " << count << G4endl;
   //
   // insert fibers
 
@@ -266,44 +271,46 @@ void HFDetectorConstruction::SetupDetectors()
   count = 0;
   // create upper lattice
   for ( unsigned row = 0; row != nd2; row++ ) {
-    const double xStartr = xStart-(row+1)*m_rRod;
-    const double yPosLow = m_h*(row+1U)-m_l;
-    const double yPosHigh = m_h*(row+1U)-m_y;
-    const unsigned nR = n-row-1U;
+    G4double xStartr = xStart-(row+1)*m_rRod;
+    G4double yPosLow = m_h*(row+1)-m_l;
+    G4double yPosHigh = m_h*(row+1)-m_y;
+    const unsigned nR = n-row-1;
     const unsigned nF = 2*(nR-1)+1;
     for ( unsigned i=0; i != nF; i++ ) {
-      const double xPos = i*m_rRod-xStartr;
+      G4double xPos = i*m_rRod-xStartr;
       char name[6];
       sprintf(name,"fib%d",count);
      
-      if ( i%2 == 1 ) m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,0.),m_qFibre_log,name,m_expHall_log,false,count++,true));
-      else m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,0.),m_qFibre_log,name,m_expHall_log,false,count++,true));
+      if ( i%2 == 1 ) m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
+      else m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
     }
   }
 
   // create lower lattice
   for ( unsigned row = 0; row != nd2; row++ ) {
-    const double xStartr = xStart-(row+1)*m_rRod;
-    const double yPosLow = -m_h*(row+1U)+m_y;
-    const double yPosHigh = -m_h*(row+1U)+m_l;
-    const unsigned nR = n-row-1U;
+    G4double xStartr = xStart-(row+1)*m_rRod;
+    G4double yPosLow = -m_h*(row+1)+m_y;
+    G4double yPosHigh = -m_h*(row+1)+m_l;
+    const unsigned nR = n-row-1;
     const unsigned nF = 2*(nR-1)+1;
     for ( unsigned i=0; i != nF; i++ ) {
-      const double xPos = i*m_rRod-xStartr;
+      G4double xPos = i*m_rRod-xStartr;
       char name[6];
       sprintf(name,"fib%d",count);
     
-      if ( i%2 == 0 ) m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,0.),m_qFibre_log,name,m_expHall_log,false,count++,true));
-      else m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,0.),m_qFibre_log,name,m_expHall_log,false,count++,true));
+      if ( i%2 == 0 ) m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
+      else m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
     }
   }
 
+  //
+  G4cout << "Total Number of fibers: " << count << G4endl;
 
 
   // ------------- Surfaces and Optical Properties --------------
 
 
-  const unsigned nEnergies = 3U;
+  const unsigned nEnergies = 3;
   G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
   G4double qRindex[nEnergies] = {m_nFib, m_nFib, m_nFib};   
 
@@ -322,19 +329,19 @@ void HFDetectorConstruction::CalculateConstants()
   m_l = 2.*sqrt(3.)*m_rRod/3;
   m_rFib = 0.99*(m_l-m_rRod);
 
-  if ( m_length > m_expHall_z ) m_expHall_z = 1.10*m_length;
-  const double width = m_nRods*m_rRod;
-  if ( width > m_expHall_x ) { 
-    m_expHall_x =  1.10*width;
-    m_expHall_y = 1.1 * width;
-  }
+  //if ( m_length > m_expHall_z ) m_expHall_z = 1.10*m_length;
+  //G4double width = m_nRods*m_rRod;
+  //if ( width > m_expHall_x ) { 
+  //  m_expHall_x =  1.10*width;
+  //  m_expHall_y = 1.1 * width;
+  //}
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 
-void HFDetectorConstruction::SetNRods(unsigned n)
+void HFDetectorConstruction::SetNRods(G4int n)
 {
   m_nRods = n;
   if ( !m_isConstructed ) return;
@@ -352,7 +359,7 @@ void HFDetectorConstruction::SetNRods(unsigned n)
 }
 
 
-void HFDetectorConstruction::SetRRod(double r)
+void HFDetectorConstruction::SetRRod(G4double r)
 { 
   m_rRod = r;
 
@@ -369,7 +376,7 @@ void HFDetectorConstruction::SetRRod(double r)
 
 }
 
-void HFDetectorConstruction::SetLength(double l)
+void HFDetectorConstruction::SetLength(G4double l)
 {
 
   m_length = l;
@@ -383,21 +390,21 @@ void HFDetectorConstruction::SetLength(double l)
   SetupGeometry();
   SetupDetectors(); 
 
-  if ( m_gun ) {
-    m_gun->SetInitDist(m_length);
-  }
+  //if ( m_gun ) {
+  //  m_gun->SetInitDist(m_length);
+  //}
 
   G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
 
 }
 
-void HFDetectorConstruction::SetFibreIndex(double n)
+void HFDetectorConstruction::SetFibreIndex(G4double n)
 {
   m_nFib = n;
 
   if ( !m_isConstructed ) return;
 
-  const unsigned nEnergies = 3U;
+  const unsigned nEnergies = 3;
   G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
   G4double qRindex[nEnergies] = {m_nFib, m_nFib, m_nFib};   
 
@@ -413,7 +420,7 @@ void HFDetectorConstruction::SetFibreIndex(double n)
 
 }
 
-void HFDetectorConstruction::SetCladIndex(double n)
+void HFDetectorConstruction::SetCladIndex(G4double n)
 {
   m_nClad = n;
   if ( m_stacking ) {
@@ -469,9 +476,9 @@ void HFDetectorConstruction::SetStackingAction( HFStackingAction *sa )
 }
 
 
-void HFDetectorConstruction::SetParticleGun( HFPrimaryGeneratorAction *gun )
-{
-  m_gun = gun;
-}
+//void HFDetectorConstruction::SetParticleGun( HFPrimaryGeneratorAction *gun )
+//{
+//  m_gun = gun;
+//}
 
 
