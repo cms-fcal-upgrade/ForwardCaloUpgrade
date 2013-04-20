@@ -9,7 +9,7 @@
 
  For running job you need to perform the next steps:
 
- 1. source config.csh - set environment;
+ 1. source config.csh or config.sh - set environment;
 
  2. make JetsGen - produce executable;
 
