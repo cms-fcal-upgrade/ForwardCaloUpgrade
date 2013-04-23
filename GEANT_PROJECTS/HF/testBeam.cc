@@ -54,7 +54,6 @@
 #include "LHEP.hh"
 #include "QGSP_BERT.hh"
 
-#include "HFPhysicsList.hh"
 #include "HFPrimaryGeneratorAction.hh"
 #include "HFDetectorConstruction.hh"
 #include "HFRunAction.hh"
@@ -77,7 +76,7 @@ void printUsage(int argc, char **argv)
   if ( argv ) std::cout << argv[0] << " ";
   std::cout << " [options] [macroFile]" << std::endl;
   std::cout << "\t -o outputFile\t the name of the output ROOT file\n"
-	    << "\t -p physics\t the name of the physics list [default: LHEP]\n"
+	    << "\t -p physics\t the name of the physics list [default: FTFP_BERT]\n"
             << "\t -h\t print this help message and quit" << std::endl;
 }
 
@@ -143,7 +142,7 @@ int main(int argc,char** argv)
   }
 
   if ( "" == physName || factory.IsReferencePhysList(physName)) {
-    physName = "LHEP";
+    physName = "FTFP_BERT";
   } 
  
   std::cout << "Using physics list: " << physName << std::endl; 
@@ -164,18 +163,14 @@ int main(int argc,char** argv)
   runManager-> SetUserInitialization(detector);
 
   // set physics list
-  //G4VUserPhysicsList* physics = new HFPhysicsList;
   G4VModularPhysicsList * physics = factory.GetReferencePhysList(physName);
   physics->RegisterPhysics(new G4EmUserPhysics(0));
   runManager-> SetUserInitialization(physics);
-  //runManager->SetUserInitialization(new QGSP_BERT);
-  //
 
   // setup generator
-  G4VUserPrimaryGeneratorAction* gen_action = new HFPrimaryGeneratorAction();
+  HFPrimaryGeneratorAction* gen_action = new HFPrimaryGeneratorAction();
+  gen_action->SetDataFormat(&df);
   runManager->SetUserAction(gen_action);
-  //dynamic_cast<HFDetectorConstruction*>(detector)->SetParticleGun(dynamic_cast<HFPrimaryGeneratorAction*>(gen_action));
-  //dynamic_cast<HFPrimaryGeneratorAction*>(gen_action)->SetDataFormat(&df);
   
 
   G4UserEventAction *event_action = new HFEventAction(&df);
