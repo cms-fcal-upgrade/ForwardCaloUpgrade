@@ -41,6 +41,7 @@ public:
   void SetGunMomentum(G4double gunMomentum);                       // non-trivial
   void SetGunMomentumStep(G4double gunMomentumStep)                { fGunMomentumStep = gunMomentumStep; }
   void SetGunMomentumSmearing(G4double gunMomentumSmearing)        { fGunMomentumSmearing = gunMomentumSmearing; }
+  void SetGunPositionSmearingMode(ESmearingMode smearingMode)     { fGunPositionSmearingMode = smearingMode; }
   void SetGunDirectionSmearingMode(ESmearingMode smearingMode)     { fGunDirectionSmearingMode = smearingMode; }
   void SetGunMomentumSmearingMode(ESmearingMode smearingMode)      { fGunMomentumSmearingMode = smearingMode; }
   void SetOptPhotonPolar(void);
@@ -57,9 +58,12 @@ public:
   G4double GetGunMomentum(void);                                   // non-trivial
   G4double GetGunMomentumStep(void)                                { return fGunMomentumStep; }
   G4double GetGunMomentumSmearing(void)                            { return fGunMomentumSmearing; }
+  ESmearingMode GetGunPositionSmearingMode(void)                  { return fGunPositionSmearingMode; }
   ESmearingMode GetGunDirectionSmearingMode(void)                  { return fGunDirectionSmearingMode; }
   ESmearingMode GetGunMomentumSmearingMode(void)                   { return fGunMomentumSmearingMode; }
   G4double GetOptPhotonPolar(void)                                 { return fGunOptPolar; }
+  G4ThreeVector GetGunPosition(void)                               { return fGunPosition; }
+  
 
 private:
   G4ParticleGun * fParticleGun;
@@ -72,8 +76,11 @@ private:
   G4double      fGunPhiStep;
   G4double      fGunPhiSmearing;
   G4double      fGunMomentumStep;
+
+  G4ThreeVector fGunPosition;
   
   G4double      fGunMomentumSmearing;
+  ESmearingMode fGunPositionSmearingMode;
   ESmearingMode fGunDirectionSmearingMode;
   ESmearingMode fGunMomentumSmearingMode;
 

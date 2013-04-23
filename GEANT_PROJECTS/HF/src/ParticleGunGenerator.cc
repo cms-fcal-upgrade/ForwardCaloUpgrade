@@ -38,8 +38,11 @@ ParticleGunGenerator::ParticleGunGenerator(void):
   fGunPhiSmearing = 0;
   fGunMomentumStep = 0;
   fGunMomentumSmearing = 0;
+  fGunPositionSmearingMode = kGaussian;
   fGunDirectionSmearingMode = kGaussian;
   fGunMomentumSmearingMode = kGaussian;
+
+  fGunPosition = G4ThreeVector(0,0,0);
 }
 
 ParticleGunGenerator::~ParticleGunGenerator(void)
@@ -78,10 +81,23 @@ void ParticleGunGenerator::GeneratePrimaryVertex(G4Event *evt)
   const G4double savedMomentum = this->GetGunMomentum(); // needs to be calculated
 
   // perform smearing of position, ...
-  const G4double smearedPositionX = G4RandGauss::shoot(savedPosition.getX(), fGunPositionSmearing.getX());
-  const G4double smearedPositionY = G4RandGauss::shoot(savedPosition.getY(), fGunPositionSmearing.getY());
-  const G4double smearedPositionZ = G4RandGauss::shoot(savedPosition.getZ(), fGunPositionSmearing.getZ());
-  const G4ThreeVector smearedPosition(smearedPositionX, smearedPositionY, smearedPositionZ);
+  //const G4double smearedPositionX = G4RandGauss::shoot(savedPosition.getX(), fGunPositionSmearing.getX());
+  //const G4double smearedPositionY = G4RandGauss::shoot(savedPosition.getY(), fGunPositionSmearing.getY());
+  //const G4double smearedPositionZ = G4RandGauss::shoot(savedPosition.getZ(), fGunPositionSmearing.getZ());
+  //const G4ThreeVector smearedPosition(smearedPositionX, smearedPositionY, smearedPositionZ);
+  G4ThreeVector smearedPosition(savedPosition.getX(), savedPosition.getY(), savedPosition.getZ());
+  switch (fGunPositionSmearingMode) {
+    case kGaussian:
+      smearedPosition.setX(G4RandGauss::shoot(savedPosition.getX(), fGunPositionSmearing.getX()));
+      smearedPosition.setY(G4RandGauss::shoot(savedPosition.getY(), fGunPositionSmearing.getY()));
+      smearedPosition.setZ(G4RandGauss::shoot(savedPosition.getZ(), fGunPositionSmearing.getZ()));
+    case kUniform:
+      smearedPosition.setX(G4RandFlat::shoot(-0.5*fGunPositionSmearing.getX(), +0.5*fGunPositionSmearing.getX()));
+      smearedPosition.setY(G4RandFlat::shoot(-0.5*fGunPositionSmearing.getY(), +0.5*fGunPositionSmearing.getY()));
+      smearedPosition.setZ(G4RandFlat::shoot(-0.5*fGunPositionSmearing.getZ(), +0.5*fGunPositionSmearing.getZ()));
+  }
+
+  fGunPosition = smearedPosition;
 
   // ... direction, ...
   G4ThreeVector smearedDirection(0, 0, 1); // dummy unit vector
