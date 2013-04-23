@@ -19,7 +19,7 @@
 #include "globals.hh"
 
 #include "G4ThreeVector.hh"
-
+#include "HFDataFormatMessenger.hh"
 
 ///
 /// The StackingStruct helps to pass data from the HFStackingAction
@@ -82,7 +82,6 @@ class HFDataFormat {
 
 public:
 
-  HFDataFormat();
   // constructor, provide output ROOT file name
   HFDataFormat(const std::string &fileName);
 
@@ -106,14 +105,31 @@ public:
   // dump file and close   
   void fileDump();
 
-  // set the file name
+  // set the file name and create tree
   void SetFileName(const G4String &fileName);
 
+  // generate tree branches
+  void generateTrees();
+
+  // set and get store options
+  void SetStoreOpticalInfo(G4bool store)    { _storeOpticalInfo = store; }
+  void SetStoreParticleInfo(G4bool store)    { _storeParticleInfo = store; }
+  void SetStoreGeneratorInfo(G4bool store)    { _storeGeneratorInfo = store; }
+ 
+  G4bool GetStoreOpticalInfo()          { return _storeOpticalInfo; }
+  G4bool GetStoreParticleInfo()          { return _storeParticleInfo; }
+  G4bool GetStoreGeneratorInfo()          { return _storeGeneratorInfo; }
+ 
 
 private:
 
-  // generate trees
-  void generateTrees();
+
+  // messenger
+  HFDataFormatMessenger* _messenger;
+  // options in storage
+  G4bool _storeOpticalInfo;
+  G4bool _storeParticleInfo;
+  G4bool _storeGeneratorInfo;
 
   // clear vectors in trees
   // clear stacking vectors
@@ -130,27 +146,27 @@ private:
 
   // tree branches
   // event branches
-  std::vector<double> * m_opt_wavelength;
-  std::vector<double> * m_opt_energy;
-  std::vector<double> * m_opt_na;
-  std::vector<double> * m_opt_fx;
-  std::vector<double> * m_opt_fy;
-  std::vector<double> * m_opt_fz;
-  std::vector<double> * m_opt_t;
+  std::vector<double>  m_opt_wavelength;
+  std::vector<double>  m_opt_energy;
+  std::vector<double>  m_opt_na;
+  std::vector<double>  m_opt_fx;
+  std::vector<double>  m_opt_fy;
+  std::vector<double>  m_opt_fz;
+  std::vector<double>  m_opt_t;
 
   // shower particle branches
-  std::vector<int> * m_part_pdgId;
-  std::vector<double> * m_part_px;
-  std::vector<double> * m_part_py;
-  std::vector<double> * m_part_pz;
-  std::vector<double> * m_part_x;
-  std::vector<double> * m_part_y;
-  std::vector<double> * m_part_z;
-  std::vector<double> * m_part_e;
+  std::vector<int>  m_part_pdgId;
+  std::vector<double>  m_part_px;
+  std::vector<double>  m_part_py;
+  std::vector<double>  m_part_pz;
+  std::vector<double>  m_part_x;
+  std::vector<double>  m_part_y;
+  std::vector<double>  m_part_z;
+  std::vector<double>  m_part_e;
 
   // generator (beam) parameters
-  std::vector<double> * m_gen_x;
-  std::vector<double> * m_gen_y;
+  std::vector<double>  m_gen_x;
+  std::vector<double>  m_gen_y;
 
 
 };

@@ -3,28 +3,19 @@
 
 #include <iostream>
 
-HFDataFormat::HFDataFormat():m_file(NULL),m_event(NULL)
-,m_opt_wavelength(NULL),m_opt_energy(NULL),m_opt_na(NULL)
-,m_opt_fx(NULL),m_opt_fy(NULL),m_opt_fz(NULL),m_opt_t(NULL)
-,m_part_pdgId(NULL),m_part_px(NULL),m_part_py(NULL)
-,m_part_pz(NULL),m_part_x(NULL),m_part_y(NULL),m_part_z(NULL)
-,m_part_e(NULL)
-,m_gen_x(NULL),m_gen_y(NULL)
-{ }
-
-HFDataFormat::HFDataFormat(const std::string &fileName):
-m_opt_wavelength(NULL),m_opt_energy(NULL),m_opt_na(NULL)
-,m_opt_fx(NULL),m_opt_fy(NULL),m_opt_fz(NULL),m_opt_t(NULL)
-,m_part_pdgId(NULL),m_part_px(NULL),m_part_py(NULL)
-,m_part_pz(NULL),m_part_x(NULL),m_part_y(NULL),m_part_z(NULL)
-,m_part_e(NULL)
-,m_gen_x(NULL),m_gen_y(NULL)
-{ 
+HFDataFormat::HFDataFormat(const std::string &fileName)
+{
+  _storeOpticalInfo = true;
+  _storeParticleInfo = true;
+  _storeGeneratorInfo = true; 
+  _messenger = new HFDataFormatMessenger(this);
   SetFileName(fileName);
 }
 
 HFDataFormat::~HFDataFormat()
-{ }
+{ 
+  delete _messenger;
+}
 
 
 
@@ -32,35 +23,38 @@ HFDataFormat::~HFDataFormat()
 // fill from stacking
 void HFDataFormat::fillStackingAction(const StackingStruct &st) 
 {
-  m_opt_wavelength->push_back(st.wavelength);
-  m_opt_energy->push_back(st.energy);
-  m_opt_na->push_back(st.na);
-  m_opt_fx->push_back(st.x);
-  m_opt_fy->push_back(st.y);
-  m_opt_fz->push_back(st.z);
-  m_opt_t->push_back(st.t);
+  if (_storeOpticalInfo){
+    m_opt_wavelength.push_back(st.wavelength);
+    m_opt_energy.push_back(st.energy);
+    m_opt_na.push_back(st.na);
+    m_opt_fx.push_back(st.x);
+    m_opt_fy.push_back(st.y);
+    m_opt_fz.push_back(st.z);
+    m_opt_t.push_back(st.t);
+  }
 }
 
 // fill particle
 void HFDataFormat::fillParticle(const ParticleStruct &pt)
 {
-  m_part_pdgId->push_back(pt.pdgID);
-
-  m_part_px->push_back(pt.px);
-  m_part_py->push_back(pt.py);
-  m_part_pz->push_back(pt.pz);
-
-  m_part_x->push_back(pt.x);
-  m_part_y->push_back(pt.y);
-  m_part_z->push_back(pt.z);
-
-  m_part_e->push_back(pt.e);
+  if (_storeParticleInfo){
+    m_part_pdgId.push_back(pt.pdgID);
+    m_part_px.push_back(pt.px);
+    m_part_py.push_back(pt.py);
+    m_part_pz.push_back(pt.pz);
+    m_part_x.push_back(pt.x);
+    m_part_y.push_back(pt.y);
+    m_part_z.push_back(pt.z);
+    m_part_e.push_back(pt.e);
+  }
 }
 
 void HFDataFormat::fillGenerator(const GeneratorStruct &gn)
 {
-  m_gen_x->push_back(gn.x);
-  m_gen_y->push_back(gn.y);
+  if (_storeGeneratorInfo){
+    m_gen_x.push_back(gn.x);
+    m_gen_y.push_back(gn.y);
+  }
 }
 
 
@@ -86,28 +80,32 @@ void HFDataFormat::fileDump()
 void HFDataFormat::generateTrees()
 {
 
-  m_event = new TTree("event","event");
-
   // generate event tree
-  m_event->Branch("opt_wavelength",&m_opt_wavelength);
-  m_event->Branch("opt_energy",&m_opt_energy);
-  m_event->Branch("opt_na",&m_opt_na);
-  m_event->Branch("opt_fx",&m_opt_fx);
-  m_event->Branch("opt_fy",&m_opt_fy);
-  m_event->Branch("opt_fz",&m_opt_fz);
-  m_event->Branch("opt_t",&m_opt_t);
+  if (_storeOpticalInfo){
+    m_event->Branch("opt_wavelength",&m_opt_wavelength);
+    m_event->Branch("opt_energy",&m_opt_energy);
+    m_event->Branch("opt_na",&m_opt_na);
+    m_event->Branch("opt_fx",&m_opt_fx);
+    m_event->Branch("opt_fy",&m_opt_fy);
+    m_event->Branch("opt_fz",&m_opt_fz);
+    m_event->Branch("opt_t",&m_opt_t);
+  }
 
-  m_event->Branch("part_pdgId",&m_part_pdgId);
-  m_event->Branch("part_px",&m_part_px);
-  m_event->Branch("part_py",&m_part_py);
-  m_event->Branch("part_pz",&m_part_pz);
-  m_event->Branch("part_x",&m_part_x);
-  m_event->Branch("part_y",&m_part_y);
-  m_event->Branch("part_z",&m_part_z);
-  m_event->Branch("part_e",&m_part_e);
-
-  m_event->Branch("gen_x",&m_gen_x);
-  m_event->Branch("gen_y",&m_gen_y);
+  if (_storeParticleInfo){
+    m_event->Branch("part_pdgId",&m_part_pdgId);
+    m_event->Branch("part_px",&m_part_px);
+    m_event->Branch("part_py",&m_part_py);
+    m_event->Branch("part_pz",&m_part_pz);
+    m_event->Branch("part_x",&m_part_x);
+    m_event->Branch("part_y",&m_part_y);
+    m_event->Branch("part_z",&m_part_z);
+    m_event->Branch("part_e",&m_part_e);
+  }
+  
+  if (_storeGeneratorInfo){
+    m_event->Branch("gen_x",&m_gen_x);
+    m_event->Branch("gen_y",&m_gen_y);
+  }
 
 }
 
@@ -115,7 +113,8 @@ void HFDataFormat::SetFileName(const G4String &fileName)
 {
 
   m_file = new TFile(fileName.c_str(),"RECREATE");
-  generateTrees();
+  
+  m_event = new TTree("event","event");
 
   std::cout << "HF Created " << fileName << std::endl;
 
@@ -124,30 +123,36 @@ void HFDataFormat::SetFileName(const G4String &fileName)
 
 void HFDataFormat::clearStacking()
 {
-  m_opt_wavelength->clear();
-  m_opt_energy->clear();
-  m_opt_na->clear();
-  m_opt_fx->clear();
-  m_opt_fy->clear();
-  m_opt_fz->clear();
-  m_opt_t->clear();
+  if (_storeOpticalInfo){
+    m_opt_wavelength.clear();
+    m_opt_energy.clear();
+    m_opt_na.clear();
+    m_opt_fx.clear();
+    m_opt_fy.clear();
+    m_opt_fz.clear();
+    m_opt_t.clear();
+  }
 }
 
 void HFDataFormat::clearParticle()
 {
-  m_part_pdgId->clear();
-  m_part_px->clear();
-  m_part_py->clear();
-  m_part_pz->clear();
-  m_part_x->clear();
-  m_part_y->clear();
-  m_part_z->clear();
-  m_part_e->clear();
+  if (_storeParticleInfo){
+    m_part_pdgId.clear();
+    m_part_px.clear();
+    m_part_py.clear();
+    m_part_pz.clear();
+    m_part_x.clear();
+    m_part_y.clear();
+    m_part_z.clear();
+    m_part_e.clear();
+  }
 }
 
 void HFDataFormat::clearGenerator()
 {
-  m_gen_x->clear();
-  m_gen_y->clear();
+  if (_storeGeneratorInfo){
+    m_gen_x.clear();
+    m_gen_y.clear();
+  }
 }
 
