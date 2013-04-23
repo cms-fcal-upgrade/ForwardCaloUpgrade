@@ -1,3 +1,20 @@
+04/23/2013  Hengne Li Hengne.Li@cern.ch
+            - using "FTFP_BERT" physics list as default in replacement of "LHEP" 
+              since the later is declared to be no longer supported in recent/future 
+              Geant4 version. 
+            - modified class HepMCG4AsciiReader to be independent of 
+              class HepMCG4Interface
+            - removed redundant classes: HepMCG4Interface, HFPhysicsList, and 
+              HFPhysicsListMessenger 
+            - change class name HFMessenger to be HFDetectorConstructionMessenger 
+              since it only serves for class HFDetectorConstruction.
+            - ParticleGun: 
+               - added back the method to store the particle gun positions that 
+                  was not reimplemented in the last update.
+               - users can choose for particle gun position smearing methods: flat or gaussian.
+            - DataFormat:
+               - added methods to select the information to store in the output root file.
+               - fixed crashes in certain circumstances when storing only part of the information.
 04/15/2013  Hengne Li Hengne.Li@cern.ch
             - Moved the 1 meter long stack of the tungsten to 7.2 meters 
               positive Z axis, i.e. starting at 6.7 meters.
