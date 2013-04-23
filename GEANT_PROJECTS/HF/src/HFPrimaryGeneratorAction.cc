@@ -48,10 +48,21 @@ void HFPrimaryGeneratorAction::SetGenerator(G4String genname)
 
 void HFPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
-  if (fPrimaryGenerator)
+  if (fPrimaryGenerator) {
     fPrimaryGenerator->GeneratePrimaryVertex(anEvent);
-  //else
-    //G4Exception("generator is not instantiated.");
-}
 
+    if ( fGenName == "particleGun") {
+      if ( m_df ) {
+        double x = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunPosition()[0];
+        double y = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunPosition()[1];
+        GeneratorStruct gs(x,y);
+        m_df->fillGenerator(gs);
+      }
+    }
+  }
+  else{
+    G4cout << "generator is not instantiated." << G4endl;
+    abort();
+  }
+}
 
