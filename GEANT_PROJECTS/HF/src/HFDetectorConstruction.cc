@@ -69,7 +69,7 @@ HFDetectorConstruction::HFDetectorConstruction()
 
   m_length = 100.*cm;
 
-  m_messenger = new HFMessenger(this);
+  m_messenger = new HFDetectorConstructionMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

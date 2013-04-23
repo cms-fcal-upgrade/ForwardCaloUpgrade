@@ -34,7 +34,7 @@
 
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
-#include "HFMessenger.hh"
+#include "HFDetectorConstructionMessenger.hh"
 
 class G4LogicalVolume;
 class G4PhysicalVolume;
@@ -140,7 +140,7 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_rods;
     std::vector<G4VPhysicalVolume *> m_fibres;
 
-    HFMessenger *m_messenger;
+    HFDetectorConstructionMessenger *m_messenger;
     HFStackingAction * m_stacking;
     HFPrimaryGeneratorAction *m_gun;
 };
