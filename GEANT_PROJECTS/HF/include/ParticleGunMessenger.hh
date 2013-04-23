@@ -42,6 +42,7 @@ private:
   G4UIcmdWithADoubleAndUnit *fGunMomentumCmd;
   G4UIcmdWithADoubleAndUnit *fGunMomentumStepCmd;
   G4UIcmdWithADoubleAndUnit *fGunMomentumSmearingCmd;
+  G4UIcmdWithAString        *fGunPositionSmearingModeCmd;
   G4UIcmdWithAString        *fGunDirectionSmearingModeCmd;
   G4UIcmdWithAString        *fGunMomentumSmearingModeCmd;
   G4UIcmdWithoutParameter   *fGunInfoCmd;
