@@ -82,6 +82,14 @@ ParticleGunMessenger::ParticleGunMessenger(ParticleGunGenerator *primaryGenerato
   fGunMomentumSmearingCmd->SetDefaultValue(0);
   fGunMomentumSmearingCmd->SetDefaultUnit("GeV"); // as in "/gun/energy"
   
+  fGunPositionSmearingModeCmd = new G4UIcmdWithAString("/gun/positionSmearingMode", this);
+  fGunPositionSmearingModeCmd->SetGuidance("Select a smearing mode for the particle gun position");
+  fGunPositionSmearingModeCmd->SetGuidance("  \"gaussian\" - smearing values mean gaussian sigma");
+  fGunPositionSmearingModeCmd->SetGuidance("  \"uniform\"  - smearing values mean half the width");
+  fGunPositionSmearingModeCmd->SetGuidance("See also \"/gun/positionSmearing\".");
+  fGunPositionSmearingModeCmd->SetParameterName("smearingMode", false); // not omittable
+  fGunPositionSmearingModeCmd->SetCandidates("gaussian uniform");
+ 
   fGunDirectionSmearingModeCmd = new G4UIcmdWithAString("/gun/directionSmearingMode", this);
   fGunDirectionSmearingModeCmd->SetGuidance("Select a smearing mode for the angular uncertainties.");
   fGunDirectionSmearingModeCmd->SetGuidance("  \"gaussian\" - smearing values mean gaussian sigma");
@@ -89,7 +97,7 @@ ParticleGunMessenger::ParticleGunMessenger(ParticleGunGenerator *primaryGenerato
   fGunDirectionSmearingModeCmd->SetGuidance("See also \"/gun/thetaSmearing\" and \"/gun/phiSmearing\".");
   fGunDirectionSmearingModeCmd->SetParameterName("smearingMode", false); // not omittable
   fGunDirectionSmearingModeCmd->SetCandidates("gaussian uniform");
-  
+ 
   fGunMomentumSmearingModeCmd = new G4UIcmdWithAString("/gun/momentumSmearingMode", this);
   fGunMomentumSmearingModeCmd->SetGuidance("Select a smearing mode for the momentum uncertainties.");
   fGunMomentumSmearingModeCmd->SetGuidance("  \"gaussian\" - smearing values mean gaussian sigma");
@@ -117,6 +125,7 @@ ParticleGunMessenger::~ParticleGunMessenger(void)
 {
   delete fGunInfoCmd;
   delete fGunMomentumSmearingModeCmd;
+  delete fGunPositionSmearingModeCmd;
   delete fGunDirectionSmearingModeCmd;
   delete fGunMomentumSmearingCmd;
   delete fGunMomentumStepCmd;
@@ -141,7 +150,10 @@ void ParticleGunMessenger::SetNewValue(G4UIcommand *command, G4String newValue)
   else if (command == fGunMomentumCmd)         fPrimaryGenerator->SetGunMomentum(fGunMomentumCmd->GetNewDoubleValue(newValue));
   else if (command == fGunMomentumStepCmd)     fPrimaryGenerator->SetGunMomentumStep(fGunMomentumStepCmd->GetNewDoubleValue(newValue));
   else if (command == fGunMomentumSmearingCmd) fPrimaryGenerator->SetGunMomentumSmearing(fGunMomentumSmearingCmd->GetNewDoubleValue(newValue));
-
+  else if (command == fGunPositionSmearingModeCmd) {
+    if      (newValue == "gaussian")           fPrimaryGenerator->SetGunPositionSmearingMode(ParticleGunGenerator::kGaussian);
+    else if (newValue == "uniform")            fPrimaryGenerator->SetGunPositionSmearingMode(ParticleGunGenerator::kUniform);
+  }
   else if (command == fGunDirectionSmearingModeCmd) {
     if      (newValue == "gaussian")           fPrimaryGenerator->SetGunDirectionSmearingMode(ParticleGunGenerator::kGaussian);
     else if (newValue == "uniform")            fPrimaryGenerator->SetGunDirectionSmearingMode(ParticleGunGenerator::kUniform);
@@ -165,7 +177,13 @@ G4String ParticleGunMessenger::GetCurrentValue(G4UIcommand *command)
   else if (command == fGunMomentumCmd)         return fGunMomentumCmd->ConvertToString(fPrimaryGenerator->GetGunMomentum());
   else if (command == fGunMomentumStepCmd)     return fGunMomentumStepCmd->ConvertToString(fPrimaryGenerator->GetGunMomentumStep());
   else if (command == fGunMomentumSmearingCmd) return fGunMomentumSmearingCmd->ConvertToString(fPrimaryGenerator->GetGunMomentumSmearing());
-
+  else if (command == fGunPositionSmearingModeCmd) {
+    switch (fPrimaryGenerator->GetGunPositionSmearingMode()) {
+      case ParticleGunGenerator::kGaussian:    return "gaussian";
+      case ParticleGunGenerator::kUniform:     return "uniform";
+      default: return "unknown"; // this should never happen
+    }
+  }
   else if (command == fGunDirectionSmearingModeCmd) {
     switch (fPrimaryGenerator->GetGunDirectionSmearingMode()) {
       case ParticleGunGenerator::kGaussian:    return "gaussian";
