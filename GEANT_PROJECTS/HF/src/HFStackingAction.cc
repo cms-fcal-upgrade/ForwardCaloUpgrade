@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.cc,v 1.4 2013/03/20 16:38:48 cowden Exp $
+// $Id: HFStackingAction.cc,v 1.5 2013/03/28 20:25:13 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -45,7 +45,9 @@ HFStackingAction::HFStackingAction(HFDataFormat *df)
 , m_fibreNA(-1.)
 , m_nFibre(1.457)
 , m_nClad(1.419)
+, m_rFibre(0.306*mm)
 , m_df(df)
+, m_optDef( G4OpticalPhoton::OpticalPhotonDefinition() )
 {
 }
 
@@ -67,13 +69,18 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
   const G4VPhysicalVolume * volume = aTrack->GetVolume();
   const G4String & vName = volume->GetName();
 
+  if ( !volume ) return classification;
+
+  // kill optical photon
+  //if ( aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() ) classification = fKill;
+
   // check if track is an optical photon in a fibre
-  if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && vName.contains("fib"))
+  if(aTrack->GetDefinition() == m_optDef )
   { // particle is optical photon
     if(aTrack->GetParentID()>0)
     { // particle is secondary
 
-      classification = fKill;
+      //classification = fKill;
 
       const G4DynamicParticle *aParticle = aTrack->GetDynamicParticle();
       const double E = aParticle->GetTotalEnergy();
@@ -81,23 +88,48 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const G4ThreeVector & mom = aTrack->GetMomentumDirection();
       const double px = mom.x();
       const double py = mom.y();
-      const double na = sqrt(px*px+py*py);
+      const double pz = mom.z();
       
       const G4ThreeVector & pos = aTrack->GetPosition();
       const double x = pos.x();
       const double y = pos.y();
       const double z = pos.z();
       const double t = aTrack->GetGlobalTime();
-     
 
-      if ( lambda > m_lCutLow && na < m_fibreNA ) { 
+      //////////////////////////////////////////////////
+      // Find the fiber's central axis, and the displancement
+      // of the photon production point from the that axis in
+      // a plane perpendicular to the fiber.
+      const G4ThreeVector & trans = volume->GetTranslation();
+      const G4ThreeVector rho = pos - trans;
+      const double rhox = rho.x();
+      const double rhoy = rho.y();
+
+      /////////////////////////////////////////////////
+      // calculate the angle the photon makes with the core/clad
+      // interface surface normal.  
+      // eta is the angle between the photon and the surface normal 
+      // in the transverse plane
+      // psi is the angle between the photon and fiber's central axis.
+      const double sinEta = (rhox*py-rhoy*px)/m_rFibre;
+      const double sinPsi = sqrt(1.-pz*pz);
+      //const double na = sinPsi*cos(asin(sinEta));  // equal to cos(Xi)
+     
+      //////////////////////
+      // This is the old method to check photon acceptance
+      const double na = sqrt(px*px+py*py);
+      
+     
+      if ( lambda <= m_lCutLow ) classification = fKill;
+
+      if ( vName.contains("fib") &&  lambda > m_lCutLow && na < m_fibreNA ) { 
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t);
         m_df->fillStackingAction(st);
       } 
     }
 
-  } else if ( aTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() ) {
+  } else {
 
     const G4DynamicParticle * particle = aTrack->GetDynamicParticle();
     const double E = particle->GetTotalEnergy();
@@ -119,7 +151,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 void HFStackingAction::NewStage()
 {
   G4cout << "Number of optical photons produced in this event : "
-         << gammaCounter << G4endl;
+         << gammaCounter << " R = " << m_rFibre << " NA = " << m_fibreNA << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

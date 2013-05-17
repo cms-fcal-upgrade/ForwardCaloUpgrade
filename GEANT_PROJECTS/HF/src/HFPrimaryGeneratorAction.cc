@@ -46,6 +46,7 @@ void HFPrimaryGeneratorAction::SetGenerator(G4String genname)
 
 }
 
+
 void HFPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   if (fPrimaryGenerator) {

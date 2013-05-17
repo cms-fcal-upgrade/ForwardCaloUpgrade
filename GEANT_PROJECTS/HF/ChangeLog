@@ -1,3 +1,11 @@
+05/17/2013  Christopher Cowden Christopher.Cowden@cern.ch
+	- Added a cladding to quartz fibers
+ 	- Added "PMT" readout to ntuple (optical photon information at end of fiber)
+	- Included a glass plate at back of calorimeter to capture optical photons
+	- Made geometry overlap check a boolean flag in HFDetectorConstruction
+	- Set calorimeter half length to 0.5 m
+	- added HFSteppingAction to readout photons at end of fibers
+	  This class also limits the global time of photons to 100 ns
 04/23/2013  Hengne Li Hengne.Li@cern.ch
             - using "FTFP_BERT" physics list as default in replacement of "LHEP" 
               since the later is declared to be no longer supported in recent/future 

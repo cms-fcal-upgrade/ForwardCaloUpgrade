@@ -77,6 +77,23 @@ struct GeneratorStruct {
   
 };
 
+///
+/// The SteppingStruct helps to pass data from the stepping action
+/// mostly information for PMT simulation
+struct SteppingStruct {
+  double x;
+  double y;
+  double z;
+  double t;
+  double lambda;
+  double polX;
+  double polY;
+
+  inline SteppingStruct(const G4ThreeVector &mom, double pt, double l, double ppx, double ppy)
+    :x(mom.x()),y(mom.y()),z(mom.z()),t(pt),lambda(l),polX(ppx),polY(ppy)
+    { }
+};
+
 
 class HFDataFormat {
 
@@ -88,7 +105,7 @@ public:
   virtual ~HFDataFormat();
 
 
-  // fill from SteppingAction
+  // fill from StackingAction
   void fillStackingAction(const StackingStruct &);
   // fill from EventAction 
 
@@ -97,6 +114,10 @@ public:
 
   // fill from primary generator action
   void fillGenerator(const GeneratorStruct &);
+
+  // fill from stepping action (PMT);
+  void fillSteppingAction(const SteppingStruct &);
+
   
 
   // store event in tree, and clear vectors
@@ -115,10 +136,12 @@ public:
   void SetStoreOpticalInfo(G4bool store)    { _storeOpticalInfo = store; }
   void SetStoreParticleInfo(G4bool store)    { _storeParticleInfo = store; }
   void SetStoreGeneratorInfo(G4bool store)    { _storeGeneratorInfo = store; }
+  void SetStorePMTInfo(G4bool store) { _storePMTInfo = store; }
  
   G4bool GetStoreOpticalInfo()          { return _storeOpticalInfo; }
   G4bool GetStoreParticleInfo()          { return _storeParticleInfo; }
   G4bool GetStoreGeneratorInfo()          { return _storeGeneratorInfo; }
+  G4bool GetStorePMTInfo()  { return _storePMTInfo; }
  
 
 private:
@@ -130,10 +153,13 @@ private:
   G4bool _storeOpticalInfo;
   G4bool _storeParticleInfo;
   G4bool _storeGeneratorInfo;
+  G4bool _storePMTInfo;
 
   // clear vectors in trees
   // clear stacking vectors
   void clearStacking();
+  // clear pmt vectors
+  void clearPMT();
   // clear particle vectors
   void clearParticle();
   // clear generator vectors
@@ -153,6 +179,15 @@ private:
   std::vector<double>  m_opt_fy;
   std::vector<double>  m_opt_fz;
   std::vector<double>  m_opt_t;
+
+  // photons crossing the end of a fiber
+  std::vector<double> m_pmt_x;
+  std::vector<double> m_pmt_y;
+  std::vector<double> m_pmt_z;
+  std::vector<double> m_pmt_t;
+  std::vector<double> m_pmt_wavelength;
+  std::vector<double> m_pmt_polX;
+  std::vector<double> m_pmt_polY;
 
   // shower particle branches
   std::vector<int>  m_part_pdgId;

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: testBeam.cc,v 1.5 2013/03/28 20:25:12 cowden Exp $
+// $Id: testBeam.cc,v 1.7 2013/04/23 17:44:09 heli Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -61,6 +61,7 @@
 #include "HFSteppingVerbose.hh"
 #include "HFEventAction.hh"
 #include "HFDataFormat.hh"
+#include "HFSteppingAction.hh"
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -186,6 +187,10 @@ int main(int argc,char** argv)
   //
   G4UserRunAction* run_action = new HFRunAction;
   runManager->SetUserAction(run_action);
+
+  // user stepping action
+  G4UserSteppingAction * step_action = new HFSteppingAction(&df);
+  runManager->SetUserAction(step_action);
 
   // Initialize G4 kernel
   //

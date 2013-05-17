@@ -10,6 +10,7 @@ class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWithADouble;
 class G4UIcmdWithAString;
+class G4UIcmdWithABool;
 
 class HFDetectorConstructionMessenger: public G4UImessenger
 {
@@ -29,6 +30,7 @@ class HFDetectorConstructionMessenger: public G4UImessenger
    G4UIcmdWithADoubleAndUnit * m_lengthCmd;
    G4UIcmdWithADouble * m_fibreIndexCmd;  // fibre index of refraction
    G4UIcmdWithADouble * m_cladIndexCmd;
+   G4UIcmdWithABool * m_overlapCheckCmd;
 
 };
 

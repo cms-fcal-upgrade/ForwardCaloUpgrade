@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.hh,v 1.3 2013/03/20 16:38:48 cowden Exp $
+// $Id: HFDetectorConstruction.hh,v 1.5 2013/04/23 17:44:04 heli Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -41,6 +41,7 @@ class G4PhysicalVolume;
 class G4Material;
 class G4Box;
 class G4Tubs;
+class G4UserLimits;
 
 class HFStackingAction;
 class HFPrimaryGeneratorAction;
@@ -77,6 +78,9 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     // allow access to the particle gun
     void SetParticleGun( HFPrimaryGeneratorAction *gun);
 
+    // set whether to check for overlaps in the geometry
+    void SetOverlapCheck( G4bool check );
+
     // ---- accessor methods -----
     void PrintCalorParameters() { return; }
     
@@ -86,6 +90,7 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     G4double GetLength() { return m_length; }
     G4double GetFibreIndex() { return m_nFib; }
     G4double GetCladIndex() { return m_nClad; }
+    G4double GetOverlapCheck() { return m_checkOverlaps; }
 
   private:
    // -------------- private member functions --------
@@ -107,42 +112,59 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_expHall_y;
     G4double m_expHall_z;
 
-    G4int m_nRods;
+    unsigned m_nRods;
     G4double m_rRod;
     G4double m_nFib;
     G4double m_nClad;
+    G4double m_absFib;
+    G4double m_absClad;
     G4double m_length;
     G4double m_length2;
+    G4double m_nGlass;
+    G4double m_absGlass;
 
     G4double m_h;
     G4double m_l;
     G4double m_y;
     G4double m_rFib;
+    G4double m_rClad;
+
+    G4bool m_checkOverlaps;
 
     // materials
     G4Material * m_air;
     G4Material * m_quartz;
     G4Material * m_tungsten;
+    G4Material * m_glass;
+    G4Material * m_clad;
     G4Material * m_iron;
 
     // primitives
     G4Box * m_expHall_box;
     G4Tubs * m_tungRod;
     G4Tubs * m_qFibre;
+    G4Box * m_glass_box;
+    G4Tubs * m_clad_tube;
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
     G4LogicalVolume * m_tungRod_log;
     G4LogicalVolume * m_qFibre_log;
+    G4LogicalVolume * m_glass_log;
+    G4LogicalVolume * m_clad_log;
 
     // physical volumes
     G4VPhysicalVolume * m_expHall_phys;
     std::vector<G4VPhysicalVolume *> m_rods;
     std::vector<G4VPhysicalVolume *> m_fibres;
+    std::vector<G4VPhysicalVolume *> m_cladding;
+    G4VPhysicalVolume * m_glass_phys;
 
     HFDetectorConstructionMessenger *m_messenger;
     HFStackingAction * m_stacking;
     HFPrimaryGeneratorAction *m_gun;
+
+    G4UserLimits *m_fibLimits;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

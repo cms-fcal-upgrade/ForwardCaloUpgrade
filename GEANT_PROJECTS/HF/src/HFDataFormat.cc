@@ -4,10 +4,11 @@
 #include <iostream>
 
 HFDataFormat::HFDataFormat(const std::string &fileName)
-{
+{ 
   _storeOpticalInfo = true;
   _storeParticleInfo = true;
   _storeGeneratorInfo = true; 
+  _storePMTInfo = true;
   _messenger = new HFDataFormatMessenger(this);
   SetFileName(fileName);
 }
@@ -57,12 +58,26 @@ void HFDataFormat::fillGenerator(const GeneratorStruct &gn)
   }
 }
 
+void HFDataFormat::fillSteppingAction(const SteppingStruct &st)
+{
+  if ( _storePMTInfo ) {
+    m_pmt_x.push_back(st.x);
+    m_pmt_y.push_back(st.y);
+    m_pmt_z.push_back(st.z);
+    m_pmt_t.push_back(st.t);
+    m_pmt_wavelength.push_back(st.lambda);
+    m_pmt_polX.push_back(st.polX);
+    m_pmt_polY.push_back(st.polY);
+  }
+}
+
 
 void HFDataFormat::store()
 {
   m_event->Fill();
 
   clearStacking();
+  clearPMT();
   clearParticle();
   clearGenerator();
 }
@@ -107,6 +122,16 @@ void HFDataFormat::generateTrees()
     m_event->Branch("gen_y",&m_gen_y);
   }
 
+  if ( _storePMTInfo ) {
+    m_event->Branch("pmt_t",&m_pmt_t);
+    m_event->Branch("pmt_wavelength",&m_pmt_wavelength);
+    m_event->Branch("pmt_polX",&m_pmt_polX);
+    m_event->Branch("pmt_polY",&m_pmt_polY);
+    m_event->Branch("pmt_x",&m_pmt_x);
+    m_event->Branch("pmt_y",&m_pmt_y);
+    m_event->Branch("pmt_z",&m_pmt_z);
+  }
+
 }
 
 void HFDataFormat::SetFileName(const G4String &fileName)
@@ -131,6 +156,19 @@ void HFDataFormat::clearStacking()
     m_opt_fy.clear();
     m_opt_fz.clear();
     m_opt_t.clear();
+  }
+}
+
+void HFDataFormat::clearPMT()
+{
+  if ( _storePMTInfo ) {
+    m_pmt_x.clear();
+    m_pmt_y.clear();
+    m_pmt_z.clear();
+    m_pmt_t.clear();
+    m_pmt_wavelength.clear();
+    m_pmt_polX.clear();
+    m_pmt_polY.clear();
   }
 }
 

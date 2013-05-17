@@ -25,6 +25,7 @@ class HFDataFormatMessenger: public G4UImessenger
    G4UIcmdWithABool * m_storeOpticalInfoCmd;   
    G4UIcmdWithABool * m_storeParticleInfoCmd;   
    G4UIcmdWithABool * m_storeGeneratorInfoCmd;  
+   G4UIcmdWithABool * m_storePMTInfoCmd;
    G4UIcmdWithoutParameter * m_genTreeCmd; 
 
 };

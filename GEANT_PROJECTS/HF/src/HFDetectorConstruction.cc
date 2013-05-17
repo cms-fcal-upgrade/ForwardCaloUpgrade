@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.cc,v 1.5 2013/03/28 20:25:13 cowden Exp $
+// $Id: HFDetectorConstruction.cc,v 1.7 2013/04/23 17:44:04 heli Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -48,6 +48,8 @@
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4NistManager.hh"
+#include "G4UserLimits.hh"
 
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -59,6 +61,8 @@
 
 HFDetectorConstruction::HFDetectorConstruction()
 :m_isConstructed(false), m_nRods(268),m_rRod(2.5*mm),m_nFib(1.457),m_nClad(1.42)
+,m_absFib(28.1*m),m_absClad(28.1*m)
+,m_nGlass(1.517),m_absGlass(.1)
 ,m_stacking(NULL)
 //,m_gun(NULL)
 {
@@ -67,15 +71,19 @@ HFDetectorConstruction::HFDetectorConstruction()
   m_expHall_x = 5.0*m;
   m_expHall_y = 5.0*m;
 
-  m_length = 100.*cm;
+  m_length = 50.*cm;
 
+  m_checkOverlaps = false;
   m_messenger = new HFDetectorConstructionMessenger(this);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 HFDetectorConstruction::~HFDetectorConstruction()
-{ delete m_messenger; }
+{ 
+  delete m_messenger; 
+  delete m_fibLimits;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -120,6 +128,12 @@ void HFDetectorConstruction::DefineMaterials()
   G4Element* O = new G4Element("Oxygen"  , "O", z=8 , a=16.00*g/mole);
   G4Element* Si = new G4Element("Silicon", "Si", z=14, a=28.09*g/mole);
 
+  G4NistManager* man = G4NistManager::Instance();
+  G4Element* B = man->FindOrBuildElement("B");
+  G4Element* Na = man->FindOrBuildElement("Na");
+  G4Element* Al = man->FindOrBuildElement("Al");
+  G4Element* K = man->FindOrBuildElement("K");
+
   m_air = new G4Material("Air", density=1.29*mg/cm3, nelements=2);
   m_air->AddElement(N, 70.*perCent);
   m_air->AddElement(O, 30.*perCent);
@@ -136,6 +150,11 @@ void HFDetectorConstruction::DefineMaterials()
   m_quartz = new G4Material("quartz",2.2*g/cm3,2);
   m_quartz->AddElement(Si,1);
   m_quartz->AddElement(O,2);
+
+  // cladding material
+  m_clad = new G4Material("cladding",2.2*g/cm3,2);
+  m_clad->AddElement(Si,1);
+  m_clad->AddElement(O,2);
 
   //
   // ------------ Generate & Add Material Properties Table ------------
@@ -168,6 +187,22 @@ void HFDetectorConstruction::DefineMaterials()
   
   m_air->SetMaterialPropertiesTable(myMPT2);
 
+  // Glass
+  //
+  m_glass = new G4Material("glass",2.23*g/cm3,6);
+  m_glass->AddElement(B,0.040064);
+  m_glass->AddElement(O,0.539562);
+  m_glass->AddElement(Na,0.028191);
+  m_glass->AddElement(Al,0.011644);
+  m_glass->AddElement(Si,0.377220);
+  m_glass->AddElement(K,0.003321);
+
+  G4MaterialPropertiesTable *glassPT = new G4MaterialPropertiesTable();
+  G4double glassE[3] = { 1.625*eV, 5.*eV, 12.4*eV };
+  G4double glassN[3] = {m_nGlass,m_nGlass,m_nGlass};
+  G4double glassAbs[3] = {m_absGlass,m_absGlass,m_absGlass};
+  glassPT->AddProperty("RINDEX",glassE,glassN,3);
+  glassPT->AddProperty("ABSLENGTH",glassE,glassAbs,3);
 
 }
 
@@ -208,13 +243,33 @@ void HFDetectorConstruction::SetupGeometry()
   m_qFibre = new G4Tubs("quarzFibre",0.,m_rFib,m_length,0.,2.*pi);
   m_qFibre_log = new G4LogicalVolume(m_qFibre,m_quartz,"quartzFibreLog",0,0,0);
 
+  // Cladding on fibre
+  //
+  m_clad_tube = new G4Tubs("cladding",m_rClad,m_rFib,m_length,0,2.*pi);
+  m_clad_log = new G4LogicalVolume(m_clad_tube,m_clad,"cladding",0,0,0);
+
+  // Glass 
+  //
+  m_glass_box = new G4Box("Glass",m_expHall_x,m_expHall_y,1.*cm);
+  m_glass_log = new G4LogicalVolume(m_glass_box,m_glass,"glassLog",0,0,0); 
+
+  // set limits on the time to propagate photons
+  // needs a G4StepLimiter needs to be added to OpticalPhoton
+  // process for the following to do anything.
+  /*m_fibLimits  = new G4UserLimits();
+  m_fibLimits->SetUserMaxTime(0.0*ns);
+  m_qFibre_log->SetUserLimits(m_fibLimits);
+  m_clad_log->SetUserLimits(m_fibLimits);
+  m_glass_log->SetUserLimits(m_fibLimits);
+  m_expHall_log->SetUserLimits(m_fibLimits);*/
+
 }
 
 // Setup the detectors physical volumes
 void HFDetectorConstruction::SetupDetectors()
 { 
 
-  G4double zPos = 7.2*m;
+  const G4double zPos = 7.2*m;
   
   const unsigned n = m_nRods;
   //const unsigned nRods = 2*(n*(n+1)/2-n*(n/2+1)/4)-n;
@@ -227,7 +282,7 @@ void HFDetectorConstruction::SetupDetectors()
     char name[6];
     sprintf(name,"rod%d",count);
 
-    m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,0.,zPos),m_tungRod_log,name,m_expHall_log,false,count++,false));
+    m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,0.,zPos),m_tungRod_log,name,m_expHall_log,false,count++,m_checkOverlaps));
   }
 
   // create upper portion
@@ -241,7 +296,7 @@ void HFDetectorConstruction::SetupDetectors()
       char name[6];
       sprintf(name,"rod%d",count);
       
-      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,zPos),m_tungRod_log,name,m_expHall_log,false,count++,false));
+      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,zPos),m_tungRod_log,name,m_expHall_log,false,count++,m_checkOverlaps));
     }
   }
 
@@ -255,7 +310,7 @@ void HFDetectorConstruction::SetupDetectors()
       char name[6];
       sprintf(name,"rod%d",count);
       
-      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,zPos),m_tungRod_log,name,m_expHall_log,false,count++,false));
+      m_rods.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,zPos),m_tungRod_log,name,m_expHall_log,false,count++,m_checkOverlaps));
     }
   }
 
@@ -277,12 +332,19 @@ void HFDetectorConstruction::SetupDetectors()
     const unsigned nR = n-row-1;
     const unsigned nF = 2*(nR-1)+1;
     for ( unsigned i=0; i != nF; i++ ) {
-      G4double xPos = i*m_rRod-xStartr;
-      char name[6];
+      const G4double xPos = i*m_rRod-xStartr;
+      char name[6],cname[7];
       sprintf(name,"fib%d",count);
+      sprintf(cname,"clad%d",count);
      
-      if ( i%2 == 1 ) m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
-      else m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
+      if ( i%2 == 1 ) {
+      	m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,zPos),m_qFibre_log,name,m_expHall_log,false,count,m_checkOverlaps));
+      	m_cladding.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_clad_log,cname,m_qFibre_log,false,count++,m_checkOverlaps));
+      }
+      else {
+	m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,zPos),m_qFibre_log,name,m_expHall_log,false,count,m_checkOverlaps));
+	m_cladding.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_clad_log,cname,m_qFibre_log,false,count++,m_checkOverlaps));
+      }
     }
   }
 
@@ -294,12 +356,19 @@ void HFDetectorConstruction::SetupDetectors()
     const unsigned nR = n-row-1;
     const unsigned nF = 2*(nR-1)+1;
     for ( unsigned i=0; i != nF; i++ ) {
-      G4double xPos = i*m_rRod-xStartr;
-      char name[6];
+      const G4double xPos = i*m_rRod-xStartr;
+      char name[6], cname[7];
       sprintf(name,"fib%d",count);
+      sprintf(cname,"clad%d",count);
     
-      if ( i%2 == 0 ) m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
-      else m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,zPos),m_qFibre_log,name,m_expHall_log,false,count++,false));
+      if ( i%2 == 0 ) {
+	m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosHigh,zPos),m_qFibre_log,name,m_expHall_log,false,count,m_checkOverlaps));
+	m_cladding.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_clad_log,cname,m_qFibre_log,false,count++,m_checkOverlaps));
+      }
+      else {
+	m_fibres.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPosLow,zPos),m_qFibre_log,name,m_expHall_log,false,count,m_checkOverlaps));
+	m_cladding.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_clad_log,cname,m_qFibre_log,false,count++,m_checkOverlaps));
+      }
     }
   }
 
@@ -313,10 +382,27 @@ void HFDetectorConstruction::SetupDetectors()
   const unsigned nEnergies = 3;
   G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
   G4double qRindex[nEnergies] = {m_nFib, m_nFib, m_nFib};   
+  G4double qAbsLength[nEnergies] = {m_absFib, m_absFib, m_absFib};
 
   G4MaterialPropertiesTable *qProps = new G4MaterialPropertiesTable();
   qProps->AddProperty("RINDEX",energies,qRindex,nEnergies);
+  qProps->AddProperty("ABSLENGTH",energies,qAbsLength,nEnergies);
   m_quartz->SetMaterialPropertiesTable(qProps);
+
+  G4double cRindex[nEnergies] = {m_nClad,m_nClad,m_nClad};
+  G4double cAbsLength[nEnergies] = {m_absClad,m_absClad,m_absClad};
+  
+  G4MaterialPropertiesTable *cProps = new G4MaterialPropertiesTable();
+  cProps->AddProperty("RINDEX",energies,cRindex,nEnergies);
+  cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
+  m_clad->SetMaterialPropertiesTable(cProps);
+
+
+
+  // -------------------- glass face ----------------------------
+
+  // put glass plate at back
+  m_glass_phys = new G4PVPlacement(0,G4ThreeVector(0.,0.,zPos+m_length+0.5*cm),m_glass_log,"glass",m_expHall_log,false,0,true); 
 
 }
 
@@ -328,6 +414,9 @@ void HFDetectorConstruction::CalculateConstants()
   m_y = sqrt(3.)*m_rRod/3.;
   m_l = 2.*sqrt(3.)*m_rRod/3;
   m_rFib = 0.99*(m_l-m_rRod);
+  m_rClad = 0.8*m_rFib;  // radius to core clad interface from fiber axis
+
+  if ( m_stacking ) m_stacking->SetFiberRadius(m_rClad);
 
   //if ( m_length > m_expHall_z ) m_expHall_z = 1.10*m_length;
   //G4double width = m_nRods*m_rRod;
@@ -407,9 +496,11 @@ void HFDetectorConstruction::SetFibreIndex(G4double n)
   const unsigned nEnergies = 3;
   G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
   G4double qRindex[nEnergies] = {m_nFib, m_nFib, m_nFib};   
+  G4double qAbsLength[nEnergies] = {m_absFib, m_absFib, m_absFib};
 
   G4MaterialPropertiesTable *qProps = new G4MaterialPropertiesTable();
   qProps->AddProperty("RINDEX",energies,qRindex,nEnergies);
+  qProps->AddProperty("ABSLENGTH",energies,qAbsLength,nEnergies);
   m_quartz->SetMaterialPropertiesTable(qProps);
 
   if ( m_stacking ) {
@@ -423,9 +514,35 @@ void HFDetectorConstruction::SetFibreIndex(G4double n)
 void HFDetectorConstruction::SetCladIndex(G4double n)
 {
   m_nClad = n;
+
+  if ( !m_isConstructed ) return;
+
+  const unsigned nEnergies = 3U;
+  G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
+  G4double cRindex[nEnergies] = {m_nClad,m_nClad,m_nClad};
+  G4double cAbsLength[nEnergies] = {m_absClad,m_absClad,m_absClad};
+  
+  G4MaterialPropertiesTable *cProps = new G4MaterialPropertiesTable();
+  cProps->AddProperty("RINDEX",energies,cRindex,nEnergies);
+  cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
+  m_clad->SetMaterialPropertiesTable(cProps);
+
   if ( m_stacking ) {
     m_stacking->SetCladIndex(n);
   }
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
+}
+
+
+void HFDetectorConstruction::SetOverlapCheck(G4bool check)
+{
+  m_checkOverlaps = check;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
+  
 }
 
 
@@ -447,6 +564,13 @@ void HFDetectorConstruction::ClearPhysicalVolumes()
     delete m_fibres[i];
   }
   m_fibres.clear();
+
+  const unsigned nClads = m_cladding.size();
+  for ( unsigned i=0; i != nClads; i++ ) {
+    m_clad_log->RemoveDaughter(m_cladding[i]);
+    delete m_cladding[i];
+  }
+  m_cladding.clear();
 
 
 }

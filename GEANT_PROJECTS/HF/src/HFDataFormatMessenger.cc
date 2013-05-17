@@ -37,6 +37,11 @@ HFDataFormatMessenger::HFDataFormatMessenger(HFDataFormat *df)
   m_storeGeneratorInfoCmd->SetDefaultValue(true);
   m_storeGeneratorInfoCmd->AvailableForStates(G4State_Idle);
 
+  m_storePMTInfoCmd = new G4UIcmdWithABool("/output/storePMTInfo", this);
+  m_storePMTInfoCmd->SetGuidance("Set if store PMT info of photons at end of fibers.");
+  m_storePMTInfoCmd->SetDefaultValue(true);
+  m_storePMTInfoCmd->AvailableForStates(G4State_Idle);
+
   m_genTreeCmd = new G4UIcmdWithoutParameter("/output/genTree",this);
   m_genTreeCmd->SetGuidance("Required command!! Generate braches for the Tree in the output ROOT file.");
 
@@ -48,6 +53,7 @@ HFDataFormatMessenger::~HFDataFormatMessenger()
   delete m_storeOpticalInfoCmd;
   delete m_storeParticleInfoCmd;
   delete m_storeGeneratorInfoCmd;
+  delete m_storePMTInfoCmd;
   delete m_genTreeCmd;
 
 }
@@ -63,6 +69,9 @@ void HFDataFormatMessenger::SetNewValue(G4UIcommand* cmd,G4String newValue)
   } 
   else if ( cmd ==   m_storeGeneratorInfoCmd ) {
     m_dataformat->SetStoreGeneratorInfo(m_storeGeneratorInfoCmd->GetNewBoolValue(newValue));
+  }
+  else if ( cmd == m_storePMTInfoCmd ) {
+    m_dataformat->SetStorePMTInfo(m_storePMTInfoCmd->GetNewBoolValue(newValue));
   }
   else if ( cmd == m_genTreeCmd ) { 
     m_dataformat->generateTrees();

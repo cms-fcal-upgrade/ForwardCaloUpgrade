@@ -8,6 +8,7 @@
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithABool.hh"
 
 #include <iostream>
 
@@ -54,6 +55,11 @@ HFDetectorConstructionMessenger::HFDetectorConstructionMessenger(HFDetectorConst
   m_cladIndexCmd->SetDefaultValue(1.42);
   m_cladIndexCmd->AvailableForStates(G4State_Idle);
 
+  m_overlapCheckCmd = new G4UIcmdWithABool("/testBeam/checkOverlaps",this);
+  m_overlapCheckCmd->SetGuidance("Set flag to check geometry for overlapping volumes");
+  m_overlapCheckCmd->SetDefaultValue(false);
+  m_overlapCheckCmd->AvailableForStates(G4State_Idle);
+
 }
 
 HFDetectorConstructionMessenger::~HFDetectorConstructionMessenger()
@@ -64,6 +70,7 @@ HFDetectorConstructionMessenger::~HFDetectorConstructionMessenger()
   delete m_lengthCmd;
   delete m_fibreIndexCmd;
   delete m_cladIndexCmd;
+  delete m_overlapCheckCmd;
 
 }
 
@@ -87,6 +94,9 @@ void HFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String newV
   } 
   else if ( cmd == m_cladIndexCmd ) {
     m_detector->SetCladIndex(m_cladIndexCmd->GetNewDoubleValue(newValue));
+  }
+  else if ( cmd == m_overlapCheckCmd ) {
+    m_detector->SetOverlapCheck(m_overlapCheckCmd->GetNewBoolValue(newValue));
   }
 
 }

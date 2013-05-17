@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.hh,v 1.2 2013/03/15 11:23:31 cowden Exp $
+// $Id: HFStackingAction.hh,v 1.3 2013/04/14 23:50:40 heli Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -35,11 +35,14 @@
 #include "G4UserStackingAction.hh"
 #include "HFDataFormat.hh"
 
+#include "G4ParticleDefinition.hh"
+
 class HFDetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class HFStackingAction : public G4UserStackingAction
+
 {
   public:
     HFStackingAction(HFDataFormat *df);
@@ -67,6 +70,9 @@ class HFStackingAction : public G4UserStackingAction
     // set the low end of the optical photon wavelength cutoff
     void SetOptLowCut(G4double c) { m_lCutLow = c; }
 
+    // set the fiber radius
+    inline void SetFiberRadius(double r) { m_rFibre = r; }
+
     // -- accessor methods
     // get the fibre index of refraction
     G4double GetFibreIndex() const { return m_nFibre; }
@@ -86,8 +92,11 @@ class HFStackingAction : public G4UserStackingAction
 
     G4double m_nFibre;
     G4double m_nClad;
+    G4double m_rFibre; // fibre radius
 
     HFDataFormat * m_df;
+
+    const G4ParticleDefinition * m_optDef;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
