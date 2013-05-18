@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.cc,v 1.7 2013/04/23 17:44:04 heli Exp $
+// $Id: HFDetectorConstruction.cc,v 1.8 2013/05/17 19:19:10 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -82,7 +82,7 @@ HFDetectorConstruction::HFDetectorConstruction()
 HFDetectorConstruction::~HFDetectorConstruction()
 { 
   delete m_messenger; 
-  delete m_fibLimits;
+  //delete m_fibLimits;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
