@@ -35,6 +35,29 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st)
   }
 }
 
+void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t) 
+{
+  if (_storeOpticalInfo){
+    if ( t == fCherenkov ) {
+      m_opt_wavelength.push_back(st.wavelength);
+      m_opt_energy.push_back(st.energy);
+      m_opt_na.push_back(st.na);
+      m_opt_fx.push_back(st.x);
+      m_opt_fy.push_back(st.y);
+      m_opt_fz.push_back(st.z);
+      m_opt_t.push_back(st.t);
+    } else {
+      m_scin_wavelength.push_back(st.wavelength);
+      m_scin_energy.push_back(st.energy);
+      m_scin_na.push_back(st.na);
+      m_scin_fx.push_back(st.x);
+      m_scin_fy.push_back(st.y);
+      m_scin_fz.push_back(st.z);
+      m_scin_t.push_back(st.t);
+    }
+  }
+}
+
 // fill particle
 void HFDataFormat::fillParticle(const ParticleStruct &pt)
 {
@@ -71,6 +94,28 @@ void HFDataFormat::fillSteppingAction(const SteppingStruct &st)
   }
 }
 
+void HFDataFormat::fillSteppingAction(const SteppingStruct &st, const ROType t)
+{
+  if ( _storePMTInfo ) {
+    if ( t == fScintillation ) {
+      m_pmtScin_x.push_back(st.x);
+      m_pmtScin_y.push_back(st.y);
+      m_pmtScin_z.push_back(st.z);
+      m_pmtScin_t.push_back(st.t);
+      m_pmtScin_wavelength.push_back(st.lambda);
+      m_pmtScin_polX.push_back(st.polX);
+      m_pmtScin_polY.push_back(st.polY);
+    } else {
+      m_pmt_x.push_back(st.x);
+      m_pmt_y.push_back(st.y);
+      m_pmt_z.push_back(st.z);
+      m_pmt_t.push_back(st.t);
+      m_pmt_wavelength.push_back(st.lambda);
+      m_pmt_polX.push_back(st.polX);
+      m_pmt_polY.push_back(st.polY);
+    }
+  }
+}
 
 void HFDataFormat::store()
 {
@@ -104,6 +149,14 @@ void HFDataFormat::generateTrees()
     m_event->Branch("opt_fy",&m_opt_fy);
     m_event->Branch("opt_fz",&m_opt_fz);
     m_event->Branch("opt_t",&m_opt_t);
+
+    m_event->Branch("scin_wavelength",&m_scin_wavelength);
+    m_event->Branch("scin_energy",&m_scin_energy);
+    m_event->Branch("scin_na",&m_scin_na);
+    m_event->Branch("scin_fx",&m_scin_fx);
+    m_event->Branch("scin_fy",&m_scin_fy);
+    m_event->Branch("scin_fz",&m_scin_fz);
+    m_event->Branch("scin_t",&m_scin_t);
   }
 
   if (_storeParticleInfo){
@@ -130,6 +183,14 @@ void HFDataFormat::generateTrees()
     m_event->Branch("pmt_x",&m_pmt_x);
     m_event->Branch("pmt_y",&m_pmt_y);
     m_event->Branch("pmt_z",&m_pmt_z);
+
+    m_event->Branch("pmtScin_t",&m_pmtScin_t);
+    m_event->Branch("pmtScin_wavelength",&m_pmtScin_wavelength);
+    m_event->Branch("pmtScin_polX",&m_pmtScin_polX);
+    m_event->Branch("pmtScin_polY",&m_pmtScin_polY);
+    m_event->Branch("pmtScin_x",&m_pmtScin_x);
+    m_event->Branch("pmtScin_y",&m_pmtScin_y);
+    m_event->Branch("pmtScin_z",&m_pmtScin_z);
   }
 
 }
@@ -156,6 +217,14 @@ void HFDataFormat::clearStacking()
     m_opt_fy.clear();
     m_opt_fz.clear();
     m_opt_t.clear();
+
+    m_scin_wavelength.clear();
+    m_scin_energy.clear();
+    m_scin_na.clear();
+    m_scin_fx.clear();
+    m_scin_fy.clear();
+    m_scin_fz.clear();
+    m_scin_t.clear();
   }
 }
 
@@ -169,6 +238,14 @@ void HFDataFormat::clearPMT()
     m_pmt_wavelength.clear();
     m_pmt_polX.clear();
     m_pmt_polY.clear();
+
+    m_pmtScin_x.clear();
+    m_pmtScin_y.clear();
+    m_pmtScin_z.clear();
+    m_pmtScin_t.clear();
+    m_pmtScin_wavelength.clear();
+    m_pmtScin_polX.clear();
+    m_pmtScin_polY.clear();
   }
 }
 

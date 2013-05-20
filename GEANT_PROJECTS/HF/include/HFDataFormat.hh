@@ -22,6 +22,14 @@
 #include "HFDataFormatMessenger.hh"
 
 ///
+///
+/// enumeration of readout type (Cherenkov or scintillation)
+enum ROType {
+ fCherenkov=0,
+ fScintillation
+};
+
+///
 /// The StackingStruct helps to pass data from the HFStackingAction
 /// to the ntuple filling procedure.
 struct StackingStruct {
@@ -107,6 +115,7 @@ public:
 
   // fill from StackingAction
   void fillStackingAction(const StackingStruct &);
+  void fillStackingAction(const StackingStruct &, const ROType);
   // fill from EventAction 
 
   // fill shower particles when new track is created
@@ -117,6 +126,7 @@ public:
 
   // fill from stepping action (PMT);
   void fillSteppingAction(const SteppingStruct &);
+  void fillSteppingAction(const SteppingStruct &, const ROType);
 
   
 
@@ -180,6 +190,14 @@ private:
   std::vector<double>  m_opt_fz;
   std::vector<double>  m_opt_t;
 
+  std::vector<double>  m_scin_wavelength;
+  std::vector<double>  m_scin_energy;
+  std::vector<double>  m_scin_na;
+  std::vector<double>  m_scin_fx;
+  std::vector<double>  m_scin_fy;
+  std::vector<double>  m_scin_fz;
+  std::vector<double>  m_scin_t;
+
   // photons crossing the end of a fiber
   std::vector<double> m_pmt_x;
   std::vector<double> m_pmt_y;
@@ -188,6 +206,15 @@ private:
   std::vector<double> m_pmt_wavelength;
   std::vector<double> m_pmt_polX;
   std::vector<double> m_pmt_polY;
+
+  // photons crossing the end of a fiber
+  std::vector<double> m_pmtScin_x;
+  std::vector<double> m_pmtScin_y;
+  std::vector<double> m_pmtScin_z;
+  std::vector<double> m_pmtScin_t;
+  std::vector<double> m_pmtScin_wavelength;
+  std::vector<double> m_pmtScin_polX;
+  std::vector<double> m_pmtScin_polY;
 
   // shower particle branches
   std::vector<int>  m_part_pdgId;

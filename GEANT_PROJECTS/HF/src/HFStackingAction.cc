@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.cc,v 1.5 2013/03/28 20:25:13 cowden Exp $
+// $Id: HFStackingAction.cc,v 1.6 2013/05/17 19:19:10 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -36,6 +36,7 @@
 #include "G4ParticleTypes.hh"
 #include "G4Track.hh"
 #include "G4ios.hh"
+#include "G4VProcess.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -43,8 +44,11 @@ HFStackingAction::HFStackingAction(HFDataFormat *df)
 : gammaCounter(0)
 , m_lCutLow(350.)
 , m_fibreNA(-1.)
+, m_scsfNA(-1.)
 , m_nFibre(1.457)
 , m_nClad(1.419)
+, m_nScin(1.59)
+, m_nScinClad(1.49)
 , m_rFibre(0.306*mm)
 , m_df(df)
 , m_optDef( G4OpticalPhoton::OpticalPhotonDefinition() )
@@ -63,6 +67,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 {
 
   if ( m_fibreNA < 0. ) m_fibreNA = sqrt(m_nFibre*m_nFibre-m_nClad*m_nClad);
+  if ( m_scsfNA < 0. ) m_scsfNA = sqrt(m_nScin*m_nScin-m_nScinClad*m_nScinClad);
 
   G4ClassificationOfNewTrack classification = fUrgent;
 
@@ -119,13 +124,19 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       // This is the old method to check photon acceptance
       const double na = sqrt(px*px+py*py);
       
+      //const G4VProcess * proc = aTrack->GetCreatorProcess();
+      //const G4String & procName = proc ? proc->GetProcessName() : "no";
      
-      if ( lambda <= m_lCutLow ) classification = fKill;
+      if ( lambda <= m_lCutLow || pz < 0. ) classification = fKill;
 
       if ( vName.contains("fib") &&  lambda > m_lCutLow && na < m_fibreNA ) { 
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t);
-        m_df->fillStackingAction(st);
+        m_df->fillStackingAction(st,fCherenkov);
+      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && na < m_scsfNA ) { 
+        gammaCounter++;
+	StackingStruct st(lambda,E,na,x,y,z,t);
+        m_df->fillStackingAction(st,fScintillation);
       } 
     }
 
@@ -136,6 +147,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     const int pdgId = particle->GetPDGcode();
     const G4ThreeVector & mom = aTrack->GetMomentum();
     const G4ThreeVector & pos = aTrack->GetPosition();
+
 
     ParticleStruct pt(pdgId,mom,pos,E);
     m_df->fillParticle(pt);

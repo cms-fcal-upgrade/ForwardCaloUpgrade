@@ -55,7 +55,7 @@
 #include "QGSP_BERT.hh"
 
 #include "HFPrimaryGeneratorAction.hh"
-#include "HFDetectorConstruction.hh"
+#include "CMSHFDetectorConstruction.hh"
 #include "HFRunAction.hh"
 #include "HFStackingAction.hh"
 #include "HFSteppingVerbose.hh"
@@ -124,8 +124,6 @@ int main(int argc,char** argv)
 
     nArgv[p++] = argv[i];
   } 
-
-  
   
 
   // data format
@@ -161,7 +159,7 @@ int main(int argc,char** argv)
   // UserInitialization classes - mandatory
   //
   //
-  G4VUserDetectorConstruction* detector = new HFDetectorConstruction;
+  G4VUserDetectorConstruction* detector = new CMSHFDetectorConstruction;
   runManager-> SetUserInitialization(detector);
 
   // set physics list
@@ -182,7 +180,7 @@ int main(int argc,char** argv)
   G4UserStackingAction* stacking_action = new HFStackingAction(&df);
   runManager->SetUserAction(stacking_action);
 
-  dynamic_cast<HFDetectorConstruction*>(detector)->SetStackingAction(dynamic_cast<HFStackingAction*>(stacking_action));
+  dynamic_cast<CMSHFDetectorConstruction*>(detector)->SetStackingAction(dynamic_cast<HFStackingAction*>(stacking_action));
   
   // UserAction classes
   //

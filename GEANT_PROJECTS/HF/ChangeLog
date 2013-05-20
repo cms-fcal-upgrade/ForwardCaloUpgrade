@@ -1,3 +1,18 @@
+05/20/2013  Christopher Cowden Christopher.Cowden@cern.ch
+	- Added an alternative geometry CMSHFDetectorConstruction and corresponding
+	  messenger class to simulate blocks of a CMS calorimeter based on solid W
+	  rather than rods.  There is a new executable compiled from detectorVolume.cc
+	  and some new macros (detVol.mac and detVis.mac).  This new executable  can
+	  be compile by `make name=detectorVolume`.  
+	- detectorVolume.cc just like testBeam.cc but it uses the CMSHFDetectorConstruction
+ 	  classes to build the geometry.
+	- CMSHFDetectorConstruction creates a solid W block with fibers 1.2 mm apart in a 
+	  grid.  Half of the fibers are quartz and half are scintillating (scsf-78) fibers.
+	- Modified HFDataFormat to separately readout Cherenkov fibers and scintillating
+	  fibers.  New branches were added for the scintillating fibers such that analysis
+	  code for quartz only model do not need to change.
+	- Modified HFStackingAction to readout Cherenkov and Scintillation.
+ 	- Modified HFSteppingAction to readout Cherenkov and Scintillation fibers.
 05/17/2013  Christopher Cowden Christopher.Cowden@cern.ch
 	- Added a cladding to quartz fibers
  	- Added "PMT" readout to ntuple (optical photon information at end of fiber)

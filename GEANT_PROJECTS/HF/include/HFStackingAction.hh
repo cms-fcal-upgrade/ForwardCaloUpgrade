@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.hh,v 1.3 2013/04/14 23:50:40 heli Exp $
+// $Id: HFStackingAction.hh,v 1.4 2013/05/17 19:19:10 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -66,6 +66,17 @@ class HFStackingAction : public G4UserStackingAction
 	m_nClad = n; 
 	m_fibreNA = -1.;
       }
+
+    // set scintillating fiber index of refraction
+    void SetScinIndex(G4double n) {
+      m_nScin = n;
+      m_scsfNA = -1.;
+    }
+
+    void SetScinCladIndex(G4double n) {
+      m_nScinClad = n;
+      m_scsfNA = -1.;
+    }
   
     // set the low end of the optical photon wavelength cutoff
     void SetOptLowCut(G4double c) { m_lCutLow = c; }
@@ -89,9 +100,12 @@ class HFStackingAction : public G4UserStackingAction
 
     G4double m_lCutLow; // cut off on low end of wavelength
     G4double m_fibreNA; // quartz fibre numerical aperature
+    G4double m_scsfNA; // scsf fibre numerical aperature
 
     G4double m_nFibre;
     G4double m_nClad;
+    G4double m_nScin;
+    G4double m_nScinClad;
     G4double m_rFibre; // fibre radius
 
     HFDataFormat * m_df;

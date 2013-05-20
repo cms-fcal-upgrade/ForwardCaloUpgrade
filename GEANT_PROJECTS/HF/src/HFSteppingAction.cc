@@ -26,6 +26,7 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
 
   const G4String & preName = preVolume->GetName();
   const bool isFibre = preName.contains("fib") || preName.contains("clad");
+  const bool isScinFibre = preName.contains("scsf") || preName.contains("cladScin");
 
   // get the particle
   G4Track * theTrack = step->GetTrack();
@@ -35,9 +36,10 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
   if ( time > 100*ns ) theTrack->SetTrackStatus(fStopAndKill);
 
   if ( theTrack->GetDefinition() == m_optDef && preVolume != postVolume 
-	&& isFibre ) {
+	&&  ( isFibre || isScinFibre ) ) {
 
-    if ( postVolume->GetName().contains("glass") ) {
+    const G4String & postName = postVolume->GetName();
+    if ( postName.contains("glass") ) {
 
       const G4DynamicParticle * theParticle = theTrack->GetDynamicParticle();
       const double wavelength = hbarc*twopi/theParticle->GetTotalEnergy()*1.e+6;
@@ -45,9 +47,16 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
       const G4ThreeVector & pol = theParticle->GetPolarization();
 
       SteppingStruct st(pos,time,wavelength,pol.x(),pol.y());
-      if ( wavelength > 350. ) m_df->fillSteppingAction( st );
+      if ( wavelength > 350. )  {
+  	if ( isFibre ) m_df->fillSteppingAction( st, fCherenkov );
+  	else if ( isScinFibre ) m_df->fillSteppingAction( st, fScintillation );
+      }
 
-    } else if ( postVolume->GetName().contains("World") ) {
+      // kill the track after readout
+      theTrack->SetTrackStatus(fStopAndKill);
+
+    } else if ( postName.contains("World") || postName.contains("tungsten") ) {
+      // kill the track since it left the fiber
       theTrack->SetTrackStatus(fStopAndKill);
     }
 
