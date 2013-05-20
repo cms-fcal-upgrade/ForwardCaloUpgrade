@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: CMSHFDetectorConstruction.cc,v 1.8 2013/05/17 19:19:10 cowden Exp $
+// $Id: CMSHFDetectorConstruction.cc,v 1.1 2013/05/20 21:57:38 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -75,8 +75,8 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 
 
   m_length = 60.*cm;  // half length of the calorimeter
-  m_Wdx = 0.025*m;
-  m_Wdy = 0.025*m;
+  m_Wdx = 0.25*m;
+  m_Wdy = 0.25*m;
 
   // set the position of the detector
   //m_zPos = 7.2*m;
