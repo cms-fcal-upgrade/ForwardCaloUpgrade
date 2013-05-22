@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: CMSHFDetectorConstruction.cc,v 1.1 2013/05/20 21:57:38 cowden Exp $
+// $Id: CMSHFDetectorConstruction.cc,v 1.2 2013/05/20 23:22:51 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -421,13 +421,12 @@ void CMSHFDetectorConstruction::SetupDetectors()
   scsfProps->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
   scsfProps->AddConstProperty("YIELDRATIO", 0.8);
 
- 
-  m_scsf78->SetMaterialPropertiesTable(scsfProps);
-
   G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
   scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
   scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
 
+  //m_scsf78->SetMaterialPropertiesTable(scsfProps);
+  m_scsf78->SetMaterialPropertiesTable(scsfCladProps);
   m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
 
 
@@ -435,7 +434,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
   // -------------------- glass face ----------------------------
 
   // put glass plate at back
-  m_glass_phys = new G4PVPlacement(0,G4ThreeVector(0.,0.,m_zPos+m_length+0.5*cm),m_glass_log,"glass",m_expHall_log,false,0,true); 
+  m_glass_phys = new G4PVPlacement(0,G4ThreeVector(0.,0.,m_zPos+m_length+1*cm),m_glass_log,"glass",m_expHall_log,false,0,true); 
 
 }
 

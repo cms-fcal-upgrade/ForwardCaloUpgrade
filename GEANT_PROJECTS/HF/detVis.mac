@@ -1,6 +1,6 @@
 
 /output/storeOpticalInfo true
-/output/storePMTInfo true
+#/output/storePMTInfo true
 /output/genTree
 
 

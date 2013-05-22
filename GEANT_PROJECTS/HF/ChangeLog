@@ -1,3 +1,8 @@
+05/22/2013  Christopher Cowden Christopher.Cowden@cern.ch
+	- Added random seed to log output.  There was a problem in reading from 
+ 	  /dev/urandom causing odd things with the random seed.  It should be
+	  fixed now.
+	- Switched off photon track propagation in HFStackingAction.cc
 05/20/2013  Christopher Cowden Christopher.Cowden@cern.ch
 	- Added an alternative geometry CMSHFDetectorConstruction and corresponding
 	  messenger class to simulate blocks of a CMS calorimeter based on solid W

@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: HFStackingAction.cc,v 1.6 2013/05/17 19:19:10 cowden Exp $
+// $Id: HFStackingAction.cc,v 1.7 2013/05/20 21:57:39 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -85,7 +85,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     if(aTrack->GetParentID()>0)
     { // particle is secondary
 
-      //classification = fKill;
+      classification = fKill;
 
       const G4DynamicParticle *aParticle = aTrack->GetDynamicParticle();
       const double E = aParticle->GetTotalEnergy();

@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: testBeam.cc,v 1.8 2013/05/17 19:19:10 cowden Exp $
+// $Id: detectorVolume.cc,v 1.1 2013/05/20 21:57:37 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -88,11 +88,13 @@ int main(int argc,char** argv)
   // Seed the random number generator manually
   //
   fstream randRead; 
-  randRead.open("/dev/urandom",std::fstream::binary);
+  randRead.open("/dev/urandom",std::fstream::binary|std::fstream::in);
   G4long myseed;
   randRead.read((char*)(&myseed),4);
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   CLHEP::HepRandom::setTheSeed(myseed);
+  std::cout << "THE RANDOM SEED IS: " << myseed << std::endl;
+
 
   std::string outputFileName("output.root");
   std::string macro("b.mac");

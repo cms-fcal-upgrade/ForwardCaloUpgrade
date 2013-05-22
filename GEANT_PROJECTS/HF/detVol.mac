@@ -5,7 +5,7 @@
 /output/storeOpticalInfo true  # define store optical photon info in the output tree
 /output/storeParticleInfo true  # define store all other particles in the output tree
 /output/storeGeneratorInfo true # define store generator particles in the output tree
-/output/storePMTInfo true
+/output/storePMTInfo false    # define store photons at end of fiber
 /output/genTree  # required command to create branches of the Tree as defined above 
                  # you will have nothing stored if you don't run this command
 
