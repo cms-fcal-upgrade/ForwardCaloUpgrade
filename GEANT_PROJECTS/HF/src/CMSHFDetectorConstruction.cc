@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: CMSHFDetectorConstruction.cc,v 1.2 2013/05/20 23:22:51 cowden Exp $
+// $Id: CMSHFDetectorConstruction.cc,v 1.3 2013/05/22 18:37:47 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,8 +79,8 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_Wdy = 0.25*m;
 
   // set the position of the detector
-  //m_zPos = 7.2*m;
-  m_zPos = 0.6*m;
+  m_zPos = 7.3*m;
+  //m_zPos = 0.6*m;
   m_xPos = 0.*m;
   m_yPos = 0.*m;
 
@@ -426,7 +426,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
   scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
 
   //m_scsf78->SetMaterialPropertiesTable(scsfProps);
-  m_scsf78->SetMaterialPropertiesTable(scsfCladProps);
+  m_scsf78->SetMaterialPropertiesTable(scsfProps);
   m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
 
 
