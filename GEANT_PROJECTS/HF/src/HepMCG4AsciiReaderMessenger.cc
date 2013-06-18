@@ -26,7 +26,7 @@
 // ====================================================================
 //
 //   HepMCG4AsciiReaderMessenger.cc
-//   $Id: HepMCG4AsciiReaderMessenger.cc,v 1.1 2012/10/01 15:21:16 andreevv Exp $
+//   $Id: HepMCG4AsciiReaderMessenger.cc,v 1.1 2013/04/14 23:50:41 heli Exp $
 //
 // ====================================================================
 #include "HepMCG4AsciiReaderMessenger.hh"
@@ -55,6 +55,12 @@ HepMCG4AsciiReaderMessenger::HepMCG4AsciiReaderMessenger
   open= new G4UIcmdWithAString("/generator/hepmcAscii/open", this);
   open-> SetGuidance("(re)open data file (HepMC Ascii format)");
   open-> SetParameterName("input ascii file", true, true);  
+
+  firstEvent = new G4UIcmdWithAnInteger("/generator/hepmcAscii/firstEvent", this);
+  firstEvent-> SetGuidance("Set the first event to simulate");
+  firstEvent-> SetParameterName("firstEvent", false, false);
+  firstEvent-> SetRange("firstEvent>=0");
+
 }
 
 ///////////////////////////////////////////////////////////
@@ -80,6 +86,10 @@ void HepMCG4AsciiReaderMessenger::SetNewValue(G4UIcommand* command,
     G4cout << "HepMC Ascii inputfile: " 
 	   << gen-> GetFileName() << G4endl;
     gen-> Initialize();
+  } else if ( command==firstEvent) {
+    gen->SetFirstEvent( firstEvent->GetNewIntValue(newValues) );
+    G4cout << "HepMC Ascii firstEvent: " << gen->GetFirstEvent() << G4endl;
+    gen->Initialize();
   }
 }
 

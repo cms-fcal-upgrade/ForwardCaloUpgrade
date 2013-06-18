@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: CMSHFDetectorConstruction.cc,v 1.3 2013/05/22 18:37:47 cowden Exp $
+// $Id: CMSHFDetectorConstruction.cc,v 1.4 2013/05/23 15:15:30 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -76,7 +76,7 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 
   m_length = 60.*cm;  // half length of the calorimeter
   m_Wdx = 0.25*m;
-  m_Wdy = 0.25*m;
+  m_Wdy = m_Wdx;
 
   // set the position of the detector
   m_zPos = 7.3*m;
@@ -157,6 +157,8 @@ void CMSHFDetectorConstruction::DefineMaterials()
   G4Element* W = man->FindOrBuildElement("W");
   G4Element* Ni = man->FindOrBuildElement("Ni");
   G4Element* Cu = man->FindOrBuildElement("Cu");
+  G4Element* C = man->FindOrBuildElement("C");
+  G4Element* H = man->FindOrBuildElement("H");
 
   m_air = new G4Material("Air", density=1.29*mg/cm3, nelements=2);
   m_air->AddElement(N, 70.*perCent);
@@ -188,11 +190,16 @@ void CMSHFDetectorConstruction::DefineMaterials()
   m_scsf78 = new G4Material("scsf78",2.2*g/cm3,2);
   m_scsf78->AddElement(Si,1);
   m_scsf78->AddElement(O,2);
+  //m_scsf78->AddElement(C,4);
+  //m_scsf78->AddElement(H,4);
 
   // cladding material
   m_cladScin = new G4Material("claddingScin",2.2*g/cm3,2);
   m_cladScin->AddElement(Si,1);
   m_cladScin->AddElement(O,2);
+  //m_cladScin->AddElement(C,3);
+  //m_cladScin->AddElement(H,5);
+  //m_cladScin->AddElement(O,2);
 
   //
   // ------------ Generate & Add Material Properties Table ------------

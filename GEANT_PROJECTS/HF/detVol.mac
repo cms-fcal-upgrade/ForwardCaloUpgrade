@@ -12,14 +12,16 @@
 # Select generator type (particleGun or hepmcAscii):
 #---------------------------------------------------
 #
-/generator/GenType particleGun
-#/generator/GenType hepmcAscii
+#/generator/GenType particleGun
+/generator/GenType hepmcAscii
 #
 # HepMC settings:
 #----------------
 #
 #/generator/hepmcAscii/open HepMCoutJets.dat
-#/generator/hepmcAscii/verbose 0
+/generator/hepmcAscii/open ../HepMCData/ujet50.dat
+/generator/hepmcAscii/verbose 1
+/generator/hepmcAscii/firstEvent 10
 
 # shoot an optical photon
 #/gun/particle opticalphoton
@@ -28,19 +30,19 @@
 #/gun/direction 0 70 -100
 #/N06/gun/optPhotonPolar 0
 
-/gun/particle e-
-/gun/energy 5 GeV
-/gun/position 0 0 0 mm
-/gun/direction 0 0 1
-/gun/positionSmearing 0 0 0 cm
-/gun/thetaSmearing 0 deg
-/gun/phiSmearing 0 deg
-/gun/momentumSmearing 0 GeV
+#/gun/particle pi-
+#/gun/energy 50 GeV
+#/gun/position 0 0 0 mm
+#/gun/direction 0 0 1
+#/gun/positionSmearing 4 4 0 cm
+#/gun/thetaSmearing 0 deg
+#/gun/phiSmearing 0 deg
+#/gun/momentumSmearing 0 GeV
 # uniform or gaussian
-/gun/directionSmearingMode uniform 
+#/gun/directionSmearingMode uniform 
 # uniform or gaussian
-/gun/momentumSmearingMode uniform
-/gun/info
+#/gun/momentumSmearingMode uniform
+#/gun/info
  
 #
-/run/beamOn 3 
+/run/beamOn 10 

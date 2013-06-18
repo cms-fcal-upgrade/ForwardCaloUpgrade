@@ -1,3 +1,9 @@
+06/18/2013  Christopher Cowden Christopher.Cowden@cern.ch
+	- Added command to HepMCG4AsciiReader to skip to first event to read
+	- Added some elements to the CMSHFDetectorConstruction (H and C) for 
+	  future use in plastic scintillator
+	- Added proper definition of plastic scintillator (in comments for now)
+	  material to CMSHFDetectorConstruction.
 05/22/2013  Christopher Cowden Christopher.Cowden@cern.ch
 	- Added random seed to log output.  There was a problem in reading from 
  	  /dev/urandom causing odd things with the random seed.  It should be

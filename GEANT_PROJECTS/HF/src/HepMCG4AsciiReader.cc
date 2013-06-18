@@ -26,7 +26,7 @@
 // ====================================================================
 //
 //   HepMCG4AsciiReader.cc
-//   $Id: HepMCG4AsciiReader.cc,v 1.1 2012/10/01 15:21:16 andreevv Exp $
+//   $Id: HepMCG4AsciiReader.cc,v 1.2 2013/04/23 17:44:07 heli Exp $
 //
 // ====================================================================
 #include "HepMCG4AsciiReader.hh"
@@ -44,7 +44,7 @@
 
 ////////////////////////////////////////
 HepMCG4AsciiReader::HepMCG4AsciiReader()
-  :  filename("xxx.dat"), verbose(0)
+  :  filename("xxx.dat"), verbose(0),firstEvent(0)
 ////////////////////////////////////////
 {
   asciiInput= new HepMC::IO_GenEvent(filename, std::ios::in);
@@ -70,6 +70,18 @@ void HepMCG4AsciiReader::Initialize()
 
   asciiInput= new HepMC::IO_GenEvent(filename, std::ios::in);
   asciiInput->use_input_units( HepMC::Units::GEV, HepMC::Units::MM );
+
+  GotoFirstEvent();
+}
+
+
+////////////////////////////////////////////////
+void HepMCG4AsciiReader::GotoFirstEvent()
+////////////////////////////////////////////////
+{
+  for ( G4int i=0; i != firstEvent; i++ ) {
+    HepMC::GenEvent* evt= asciiInput->read_next_event();
+  }
 }
 
 

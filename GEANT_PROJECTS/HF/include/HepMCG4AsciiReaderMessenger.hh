@@ -26,7 +26,7 @@
 // ====================================================================
 //
 //   HepMCG4AsciiReaderMessenger.hh
-//   $Id: HepMCG4AsciiReaderMessenger.hh,v 1.1 2012/10/01 15:21:16 andreevv Exp $
+//   $Id: HepMCG4AsciiReaderMessenger.hh,v 1.1 2013/04/14 23:50:40 heli Exp $
 //
 // ====================================================================
 #ifndef HEPMC_G4_ASCII_READER_MESSENGER_H
@@ -47,6 +47,7 @@ private:
   G4UIdirectory* dir;
   G4UIcmdWithAnInteger* verbose;
   G4UIcmdWithAString* open;
+  G4UIcmdWithAnInteger* firstEvent;
 
 public:
   HepMCG4AsciiReaderMessenger(HepMCG4AsciiReader* agen);
