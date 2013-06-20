@@ -1,0 +1,22 @@
+! File: ParticleGunGen.in
+! This file contains commands to be read in for a Pythia8 run. 
+! Lines not beginning with a letter or digit are comments.
+! Names are case-insensitive  -  but spellings-sensitive!
+! The changes here are illustrative, not always physics-motivated.
+
+! 1) Settings that will be used in a main program.
+!-------------------------------------------------
+Main:numberOfEvents = 1000           ! number of events to generate
+Main:numberToList = 3              ! number of events to list
+Main:timesAllowErrors = 30          ! abort run after this many flawed events
+
+! 2) Settings related to input parameters
+!-------------------------------------------
+Main:spareMode1     =  11   ! set particle type: electron=11, muon=13, tau=15
+!   pi+=211, pi0=111, proton=2212, etc
+!   for other codes look up MC particle numbering scheme (PDG)
+!Main:spareParm1     =   0.44   ! px (GeV) ! one cell
+Main:spareParm1     =   14.8   ! px (GeV) 
+Main:spareParm2     =   0.0   ! py (GeV) 
+Main:spareParm3     =   98.9   ! pz (GeV) 
+!--------------------------------------------------------------------------
