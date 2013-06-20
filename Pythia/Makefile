@@ -34,7 +34,7 @@ all:
 # Create an executable linked to HepMC (if all goes well).
 # Owing to excessive warning output -Wshadow is not used for HepMC.
 ifneq (x$(HEPMCLOCATION),x)
-  JetsGen: \
+  JetsGen ParticleGunGen MinbiasGen: \
 	$(PYTHIA8LOCATION)/$(LIBDIRARCH)/libpythia8.a $(PYTHIA8LOCATION)/$(LIBDIRARCH)/libhepmcinterface.a
 	@mkdir -p $(BINDIR)
 	$(CXX) $(CXXFLAGS) -Wno-shadow -I$(PYTHIA8LOCATION)/$(INCDIR) -I$(HEPMCLOCATION)/include \
