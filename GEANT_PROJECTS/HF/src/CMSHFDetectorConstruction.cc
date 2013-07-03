@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: CMSHFDetectorConstruction.cc,v 1.4 2013/05/23 15:15:30 cowden Exp $
+// $Id: CMSHFDetectorConstruction.cc,v 1.5 2013/06/18 16:08:49 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,8 +79,8 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_Wdy = m_Wdx;
 
   // set the position of the detector
-  m_zPos = 7.3*m;
-  //m_zPos = 0.6*m;
+  //m_zPos = 7.3*m;
+  m_zPos = 0.7*m;
   m_xPos = 0.*m;
   m_yPos = 0.*m;
 
