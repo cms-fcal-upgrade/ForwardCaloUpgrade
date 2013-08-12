@@ -11,6 +11,7 @@ class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWithADouble;
 class G4UIcmdWithAString;
 class G4UIcmdWithABool;
+class G4UIcmdWith3VectorAndUnit;
 
 class CMSHFDetectorConstructionMessenger: public G4UImessenger
 {
@@ -25,11 +26,13 @@ class CMSHFDetectorConstructionMessenger: public G4UImessenger
    G4UIdirectory * m_dir;
 
    // the commands
+   G4UIcmdWith3VectorAndUnit * m_posCmd;
    G4UIcmdWithADoubleAndUnit * m_widthCmd;
    G4UIcmdWithADoubleAndUnit * m_lengthCmd;
    G4UIcmdWithADouble * m_fibreIndexCmd;  // fibre index of refraction
    G4UIcmdWithADouble * m_cladIndexCmd;
    G4UIcmdWithABool * m_overlapCheckCmd;
+   G4UIcmdWith3VectorAndUnit * m_fieldCmd;
 
 };
 

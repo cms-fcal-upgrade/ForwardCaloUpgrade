@@ -9,6 +9,7 @@
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
 
 #include <iostream>
 
@@ -21,6 +22,12 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_dir = new G4UIdirectory("/testBeam/");
   m_dir->SetGuidance("CMSHF W calorimeter control");
 
+  m_posCmd = new G4UIcmdWith3VectorAndUnit("/testBeam/detPosition", this);
+  m_posCmd->SetGuidance("Set the position of the center of the detector element.");
+  m_posCmd->SetParameterName("X","Y","Z",true);
+  m_posCmd->SetDefaultValue(G4ThreeVector(0.,0.,0.7));
+  m_posCmd->SetDefaultUnit("m");  
+  m_posCmd->AvailableForStates(G4State_Idle);
 
   m_lengthCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/length",this);
   m_lengthCmd->SetGuidance("Set the 1/2 Length of the calorimeter");
@@ -53,11 +60,20 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_overlapCheckCmd->SetDefaultValue(false);
   m_overlapCheckCmd->AvailableForStates(G4State_Idle);
 
+  m_fieldCmd = new G4UIcmdWith3VectorAndUnit("/testBeam/magField", this);
+  m_fieldCmd->SetGuidance("Define a uniform magnetic field");
+  m_fieldCmd->SetParameterName("X","Y","Z",true);
+  m_fieldCmd->SetDefaultValue(G4ThreeVector(0.,0.,0.7));
+  m_fieldCmd->SetDefaultUnit("tesla");  
+  m_fieldCmd->AvailableForStates(G4State_Idle);
+
+
 }
 
 CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
 {
 
+  delete m_posCmd;
   delete m_lengthCmd;
   delete m_widthCmd;
   delete m_fibreIndexCmd;
@@ -74,6 +90,9 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   if ( cmd == m_lengthCmd ) {
     m_detector->SetLength(m_lengthCmd->GetNewDoubleValue(newValue));
   } 
+  else if ( cmd == m_posCmd ) {
+    m_detector->SetPositionXYZ(m_posCmd->GetNew3VectorValue(newValue));
+  }
   else if ( cmd == m_widthCmd ) {
     m_detector->SetWidth(m_widthCmd->GetNewDoubleValue(newValue));
   }
@@ -85,6 +104,9 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   }
   else if ( cmd == m_overlapCheckCmd ) {
     m_detector->SetOverlapCheck(m_overlapCheckCmd->GetNewBoolValue(newValue));
+  }
+  else if ( cmd == m_fieldCmd ) {
+    m_detector->SetMagneticField(m_fieldCmd->GetNew3VectorValue(newValue));
   }
 
 }

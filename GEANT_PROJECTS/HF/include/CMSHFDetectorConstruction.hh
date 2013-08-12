@@ -43,6 +43,8 @@ class G4Box;
 class G4Tubs;
 class G4UserLimits;
 
+class G4UniformMagField;
+
 class HFStackingAction;
 class HFPrimaryGeneratorAction;
 
@@ -56,6 +58,9 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
   public:
     G4VPhysicalVolume* Construct();
+
+    // set the position of the centre of the calorimeter segment
+    void SetPositionXYZ(const G4ThreeVector &detPos);
 
     // set the length of the calorimeter (longitudinal)
     void SetLength(G4double l);
@@ -78,10 +83,14 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // set whether to check for overlaps in the geometry
     void SetOverlapCheck( G4bool check );
 
+    // set the magnetic field
+    void SetMagneticField( const G4ThreeVector &vec);
+
     // ---- accessor methods -----
     void PrintCalorParameters() { return; }
     
     // 
+    G4ThreeVector GetPositionXYZ() const { return G4ThreeVector(m_xPos,m_yPos,m_zPos); }
     G4double GetLength() const { return m_length; }
     G4double GetFibreIndex() const { return m_nFib; }
     G4double GetCladIndex() const { return m_nClad; }
@@ -178,6 +187,9 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
     G4VPhysicalVolume * m_glass_phys;
+
+    // uniform magnetic field
+    G4UniformMagField *m_Bfield;
 
     CMSHFDetectorConstructionMessenger *m_messenger;
     HFStackingAction * m_stacking;

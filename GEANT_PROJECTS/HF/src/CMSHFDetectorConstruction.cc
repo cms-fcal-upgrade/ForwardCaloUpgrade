@@ -50,6 +50,10 @@
 #include "G4SystemOfUnits.hh"
 #include "G4NistManager.hh"
 #include "G4UserLimits.hh"
+#include "G4UniformMagField.hh"
+#include "G4TransportationManager.hh"
+#include "G4FieldManager.hh"
+
 
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -65,6 +69,7 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 ,m_nSFib(1.59),m_nSClad(1.49)
 ,m_absSFib(4.*m),m_absSClad(4.*m)
 ,m_nGlass(1.517),m_absGlass(.1)
+,m_Bfield(NULL)
 ,m_stacking(NULL)
 //,m_gun(NULL)
 {
@@ -350,7 +355,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
 
   double xPos = bufX/2. - m_Wdx;
   assert( fabs(xPos+m_Wdx) > m_rCFib );
-  for ( unsigned i=0; i != nCols; i++ ) {
+  /*for ( unsigned i=0; i != nCols; i++ ) {
     double yPos = bufY/2. - m_Wdy; 
 
     const bool oddRow = i%2==0;
@@ -376,7 +381,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
       yPos += m_a;
     }
     xPos += m_a;
-  }
+  }*/
 
   //
   G4cout << "Total Number of fibers: " << count << " " << scsfCount << G4endl;
@@ -456,6 +461,26 @@ void CMSHFDetectorConstruction::CalculateConstants()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
+void CMSHFDetectorConstruction::SetPositionXYZ(const G4ThreeVector &detPos)
+{
+  m_xPos = detPos.x();
+  m_yPos = detPos.y();
+  m_zPos = detPos.z();
+
+  if ( !m_isConstructed ) return;
+
+  ClearPhysicalVolumes();
+  //ClearLogicalVolumes();
+
+  //CalculateConstants();
+  //SetupGeometry();
+  SetupDetectors();
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+}
 
 
 void CMSHFDetectorConstruction::SetLength(G4double l)
@@ -605,6 +630,21 @@ void CMSHFDetectorConstruction::ClearLogicalVolumes()
   
   //delete m_expHall_log;
   //delete m_expHall_box;
+
+}
+
+void CMSHFDetectorConstruction::SetMagneticField(const G4ThreeVector &vec)
+{
+
+  if ( m_Bfield ) delete m_Bfield;
+
+  m_Bfield = new G4UniformMagField(vec);
+
+  G4FieldManager *fldMngr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  fldMngr->SetDetectorField(m_Bfield);
+  fldMngr->CreateChordFinder(m_Bfield);
+
+  G4cout << "Creating Magnetic Field: " << vec << G4endl;
 
 }
 
