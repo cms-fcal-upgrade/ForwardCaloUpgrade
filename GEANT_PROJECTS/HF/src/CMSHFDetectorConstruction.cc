@@ -254,6 +254,63 @@ void CMSHFDetectorConstruction::DefineMaterials()
   glassPT->AddProperty("RINDEX",glassE,glassN,3);
   glassPT->AddProperty("ABSLENGTH",glassE,glassAbs,3);
 
+
+  // ------------- Surfaces and Optical Properties --------------
+
+
+  const unsigned nEnergies = 3;
+  G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
+  G4double qRindex[nEnergies] = {m_nFib, m_nFib, m_nFib};   
+  G4double qAbsLength[nEnergies] = {m_absFib, m_absFib, m_absFib};
+
+  G4MaterialPropertiesTable *qProps = new G4MaterialPropertiesTable();
+  qProps->AddProperty("RINDEX",energies,qRindex,nEnergies);
+  qProps->AddProperty("ABSLENGTH",energies,qAbsLength,nEnergies);
+  m_quartz->SetMaterialPropertiesTable(qProps);
+
+  G4double cRindex[nEnergies] = {m_nClad,m_nClad,m_nClad};
+  G4double cAbsLength[nEnergies] = {m_absClad,m_absClad,m_absClad};
+  
+  G4MaterialPropertiesTable *cProps = new G4MaterialPropertiesTable();
+  cProps->AddProperty("RINDEX",energies,cRindex,nEnergies);
+  cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
+  m_cladCher->SetMaterialPropertiesTable(cProps);
+
+
+  const unsigned nScinEnergies = 6;
+  G4double scinEnergies[nScinEnergies] = {3.1*eV, 2.9*eV, 2.76*eV, 2.48*eV, 2.25*eV, 2.07*eV };
+  G4double scinValues[nScinEnergies] = {0.0, 5.0, 10., 5.0, 2.0, 1.0};
+  G4double scinRindex[nScinEnergies] = { m_nSFib, m_nSFib, m_nSFib, m_nSFib, m_nSFib, m_nSFib };
+  G4double scinAbsLength[nScinEnergies] = { m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib };
+  G4double scinCladRindex[nScinEnergies] = { m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad };
+  G4double scinCladAbsLength[nScinEnergies] = { m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad };
+
+  G4MaterialPropertiesTable *scsfProps = new G4MaterialPropertiesTable();
+  scsfProps->AddProperty("RINDEX",scinEnergies,scinRindex,nScinEnergies);
+  scsfProps->AddProperty("ABSLENGTH",scinEnergies,scinAbsLength,nScinEnergies);
+
+  //scsfProps->AddProperty("FASTCOMPONENT",scinEnergies,scinValues,nScinEnergies);
+  //scsfProps->AddProperty("SLOWCOMPONENT",scinEnergies,scinValues,nScinEnergies);
+
+  //
+  // see http://infoscience.epfl.ch/record/164027/files/EPFL_TH5033.pdf
+  // for scintillation yield
+  /*scsfProps->AddConstProperty("SCINTILLATIONYIELD", 8300./MeV);
+  scsfProps->AddConstProperty("RESOLUTIONSCALE", 2.0);
+  scsfProps->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
+  scsfProps->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
+  scsfProps->AddConstProperty("YIELDRATIO", 0.8);*/
+
+  G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
+  scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
+  scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
+
+  //m_scsf78->SetMaterialPropertiesTable(scsfProps);
+  m_scsf78->SetMaterialPropertiesTable(scsfProps);
+  m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
+
+
+
 }
 
 // Setup the world geometry
@@ -355,7 +412,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
 
   double xPos = bufX/2. - m_Wdx;
   assert( fabs(xPos+m_Wdx) > m_rCFib );
-  /*for ( unsigned i=0; i != nCols; i++ ) {
+  for ( unsigned i=0; i != nCols; i++ ) {
     double yPos = bufY/2. - m_Wdy; 
 
     const bool oddRow = i%2==0;
@@ -381,65 +438,10 @@ void CMSHFDetectorConstruction::SetupDetectors()
       yPos += m_a;
     }
     xPos += m_a;
-  }*/
+  }
 
   //
   G4cout << "Total Number of fibers: " << count << " " << scsfCount << G4endl;
-
-
-  // ------------- Surfaces and Optical Properties --------------
-
-
-  const unsigned nEnergies = 3;
-  G4double energies[nEnergies] = { 1.625*eV, 5.*eV, 12.4*eV };
-  G4double qRindex[nEnergies] = {m_nFib, m_nFib, m_nFib};   
-  G4double qAbsLength[nEnergies] = {m_absFib, m_absFib, m_absFib};
-
-  G4MaterialPropertiesTable *qProps = new G4MaterialPropertiesTable();
-  qProps->AddProperty("RINDEX",energies,qRindex,nEnergies);
-  qProps->AddProperty("ABSLENGTH",energies,qAbsLength,nEnergies);
-  m_quartz->SetMaterialPropertiesTable(qProps);
-
-  G4double cRindex[nEnergies] = {m_nClad,m_nClad,m_nClad};
-  G4double cAbsLength[nEnergies] = {m_absClad,m_absClad,m_absClad};
-  
-  G4MaterialPropertiesTable *cProps = new G4MaterialPropertiesTable();
-  cProps->AddProperty("RINDEX",energies,cRindex,nEnergies);
-  cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
-  m_cladCher->SetMaterialPropertiesTable(cProps);
-
-
-  const unsigned nScinEnergies = 6;
-  G4double scinEnergies[nScinEnergies] = {3.1*eV, 2.9*eV, 2.76*eV, 2.48*eV, 2.25*eV, 2.07*eV };
-  G4double scinValues[nScinEnergies] = {0.0, 5.0, 10., 5.0, 2.0, 1.0};
-  G4double scinRindex[nScinEnergies] = { m_nSFib, m_nSFib, m_nSFib, m_nSFib, m_nSFib, m_nSFib };
-  G4double scinAbsLength[nScinEnergies] = { m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib };
-  G4double scinCladRindex[nScinEnergies] = { m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad };
-  G4double scinCladAbsLength[nScinEnergies] = { m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad };
-
-  G4MaterialPropertiesTable *scsfProps = new G4MaterialPropertiesTable();
-  scsfProps->AddProperty("RINDEX",scinEnergies,scinRindex,nScinEnergies);
-  scsfProps->AddProperty("ABSLENGTH",scinEnergies,scinAbsLength,nScinEnergies);
-
-  scsfProps->AddProperty("FASTCOMPONENT",scinEnergies,scinValues,nScinEnergies);
-  scsfProps->AddProperty("SLOWCOMPONENT",scinEnergies,scinValues,nScinEnergies);
-
-  //
-  // see http://infoscience.epfl.ch/record/164027/files/EPFL_TH5033.pdf
-  // for scintillation yield
-  scsfProps->AddConstProperty("SCINTILLATIONYIELD", 8300./MeV);
-  scsfProps->AddConstProperty("RESOLUTIONSCALE", 2.0);
-  scsfProps->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
-  scsfProps->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
-  scsfProps->AddConstProperty("YIELDRATIO", 0.8);
-
-  G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
-  scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
-  scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
-
-  //m_scsf78->SetMaterialPropertiesTable(scsfProps);
-  m_scsf78->SetMaterialPropertiesTable(scsfProps);
-  m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
 
 
 

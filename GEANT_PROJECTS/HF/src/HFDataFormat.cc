@@ -58,6 +58,17 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
   }
 }
 
+void HFDataFormat::fillIonization(const IoniStruct &is)
+{
+  if (_storeOpticalInfo) {
+    m_scinIon_E.push_back(is.E);
+    m_scinIon_x.push_back(is.x);
+    m_scinIon_y.push_back(is.y);
+    m_scinIon_z.push_back(is.z);
+    m_scinIon_t.push_back(is.t);
+  }
+}
+
 // fill particle
 void HFDataFormat::fillParticle(const ParticleStruct &pt)
 {
@@ -157,6 +168,12 @@ void HFDataFormat::generateTrees()
     m_event->Branch("scin_fy",&m_scin_fy);
     m_event->Branch("scin_fz",&m_scin_fz);
     m_event->Branch("scin_t",&m_scin_t);
+
+    m_event->Branch("ion_E",&m_scinIon_E);
+    m_event->Branch("ion_x",&m_scinIon_x);
+    m_event->Branch("ion_y",&m_scinIon_y);
+    m_event->Branch("ion_z",&m_scinIon_z);
+    m_event->Branch("ion_t",&m_scinIon_t);
   }
 
   if (_storeParticleInfo){
@@ -225,6 +242,12 @@ void HFDataFormat::clearStacking()
     m_scin_fy.clear();
     m_scin_fz.clear();
     m_scin_t.clear();
+
+    m_scinIon_E.clear();
+    m_scinIon_x.clear();
+    m_scinIon_y.clear();
+    m_scinIon_z.clear();
+    m_scinIon_t.clear();
   }
 }
 

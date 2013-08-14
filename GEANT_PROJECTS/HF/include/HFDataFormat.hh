@@ -102,6 +102,22 @@ struct SteppingStruct {
     { }
 };
 
+///
+/// The ionization struct helps pass energy loss in a step from stepping action to
+/// the ntuple
+struct IoniStruct {
+  double E;
+  double x;
+  double y;
+  double z;
+  double t;
+
+  inline IoniStruct(const double e, const G4ThreeVector &pos, double T)
+    :E(e),x(pos.x()),y(pos.y()),z(pos.z()),t(T)
+    { }
+
+};
+
 
 class HFDataFormat {
 
@@ -127,6 +143,7 @@ public:
   // fill from stepping action (PMT);
   void fillSteppingAction(const SteppingStruct &);
   void fillSteppingAction(const SteppingStruct &, const ROType);
+  void fillIonization(const IoniStruct &);
 
   
 
@@ -197,6 +214,14 @@ private:
   std::vector<double>  m_scin_fy;
   std::vector<double>  m_scin_fz;
   std::vector<double>  m_scin_t;
+
+  // energy loss in fibres
+  std::vector<double> m_scinIon_E;
+  std::vector<double> m_scinIon_t;
+  std::vector<double> m_scinIon_x;
+  std::vector<double> m_scinIon_y;
+  std::vector<double> m_scinIon_z;
+
 
   // photons crossing the end of a fiber
   std::vector<double> m_pmt_x;

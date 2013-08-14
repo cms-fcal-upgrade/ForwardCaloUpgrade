@@ -1,5 +1,5 @@
 
-/testBeam/detPosition 1. 1. 5. m
+/testBeam/detPosition 0. 0. 0.7 m
 /testBeam/magField 0. 0. 3.8 tesla
 
 
@@ -90,10 +90,10 @@
 #/gun/direction 0 0 -1
 #/N06/gun/optPhotonPolar 0
 # setup the particle gun
-/gun/particle mu-
-/gun/energy 0.1 GeV
+/gun/particle e-
+/gun/energy 10 GeV
 /gun/position 0 0 0 m
-/gun/direction 0 10 0
+/gun/direction 0 0 1
 # To superimpose all of the events from a given run:
 /vis/scene/endOfEventAction accumulate
 #

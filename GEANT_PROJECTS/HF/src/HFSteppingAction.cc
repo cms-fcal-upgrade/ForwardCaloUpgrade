@@ -35,6 +35,7 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
   const double time = theTrack->GetGlobalTime();
   if ( time > 100*ns ) theTrack->SetTrackStatus(fStopAndKill);
 
+  // record photons tracked to PMT face
   if ( theTrack->GetDefinition() == m_optDef && preVolume != postVolume 
 	&&  ( isFibre || isScinFibre ) ) {
 
@@ -60,6 +61,10 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
       theTrack->SetTrackStatus(fStopAndKill);
     }
 
+  } else if ( preVolume == postVolume && preName.contains("scsf") ) {
+    const double E = step->GetTotalEnergyDeposit();
+    IoniStruct is(E,pos,time);
+    m_df->fillIonization(is); 
   } 
 
 }

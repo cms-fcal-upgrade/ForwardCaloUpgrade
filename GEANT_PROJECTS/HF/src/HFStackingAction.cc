@@ -85,7 +85,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     if(aTrack->GetParentID()>0)
     { // particle is secondary
 
-      classification = fKill;
+      //classification = fKill;
 
       const G4DynamicParticle *aParticle = aTrack->GetDynamicParticle();
       const double E = aParticle->GetTotalEnergy();
