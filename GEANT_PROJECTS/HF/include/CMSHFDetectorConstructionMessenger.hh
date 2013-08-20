@@ -27,8 +27,9 @@ class CMSHFDetectorConstructionMessenger: public G4UImessenger
 
    // the commands
    G4UIcmdWith3VectorAndUnit * m_posCmd;
-   G4UIcmdWithADoubleAndUnit * m_widthCmd;
    G4UIcmdWithADoubleAndUnit * m_lengthCmd;
+   G4UIcmdWithAnInteger * m_NfibCmd;
+   G4UIcmdWithAnInteger * m_NsegCmd;
    G4UIcmdWithADouble * m_fibreIndexCmd;  // fibre index of refraction
    G4UIcmdWithADouble * m_cladIndexCmd;
    G4UIcmdWithABool * m_overlapCheckCmd;

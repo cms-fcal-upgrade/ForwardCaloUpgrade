@@ -65,8 +65,11 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // set the length of the calorimeter (longitudinal)
     void SetLength(G4double l);
 
-    // set the width of the detector volume
-    void SetWidth(G4double w);
+    // set N fibres per segment side.  sqrt(Ntot) in a segment
+    void SetNFibSeg(unsigned N);
+
+    // set N segments per side of detector.  sqrt(Ntot) of detector
+    void SetNSeg(unsigned N);
 
     // set the fibre index of refraction
     void SetFibreIndex(G4double n);
@@ -128,6 +131,15 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_Wdx;
     G4double m_Wdy;
 
+    unsigned m_NfibSeg;  // number of fibres on segment side
+    unsigned m_Nseg;     // number of segments on detector side
+    G4double m_segWidth;
+
+    unsigned m_nQseg;  // number of Q fibres in a segment
+    unsigned m_nSseg;  // number of S fibres in a segment
+
+    std::vector<G4ThreeVector> m_segPositions;
+
     G4double m_nFib;
     G4double m_nClad;
     G4double m_absFib;
@@ -172,16 +184,16 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
-    G4LogicalVolume * m_tungBlock_log;
-    G4LogicalVolume * m_qFibreCher_log;
-    G4LogicalVolume * m_cladCher_log;
-    G4LogicalVolume * m_qFibreScin_log;
-    G4LogicalVolume * m_cladScin_log;
+    std::vector<G4LogicalVolume *> m_tungBlock_log;
+    std::vector<G4LogicalVolume *> m_qFibreCher_log;
+    std::vector<G4LogicalVolume *> m_cladCher_log;
+    std::vector<G4LogicalVolume *> m_qFibreScin_log;
+    std::vector<G4LogicalVolume *> m_cladScin_log;
     G4LogicalVolume * m_glass_log;
 
     // physical volumes
     G4VPhysicalVolume * m_expHall_phys;
-    G4VPhysicalVolume * m_tungBlock_phys;
+    std::vector<G4VPhysicalVolume *> m_tungBlock_phys;
     std::vector<G4VPhysicalVolume *> m_fibresCher;
     std::vector<G4VPhysicalVolume *> m_claddingCher;
     std::vector<G4VPhysicalVolume *> m_fibresScin;

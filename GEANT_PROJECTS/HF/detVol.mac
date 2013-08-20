@@ -1,6 +1,7 @@
 #/testBeam/nRods 20
 #/testBeam/nRods 268
 #/testBeam/rRod 2.5 mm
+/testBeam/Nseg 32
 
 /output/storeOpticalInfo true  # define store optical photon info in the output tree
 /output/storeParticleInfo true  # define store all other particles in the output tree

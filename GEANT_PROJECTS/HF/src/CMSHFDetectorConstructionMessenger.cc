@@ -36,12 +36,17 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_lengthCmd->SetDefaultUnit("cm");
   m_lengthCmd->AvailableForStates(G4State_Idle);
 
-  m_widthCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/width",this);
-  m_widthCmd->SetGuidance("Set the 1/2 width of the tungsten block");
-  m_widthCmd->SetParameterName("width",false);
-  m_widthCmd->SetDefaultValue(25);
-  m_widthCmd->SetDefaultUnit("cm");
-  m_widthCmd->AvailableForStates(G4State_Idle);
+  m_NfibCmd = new G4UIcmdWithAnInteger("/testBeam/Nfib",this);
+  m_NfibCmd->SetGuidance("Set the number of fibers along side of segment");
+  m_NfibCmd->SetParameterName("Nfib",false);
+  m_NfibCmd->SetDefaultValue(32);
+  m_NfibCmd->AvailableForStates(G4State_Idle);
+
+  m_NsegCmd = new G4UIcmdWithAnInteger("/testBeam/Nseg",this);
+  m_NsegCmd->SetGuidance("Set the number of segments along side of detector");
+  m_NsegCmd->SetParameterName("Nseg",false);
+  m_NsegCmd->SetDefaultValue(13);
+  m_NsegCmd->AvailableForStates(G4State_Idle);
 
   m_fibreIndexCmd =  new G4UIcmdWithADouble("/testBeam/fibreIndex",this);
   m_fibreIndexCmd->SetGuidance("Set the fibre index of refraction");
@@ -75,7 +80,8 @@ CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
 
   delete m_posCmd;
   delete m_lengthCmd;
-  delete m_widthCmd;
+  delete m_NfibCmd;
+  delete m_NsegCmd;
   delete m_fibreIndexCmd;
   delete m_cladIndexCmd;
   delete m_overlapCheckCmd;
@@ -93,8 +99,11 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   else if ( cmd == m_posCmd ) {
     m_detector->SetPositionXYZ(m_posCmd->GetNew3VectorValue(newValue));
   }
-  else if ( cmd == m_widthCmd ) {
-    m_detector->SetWidth(m_widthCmd->GetNewDoubleValue(newValue));
+  else if ( cmd == m_NfibCmd ) {
+    m_detector->SetNFibSeg(m_NfibCmd->GetNewIntValue(newValue));
+  }
+  else if ( cmd == m_NsegCmd ) {
+    m_detector->SetNSeg(m_NsegCmd->GetNewIntValue(newValue));
   }
   else if ( cmd == m_fibreIndexCmd ) {
     m_detector->SetFibreIndex(m_fibreIndexCmd->GetNewDoubleValue(newValue));
