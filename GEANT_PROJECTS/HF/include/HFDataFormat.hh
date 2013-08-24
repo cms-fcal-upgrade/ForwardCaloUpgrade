@@ -93,12 +93,15 @@ struct SteppingStruct {
   double y;
   double z;
   double t;
+  double lt; // local time (i.e. time track has been alive)
+  double tl; // track length
   double lambda;
   double polX;
   double polY;
 
-  inline SteppingStruct(const G4ThreeVector &mom, double pt, double l, double ppx, double ppy)
-    :x(mom.x()),y(mom.y()),z(mom.z()),t(pt),lambda(l),polX(ppx),polY(ppy)
+  inline SteppingStruct(const G4ThreeVector &mom, double pt,
+    double localTime, double tLength, double l, double ppx, double ppy)
+    :x(mom.x()),y(mom.y()),z(mom.z()),t(pt),lt(localTime),tl(tLength),lambda(l),polX(ppx),polY(ppy)
     { }
 };
 
@@ -228,6 +231,8 @@ private:
   std::vector<double> m_pmt_y;
   std::vector<double> m_pmt_z;
   std::vector<double> m_pmt_t;
+  std::vector<double> m_pmt_lt;
+  std::vector<double> m_pmt_tl;
   std::vector<double> m_pmt_wavelength;
   std::vector<double> m_pmt_polX;
   std::vector<double> m_pmt_polY;
@@ -237,6 +242,8 @@ private:
   std::vector<double> m_pmtScin_y;
   std::vector<double> m_pmtScin_z;
   std::vector<double> m_pmtScin_t;
+  std::vector<double> m_pmtScin_lt;
+  std::vector<double> m_pmtScin_tl;
   std::vector<double> m_pmtScin_wavelength;
   std::vector<double> m_pmtScin_polX;
   std::vector<double> m_pmtScin_polY;

@@ -99,6 +99,8 @@ void HFDataFormat::fillSteppingAction(const SteppingStruct &st)
     m_pmt_y.push_back(st.y);
     m_pmt_z.push_back(st.z);
     m_pmt_t.push_back(st.t);
+    m_pmt_tl.push_back(st.tl);
+    m_pmt_lt.push_back(st.lt);
     m_pmt_wavelength.push_back(st.lambda);
     m_pmt_polX.push_back(st.polX);
     m_pmt_polY.push_back(st.polY);
@@ -113,6 +115,8 @@ void HFDataFormat::fillSteppingAction(const SteppingStruct &st, const ROType t)
       m_pmtScin_y.push_back(st.y);
       m_pmtScin_z.push_back(st.z);
       m_pmtScin_t.push_back(st.t);
+      m_pmtScin_tl.push_back(st.tl);
+      m_pmtScin_lt.push_back(st.lt);
       m_pmtScin_wavelength.push_back(st.lambda);
       m_pmtScin_polX.push_back(st.polX);
       m_pmtScin_polY.push_back(st.polY);
@@ -121,6 +125,8 @@ void HFDataFormat::fillSteppingAction(const SteppingStruct &st, const ROType t)
       m_pmt_y.push_back(st.y);
       m_pmt_z.push_back(st.z);
       m_pmt_t.push_back(st.t);
+      m_pmt_lt.push_back(st.lt);
+      m_pmt_tl.push_back(st.tl);
       m_pmt_wavelength.push_back(st.lambda);
       m_pmt_polX.push_back(st.polX);
       m_pmt_polY.push_back(st.polY);
@@ -194,6 +200,8 @@ void HFDataFormat::generateTrees()
 
   if ( _storePMTInfo ) {
     m_event->Branch("pmt_t",&m_pmt_t);
+    m_event->Branch("pmt_localTime",&m_pmt_lt);
+    m_event->Branch("pmt_trackLength",&m_pmt_lt);
     m_event->Branch("pmt_wavelength",&m_pmt_wavelength);
     m_event->Branch("pmt_polX",&m_pmt_polX);
     m_event->Branch("pmt_polY",&m_pmt_polY);
@@ -202,6 +210,8 @@ void HFDataFormat::generateTrees()
     m_event->Branch("pmt_z",&m_pmt_z);
 
     m_event->Branch("pmtScin_t",&m_pmtScin_t);
+    m_event->Branch("pmtScin_localTime",&m_pmtScin_lt);
+    m_event->Branch("pmtScin_trackLength",&m_pmtScin_tl);
     m_event->Branch("pmtScin_wavelength",&m_pmtScin_wavelength);
     m_event->Branch("pmtScin_polX",&m_pmtScin_polX);
     m_event->Branch("pmtScin_polY",&m_pmtScin_polY);
@@ -258,6 +268,8 @@ void HFDataFormat::clearPMT()
     m_pmt_y.clear();
     m_pmt_z.clear();
     m_pmt_t.clear();
+    m_pmt_tl.clear();
+    m_pmt_lt.clear();
     m_pmt_wavelength.clear();
     m_pmt_polX.clear();
     m_pmt_polY.clear();
@@ -266,6 +278,8 @@ void HFDataFormat::clearPMT()
     m_pmtScin_y.clear();
     m_pmtScin_z.clear();
     m_pmtScin_t.clear();
+    m_pmtScin_tl.clear();
+    m_pmtScin_lt.clear();
     m_pmtScin_wavelength.clear();
     m_pmtScin_polX.clear();
     m_pmtScin_polY.clear();

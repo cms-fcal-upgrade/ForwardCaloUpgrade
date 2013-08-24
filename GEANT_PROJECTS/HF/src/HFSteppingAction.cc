@@ -47,7 +47,7 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
 
       const G4ThreeVector & pol = theParticle->GetPolarization();
 
-      SteppingStruct st(pos,time,wavelength,pol.x(),pol.y());
+      SteppingStruct st(pos,time,theTrack->GetLocalTime(),theTrack->GetTrackLength(),wavelength,pol.x(),pol.y());
       if ( wavelength > 350. )  {
   	if ( isFibre ) m_df->fillSteppingAction( st, fCherenkov );
   	else if ( isScinFibre ) m_df->fillSteppingAction( st, fScintillation );

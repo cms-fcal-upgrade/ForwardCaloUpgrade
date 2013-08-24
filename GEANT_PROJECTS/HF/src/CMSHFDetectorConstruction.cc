@@ -85,7 +85,7 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 
   // set the position of the detector
   //m_zPos = 7.3*m;
-  m_zPos = 0.7*m;
+  m_zPos = 0.6*m;
   m_xPos = 0.*m;
   m_yPos = 0.*m;
 
@@ -98,7 +98,7 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_rSClad = m_rCClad;
 
   m_NfibSeg = 32U;
-  m_Nseg = 13U;
+  m_Nseg = 32U;
 
   m_a = 1.2*mm;
 
