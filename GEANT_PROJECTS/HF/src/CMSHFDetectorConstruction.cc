@@ -99,6 +99,7 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 
   m_NfibSeg = 32U;
   m_Nseg = 32U;
+  //m_Nseg = 1;
 
   m_a = 1.2*mm;
 
@@ -347,7 +348,8 @@ void CMSHFDetectorConstruction::SetupGeometry()
   m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
   m_qFibreScin = new G4Tubs("scsfFibre",0.,m_rSFib,m_length,0.,2.*pi);
   m_cladScin_tube = new G4Tubs("cladding",m_rSClad,m_rSFib,m_length,0,2.*pi);
-  m_glass_box = new G4Box("Glass",m_expHall_x,m_expHall_y,1.*cm);
+  //m_glass_box = new G4Box("Glass",m_expHall_x,m_expHall_y,1.*cm);
+  m_glass_box = new G4Box("Glass",1.1*m_Wdx,1.1*m_Wdy,1.*cm);
 
   //
   // ------------- Volumes --------------
@@ -462,7 +464,8 @@ void CMSHFDetectorConstruction::SetupDetectors()
   // -------------------- glass face ----------------------------
 
   // put glass plate at back
-  m_glass_phys = new G4PVPlacement(0,G4ThreeVector(0.,0.,m_zPos+m_length+1*cm),m_glass_log,"glass",m_expHall_log,false,0,true); 
+  //m_glass_phys = new G4PVPlacement(0,G4ThreeVector(0.,0.,m_zPos+m_length+1*cm),m_glass_log,"glass",m_expHall_log,false,0,true); 
+  m_glass_phys = new G4PVPlacement(0,G4ThreeVector(m_xPos,m_yPos,m_zPos+m_length+1*cm),m_glass_log,"glass",m_expHall_log,false,0,true); 
 
 }
 

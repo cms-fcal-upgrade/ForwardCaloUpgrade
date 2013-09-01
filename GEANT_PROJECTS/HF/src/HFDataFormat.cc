@@ -32,6 +32,7 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st)
     m_opt_fy.push_back(st.y);
     m_opt_fz.push_back(st.z);
     m_opt_t.push_back(st.t);
+    m_opt_tprop.push_back(st.tprop);
   }
 }
 
@@ -46,6 +47,7 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
       m_opt_fy.push_back(st.y);
       m_opt_fz.push_back(st.z);
       m_opt_t.push_back(st.t);
+      m_opt_tprop.push_back(st.tprop);
     } else {
       m_scin_wavelength.push_back(st.wavelength);
       m_scin_energy.push_back(st.energy);
@@ -54,6 +56,7 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
       m_scin_fy.push_back(st.y);
       m_scin_fz.push_back(st.z);
       m_scin_t.push_back(st.t);
+      m_scin_tprop.push_back(st.tprop);
     }
   }
 }
@@ -166,6 +169,7 @@ void HFDataFormat::generateTrees()
     m_event->Branch("opt_fy",&m_opt_fy);
     m_event->Branch("opt_fz",&m_opt_fz);
     m_event->Branch("opt_t",&m_opt_t);
+    m_event->Branch("opt_tprop",&m_opt_tprop);
 
     m_event->Branch("scin_wavelength",&m_scin_wavelength);
     m_event->Branch("scin_energy",&m_scin_energy);
@@ -174,6 +178,7 @@ void HFDataFormat::generateTrees()
     m_event->Branch("scin_fy",&m_scin_fy);
     m_event->Branch("scin_fz",&m_scin_fz);
     m_event->Branch("scin_t",&m_scin_t);
+    m_event->Branch("scin_tprop",&m_scin_tprop);
 
     m_event->Branch("ion_E",&m_scinIon_E);
     m_event->Branch("ion_x",&m_scinIon_x);
@@ -201,7 +206,7 @@ void HFDataFormat::generateTrees()
   if ( _storePMTInfo ) {
     m_event->Branch("pmt_t",&m_pmt_t);
     m_event->Branch("pmt_localTime",&m_pmt_lt);
-    m_event->Branch("pmt_trackLength",&m_pmt_lt);
+    m_event->Branch("pmt_trackLength",&m_pmt_tl);
     m_event->Branch("pmt_wavelength",&m_pmt_wavelength);
     m_event->Branch("pmt_polX",&m_pmt_polX);
     m_event->Branch("pmt_polY",&m_pmt_polY);

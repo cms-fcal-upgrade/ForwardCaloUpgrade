@@ -37,6 +37,8 @@
 
 #include "G4ParticleDefinition.hh"
 
+#include "TRandom.h"
+
 class HFDetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -77,6 +79,12 @@ class HFStackingAction : public G4UserStackingAction
       m_nScinClad = n;
       m_scsfNA = -1.;
     }
+
+    // set index of refraction for photodetector
+    void SetGlassIndex(G4double n) { m_nGlass = n; }
+
+    // set air index of refraction
+    void SetAirIndex(G4double n) { m_nAir = n; }
   
     // set the low end of the optical photon wavelength cutoff
     void SetOptLowCut(G4double c) { m_lCutLow = c; }
@@ -107,8 +115,13 @@ class HFStackingAction : public G4UserStackingAction
     G4double m_nScin;
     G4double m_nScinClad;
     G4double m_rFibre; // fibre radius
+    G4double m_nGlass;
+    G4double m_nAir;
+    G4double m_fibLength;
 
     HFDataFormat * m_df;
+
+    TRandom m_r1;
 
     const G4ParticleDefinition * m_optDef;
 };

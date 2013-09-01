@@ -40,11 +40,12 @@ struct StackingStruct {
   double y;
   double z;
   double t;
+  double tprop;
 
 
-  inline StackingStruct(double w, double e, double n,double gx, double gy,double gz, double gt)
+  inline StackingStruct(double w, double e, double n,double gx, double gy,double gz, double gt, double pt)
     :wavelength(w),energy(e),na(n)
-    ,x(gx),y(gy),z(gz),t(gt)
+    ,x(gx),y(gy),z(gz),t(gt),tprop(pt)
     { }
 };
 
@@ -209,6 +210,7 @@ private:
   std::vector<double>  m_opt_fy;
   std::vector<double>  m_opt_fz;
   std::vector<double>  m_opt_t;
+  std::vector<double>  m_opt_tprop;
 
   std::vector<double>  m_scin_wavelength;
   std::vector<double>  m_scin_energy;
@@ -217,6 +219,7 @@ private:
   std::vector<double>  m_scin_fy;
   std::vector<double>  m_scin_fz;
   std::vector<double>  m_scin_t;
+  std::vector<double>  m_scin_tprop;
 
   // energy loss in fibres
   std::vector<double> m_scinIon_E;

@@ -32,6 +32,8 @@
 #include "HFStackingAction.hh"
 #include "HFDetectorConstruction.hh"
 
+#include "OptFibreTools.hh"
+
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
 #include "G4Track.hh"
@@ -50,6 +52,9 @@ HFStackingAction::HFStackingAction(HFDataFormat *df)
 , m_nScin(1.59)
 , m_nScinClad(1.49)
 , m_rFibre(0.306*mm)
+, m_nGlass(1.517)
+, m_nAir(1.)
+, m_fibLength(120*cm)
 , m_df(df)
 , m_optDef( G4OpticalPhoton::OpticalPhotonDefinition() )
 {
@@ -110,6 +115,43 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const double rhox = rho.x();
       const double rhoy = rho.y();
 
+      const G4ThreeVector & touchTrans = aTrack->GetTouchable()->GetTranslation();
+      //assert( trans.x() == touchTrans.x() );
+
+      Fiber fib;
+      fib.radius = m_rFibre;
+      fib.attenuation = 30*m;
+      fib.lengthTotal = 1.2*m;
+      fib.refrIndCore = m_nFibre;
+      fib.refrIndClad = m_nClad;
+      fib.refrIndAir = 1.;
+      fib.refrIndDet = m_nGlass;
+      fib.direction.SetX(0.);
+      fib.direction.SetY(0.);
+      fib.direction.SetZ(1.);
+      fib.position.SetX( touchTrans.x() );
+      fib.position.SetY( touchTrans.y() );
+      fib.position.SetZ( touchTrans.z() );
+
+      Photon ph;
+      ph.position.SetX( pos.x() );
+      ph.position.SetY( pos.y() );
+      ph.position.SetZ( pos.z() );
+      ph.direction.SetX( mom.x() );
+      ph.direction.SetY( mom.y() );
+      ph.direction.SetZ( mom.z() );
+      ph.dist = (touchTrans.z()+m_fibLength/2.-pos.z())/m_fibLength;
+      assert( ph.dist <= 1. );
+      assert( ph.dist >= 0. );      
+
+      Travel trk = GetTimeAndProbability(ph,fib);
+      double prob = trk.prob[0];
+      double probTime = trk.time[0];
+      double sumProb = 0.;
+      for (int i=0; i<trk.nmax; i++ )  sumProb += trk.prob[i];
+      double rndnm = m_r1.Rndm();
+
+
       /////////////////////////////////////////////////
       // calculate the angle the photon makes with the core/clad
       // interface surface normal.  
@@ -129,14 +171,17 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
      
       if ( lambda <= m_lCutLow || pz < 0. ) classification = fKill;
 
-      if ( vName.contains("fib") &&  lambda > m_lCutLow && na < m_fibreNA ) { 
+      if ( vName.contains("fib") &&  lambda > m_lCutLow && rndnm < sumProb ) { // na < m_fibreNA ) { 
         gammaCounter++;
-	StackingStruct st(lambda,E,na,x,y,z,t);
+	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fCherenkov);
-      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && na < m_scsfNA ) { 
+      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && rndnm < sumProb ) { // na < m_scsfNA ) { 
         gammaCounter++;
-	StackingStruct st(lambda,E,na,x,y,z,t);
+	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fScintillation);
+      } else if ( vName.contains("glass")  ) {
+	// kill tracks created in the glass
+	classification = fKill;
       } 
     }
 
