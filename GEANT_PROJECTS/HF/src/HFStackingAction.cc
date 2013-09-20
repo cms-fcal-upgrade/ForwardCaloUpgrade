@@ -99,6 +99,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const double px = mom.x();
       const double py = mom.y();
       const double pz = mom.z();
+      assert( fabs(mom.mag() - 1.) < 1.e-6);
       
       const G4ThreeVector & pos = aTrack->GetPosition();
       const double x = pos.x();
@@ -120,7 +121,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 
       Fiber fib;
       fib.radius = m_rFibre;
-      fib.attenuation = 30*m;
+      fib.attenuation = 28.1*m;
       fib.lengthTotal = 1.2*m;
       fib.refrIndCore = m_nFibre;
       fib.refrIndClad = m_nClad;
@@ -150,6 +151,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       double sumProb = 0.;
       for (int i=0; i<trk.nmax; i++ )  sumProb += trk.prob[i];
       double rndnm = m_r1.Rndm();
+      bool isDetected = 0. < rndnm && rndnm < trk.prob[0];
 
 
       /////////////////////////////////////////////////
@@ -169,13 +171,13 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       //const G4VProcess * proc = aTrack->GetCreatorProcess();
       //const G4String & procName = proc ? proc->GetProcessName() : "no";
      
-      if ( lambda <= m_lCutLow || pz < 0. ) classification = fKill;
+      if ( lambda <= m_lCutLow ) classification = fKill;
 
-      if ( vName.contains("fib") &&  lambda > m_lCutLow && rndnm < sumProb ) { // na < m_fibreNA ) { 
+      if ( vName.contains("fib") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fCherenkov);
-      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && rndnm < sumProb ) { // na < m_scsfNA ) { 
+      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) { 
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fScintillation);

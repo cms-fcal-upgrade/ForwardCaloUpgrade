@@ -5,6 +5,10 @@
 /testBeam/magField 0. 0. 3.8 tesla
 #/testBeam/detPosition 0 1055 3744 mm
 
+#/run/verbose 2
+#/event/verbose 2
+#/tracking/verbose 2
+
 /output/storeOpticalInfo true  # define store optical photon info in the output tree
 /output/storeParticleInfo true  # define store all other particles in the output tree
 /output/storeGeneratorInfo true # define store generator particles in the output tree
@@ -48,4 +52,4 @@
 #/gun/info
  
 #
-/run/beamOn 3 
+/run/beamOn 3

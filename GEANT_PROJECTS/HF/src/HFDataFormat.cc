@@ -249,6 +249,7 @@ void HFDataFormat::clearStacking()
     m_opt_fy.clear();
     m_opt_fz.clear();
     m_opt_t.clear();
+    m_opt_tprop.clear();
 
     m_scin_wavelength.clear();
     m_scin_energy.clear();
@@ -257,6 +258,7 @@ void HFDataFormat::clearStacking()
     m_scin_fy.clear();
     m_scin_fz.clear();
     m_scin_t.clear();
+    m_scin_tprop.clear();
 
     m_scinIon_E.clear();
     m_scinIon_x.clear();

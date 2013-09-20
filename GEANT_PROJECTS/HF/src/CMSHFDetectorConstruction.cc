@@ -293,17 +293,17 @@ void CMSHFDetectorConstruction::DefineMaterials()
   scsfProps->AddProperty("RINDEX",scinEnergies,scinRindex,nScinEnergies);
   scsfProps->AddProperty("ABSLENGTH",scinEnergies,scinAbsLength,nScinEnergies);
 
-  //scsfProps->AddProperty("FASTCOMPONENT",scinEnergies,scinValues,nScinEnergies);
-  //scsfProps->AddProperty("SLOWCOMPONENT",scinEnergies,scinValues,nScinEnergies);
+  scsfProps->AddProperty("FASTCOMPONENT",scinEnergies,scinValues,nScinEnergies);
+  scsfProps->AddProperty("SLOWCOMPONENT",scinEnergies,scinValues,nScinEnergies);
 
   //
   // see http://infoscience.epfl.ch/record/164027/files/EPFL_TH5033.pdf
   // for scintillation yield
-  /*scsfProps->AddConstProperty("SCINTILLATIONYIELD", 8300./MeV);
+  scsfProps->AddConstProperty("SCINTILLATIONYIELD", 8300./MeV);
   scsfProps->AddConstProperty("RESOLUTIONSCALE", 2.0);
   scsfProps->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
   scsfProps->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
-  scsfProps->AddConstProperty("YIELDRATIO", 0.8);*/
+  scsfProps->AddConstProperty("YIELDRATIO", 0.8);
 
   G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
   scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
@@ -344,9 +344,11 @@ void CMSHFDetectorConstruction::SetupGeometry()
   G4cout << "CMSHF Constructing W block: " << 2.*m_Wdx << "x" << 2.*m_Wdy << "x" << 2.*m_length << G4endl;
   //m_tungBlock = new G4Box("Wblock",m_Wdx,m_Wdy,m_length);
   m_tungBlock = new G4Box("Wblock",m_segWidth/2.,m_segWidth/2.,m_length);
-  m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCFib,m_length,0.,2.*pi);
+  //m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCFib,m_length,0.,2.*pi);
+  //m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
+  m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCClad,m_length,0.,2.*pi);
   m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
-  m_qFibreScin = new G4Tubs("scsfFibre",0.,m_rSFib,m_length,0.,2.*pi);
+  m_qFibreScin = new G4Tubs("scsfFibre",0.,m_rSClad,m_length,0.,2.*pi);
   m_cladScin_tube = new G4Tubs("cladding",m_rSClad,m_rSFib,m_length,0,2.*pi);
   //m_glass_box = new G4Box("Glass",m_expHall_x,m_expHall_y,1.*cm);
   m_glass_box = new G4Box("Glass",1.1*m_Wdx,1.1*m_Wdy,1.*cm);
@@ -439,14 +441,16 @@ void CMSHFDetectorConstruction::SetupDetectors()
       	sprintf(name,"fib%d",count);
       	m_fibresCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
       	sprintf(name,"clad%d",count);
-      	m_claddingCher.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_cladCher_log[segNum],name,m_qFibreCher_log[segNum],false,count,m_checkOverlaps));
+      	//m_claddingCher.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_cladCher_log[segNum],name,m_qFibreCher_log[segNum],false,count,m_checkOverlaps));
+      	m_claddingCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
       	count++;
       } else {
       // place scsf78
 	sprintf(name,"scsf%d",scsfCount);
 	m_fibresScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
 	sprintf(name,"cladScin%d",scsfCount);
-	m_claddingScin.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_cladScin_log[segNum],name,m_qFibreScin_log[segNum],false,scsfCount,m_checkOverlaps));
+	//m_claddingScin.push_back(new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),m_cladScin_log[segNum],name,m_qFibreScin_log[segNum],false,scsfCount,m_checkOverlaps));
+	m_claddingScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
  	scsfCount++;
       }
 
@@ -654,7 +658,8 @@ void CMSHFDetectorConstruction::ClearPhysicalVolumes()
 
   assert(m_isConstructed);
 
-  const unsigned segTot = m_Nseg*m_Nseg;
+  //const unsigned segTot = m_Nseg*m_Nseg;
+  const unsigned segTot = m_tungBlock_log.size();
   for ( unsigned i=0; i != segTot; i++ )  {
     m_tungBlock_log[i]->RemoveDaughter(m_tungBlock_phys[i]);
     delete m_tungBlock_phys[i];
