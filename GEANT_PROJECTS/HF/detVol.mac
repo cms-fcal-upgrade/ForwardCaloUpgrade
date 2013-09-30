@@ -2,7 +2,7 @@
 #/testBeam/nRods 268
 #/testBeam/rRod 2.5 mm
 #/testBeam/Nseg 32
-/testBeam/magField 0. 0. 3.8 tesla
+#/testBeam/magField 0. 0. 3.8 tesla
 #/testBeam/detPosition 0 1055 3744 mm
 
 #/run/verbose 2
@@ -10,9 +10,9 @@
 #/tracking/verbose 2
 
 /output/storeOpticalInfo true  # define store optical photon info in the output tree
-/output/storeParticleInfo true  # define store all other particles in the output tree
+/output/storeParticleInfo false  # define store all other particles in the output tree
 /output/storeGeneratorInfo true # define store generator particles in the output tree
-/output/storePMTInfo true    # define store photons at end of fiber
+/output/storePMTInfo false    # define store photons at end of fiber
 /output/genTree  # required command to create branches of the Tree as defined above 
                  # you will have nothing stored if you don't run this command
 
@@ -40,7 +40,7 @@
 /gun/particle pi-
 /gun/energy 100 GeV
 /gun/position 0 0 0 mm
-/gun/direction 0 0.342 0.94
+/gun/direction 0 0 1
 /gun/positionSmearing 4 4 0 mm
 #/gun/thetaSmearing 0 deg
 #/gun/phiSmearing 0 deg
@@ -52,4 +52,4 @@
 #/gun/info
  
 #
-/run/beamOn 3
+/run/beamOn 100
