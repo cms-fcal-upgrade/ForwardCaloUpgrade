@@ -102,7 +102,7 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_rSClad = m_rCClad;
 
   m_NfibSeg = 32U;
-  m_Nseg = 1U;
+  m_Nseg = 32U;
 
   m_a = 1.2*mm;
 
