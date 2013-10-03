@@ -1,11 +1,13 @@
 
-#/testBeam/detPosition 0. 0. 0.7 m
+/testBeam/detPosition 31.4 0 592 mm
+/testBeam/rotate 0 3 0 deg
 #/testBeam/magField 0. 0. 3.8 tesla
+#/testBeam/checkOverlaps true
 
 
-/output/storeOpticalInfo true
+#/output/storeOpticalInfo true
 #/output/storePMTInfo true
-/output/genTree
+#/output/genTree
 
 # Use this open statement to create an OpenGL view:
 #/vis/open OGL 600x600-0+0
@@ -37,24 +39,25 @@
 /vis/drawVolume
 #
 # Specify view angle:
-#/vis/viewer/set/viewpointThetaPhi 90. 0.
+/vis/viewer/set/viewpointThetaPhi 150. 45.
 #
 # Specify zoom value:
 /vis/viewer/zoom 1.5
 #
 # Specify style (surface or wireframe):
-/vis/viewer/set/style wireframe
+/vis/viewer/set/style solid
 
 /vis/viewer/set/auxiliaryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 100
 /vis/viewer/set/viewpointVector -0.1 0.1 0.9
 /vis/viewer/set/lightsVector -0.5 0.5 0
 /vis/geometry/set/visibility World 0 false
-/vis/geometry/set/colour WRodLog 0 1 1 0 0.5
+#/vis/geometry/set/colour WRodLog 0 1 1 0 0.5
+/vis/geometry/set/colour glass 1 0 0 0.75
 
 #
 # Draw coordinate axes:
-#/vis/scene/add/axes 0 0 0 1 cm
+/vis/scene/add/axes 0 0 0 10 cm
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -98,7 +101,7 @@
 /vis/scene/endOfEventAction accumulate
 #
 # Re-establish auto refreshing and verbosity:
-#/vis/viewer/set/autoRefresh true
+/vis/viewer/set/autoRefresh true
 #/vis/verbose warnings
 #
 # For file-based drivers, use this to create an empty detector view:

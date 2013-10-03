@@ -36,6 +36,8 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "CMSHFDetectorConstructionMessenger.hh"
 
+#include "G4RotationMatrix.hh"
+
 class G4LogicalVolume;
 class G4PhysicalVolume;
 class G4Material;
@@ -88,6 +90,11 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
     // set the magnetic field
     void SetMagneticField( const G4ThreeVector &vec);
+
+    // set the pitch of the detector
+    // pitch is applied first, then yaw
+    void SetPitchAndYaw(G4double, G4double);
+
 
     // ---- accessor methods -----
     void PrintCalorParameters() { return; }
@@ -161,6 +168,11 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // grid spacing
     G4double m_a;
 
+    // rotation matrix for the wedge
+    // this describes how a wedge is shifted from a normal position
+    double m_pitch; 
+    double m_yaw;
+
     G4bool m_checkOverlaps;
 
     // materials
@@ -198,7 +210,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_claddingCher;
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
-    G4VPhysicalVolume * m_glass_phys;
+    std::vector<G4VPhysicalVolume *> m_glass_phys;
 
     // uniform magnetic field
     G4UniformMagField *m_Bfield;

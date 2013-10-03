@@ -49,8 +49,8 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
 
       SteppingStruct st(pos,time,theTrack->GetLocalTime(),theTrack->GetTrackLength(),wavelength,pol.x(),pol.y());
       if ( wavelength > 350. )  {
-  	if ( isFibre ) m_df->fillSteppingAction( st, fCherenkov );
-  	else if ( isScinFibre ) m_df->fillSteppingAction( st, fScintillation );
+  	//if ( isFibre ) m_df->fillSteppingAction( st, fCherenkov );
+  	//else if ( isScinFibre ) m_df->fillSteppingAction( st, fScintillation );
       }
 
       // kill the track after readout
@@ -64,7 +64,7 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
   } else if ( preVolume == postVolume && preName.contains("scsf") ) {
     const double E = step->GetTotalEnergyDeposit();
     IoniStruct is(E,pos,time);
-    m_df->fillIonization(is); 
+    //m_df->fillIonization(is); 
   } 
 
 }

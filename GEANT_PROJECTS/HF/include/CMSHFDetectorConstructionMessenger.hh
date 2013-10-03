@@ -12,6 +12,7 @@ class G4UIcmdWithADouble;
 class G4UIcmdWithAString;
 class G4UIcmdWithABool;
 class G4UIcmdWith3VectorAndUnit;
+class G4UIcmdWith3Vector;
 
 class CMSHFDetectorConstructionMessenger: public G4UImessenger
 {
@@ -34,6 +35,7 @@ class CMSHFDetectorConstructionMessenger: public G4UImessenger
    G4UIcmdWithADouble * m_cladIndexCmd;
    G4UIcmdWithABool * m_overlapCheckCmd;
    G4UIcmdWith3VectorAndUnit * m_fieldCmd;
+   G4UIcmdWith3VectorAndUnit * m_rotCmd; // command to rotate detector elements
 
 };
 

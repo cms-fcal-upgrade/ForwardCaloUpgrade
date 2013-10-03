@@ -55,6 +55,7 @@ HFStackingAction::HFStackingAction(HFDataFormat *df)
 , m_nGlass(1.517)
 , m_nAir(1.)
 , m_fibLength(120*cm)
+, m_fibreDir(0.,0.,1.)
 , m_df(df)
 , m_optDef( G4OpticalPhoton::OpticalPhotonDefinition() )
 {
@@ -102,23 +103,21 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const double pz = mom.z();
       assert( fabs(mom.mag() - 1.) < 1.e-6);
       
-      const G4ThreeVector & pos = aTrack->GetPosition();
-      const double x = pos.x();
-      const double y = pos.y();
-      const double z = pos.z();
-      const double t = aTrack->GetGlobalTime();
-
       //////////////////////////////////////////////////
       // Find the fiber's central axis, and the displancement
       // of the photon production point from the that axis in
       // a plane perpendicular to the fiber.
       const G4ThreeVector & trans = volume->GetTranslation();
-      const G4ThreeVector rho = pos - trans;
-      const double rhox = rho.x();
-      const double rhoy = rho.y();
 
       const G4ThreeVector & touchTrans = aTrack->GetTouchable()->GetTranslation();
       //assert( trans.x() == touchTrans.x() );
+
+      const G4ThreeVector & pos = aTrack->GetPosition();
+      const double x = touchTrans.x();  // record center to fibre rather
+      const double y = touchTrans.y();
+      const double z = pos.z();
+      const double t = aTrack->GetGlobalTime();
+
 
       Fiber fib;
       fib.radius = m_rFibre;
@@ -128,9 +127,9 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       fib.refrIndClad = m_nClad;
       fib.refrIndAir = 1.;
       fib.refrIndDet = m_nGlass;
-      fib.direction.SetX(0.);
-      fib.direction.SetY(0.);
-      fib.direction.SetZ(1.);
+      fib.direction.SetX(m_fibreDir.x());
+      fib.direction.SetY(m_fibreDir.y());
+      fib.direction.SetZ(m_fibreDir.z());
       fib.position.SetX( touchTrans.x() );
       fib.position.SetY( touchTrans.y() );
       fib.position.SetZ( touchTrans.z() );
@@ -155,16 +154,6 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       bool isDetected = 0. < rndnm && rndnm < trk.prob[0];
 
 
-      /////////////////////////////////////////////////
-      // calculate the angle the photon makes with the core/clad
-      // interface surface normal.  
-      // eta is the angle between the photon and the surface normal 
-      // in the transverse plane
-      // psi is the angle between the photon and fiber's central axis.
-      const double sinEta = (rhox*py-rhoy*px)/m_rFibre;
-      const double sinPsi = sqrt(1.-pz*pz);
-      //const double na = sinPsi*cos(asin(sinEta));  // equal to cos(Xi)
-     
       //////////////////////
       // This is the old method to check photon acceptance
       const double na = sqrt(px*px+py*py);

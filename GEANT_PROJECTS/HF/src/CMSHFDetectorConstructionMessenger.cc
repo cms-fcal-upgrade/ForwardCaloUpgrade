@@ -10,6 +10,7 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWith3VectorAndUnit.hh"
+#include "G4UIcmdWith3Vector.hh"
 
 #include <iostream>
 
@@ -72,6 +73,12 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_fieldCmd->SetDefaultUnit("tesla");  
   m_fieldCmd->AvailableForStates(G4State_Idle);
 
+  m_rotCmd = new G4UIcmdWith3VectorAndUnit("/testBeam/rotate", this);
+  m_rotCmd->SetGuidance("Define the pitch and yaw of the detector.  Requires a 3 vector (the third element is a dummy inpur)");
+  m_rotCmd->SetDefaultValue(false);
+  m_rotCmd->SetDefaultUnit("deg");
+  m_rotCmd->AvailableForStates(G4State_Idle);
+
 
 }
 
@@ -85,6 +92,7 @@ CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
   delete m_fibreIndexCmd;
   delete m_cladIndexCmd;
   delete m_overlapCheckCmd;
+  delete m_rotCmd;
 
 }
 
@@ -116,6 +124,10 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   }
   else if ( cmd == m_fieldCmd ) {
     m_detector->SetMagneticField(m_fieldCmd->GetNew3VectorValue(newValue));
+  }
+  else if ( cmd == m_rotCmd ) {
+    const G4ThreeVector & vec = m_rotCmd->GetNew3VectorValue(newValue);
+    m_detector->SetPitchAndYaw(vec.x(),vec.y());
   }
 
 }

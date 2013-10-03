@@ -62,6 +62,12 @@ class HFStackingAction : public G4UserStackingAction
 	m_fibreNA = -1.; // force recalculation
       }
 
+   //  set the fibre direction
+   void SetFibreDirection(const G4ThreeVector & dir) 
+      {
+	m_fibreDir = dir;
+      }
+
     // set the cladding index of refraction
     void SetCladIndex(G4double n) 
       { 
@@ -118,6 +124,8 @@ class HFStackingAction : public G4UserStackingAction
     G4double m_nGlass;
     G4double m_nAir;
     G4double m_fibLength;
+
+    G4ThreeVector m_fibreDir;
 
     HFDataFormat * m_df;
 

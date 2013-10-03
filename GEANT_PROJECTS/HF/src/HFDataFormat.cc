@@ -180,11 +180,11 @@ void HFDataFormat::generateTrees()
     m_event->Branch("scin_t",&m_scin_t);
     m_event->Branch("scin_tprop",&m_scin_tprop);
 
-    m_event->Branch("ion_E",&m_scinIon_E);
+    /*m_event->Branch("ion_E",&m_scinIon_E);
     m_event->Branch("ion_x",&m_scinIon_x);
     m_event->Branch("ion_y",&m_scinIon_y);
     m_event->Branch("ion_z",&m_scinIon_z);
-    m_event->Branch("ion_t",&m_scinIon_t);
+    m_event->Branch("ion_t",&m_scinIon_t);*/
   }
 
   if (_storeParticleInfo){
