@@ -106,6 +106,14 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 
   m_a = 1.2*mm;
 
+  // dead material around block
+  m_deadSeg_bottom = 1U;
+  m_deadSeg_top = 1U;
+  m_deadSeg_right = 1U;
+  m_deadSeg_left = 1U;
+
+  m_fillFibres = false; // by default don't insert fibers
+
   m_checkOverlaps = false;
   m_messenger = new CMSHFDetectorConstructionMessenger(this);
 }
@@ -386,6 +394,9 @@ void CMSHFDetectorConstruction::SetupGeometry()
   //
   m_glass_log = new G4LogicalVolume(m_glass_box,m_glass,"glassLog",0,0,0); 
 
+  // dead material
+  m_deadBlock_log = new G4LogicalVolume(m_tungBlock,m_tungsten,"DeadMaterial",0,0,0);
+
   // set limits on the time to propagate photons
   // needs a G4StepLimiter needs to be added to OpticalPhoton
   // process for the following to do anything.
@@ -430,6 +441,12 @@ void CMSHFDetectorConstruction::SetupDetectors()
   //m_glass_phys[i] = new G4PVPlacement(0,m_segPositions[i]+glassOffset,m_glass_log,"glass",m_expHall_log,false,0,m_checkOverlaps); 
   }
 
+  // place dead blocks
+  const unsigned nDead = m_deadPositions.size();
+  for ( unsigned i=0; i != nDead; i++ ) {
+    m_deadBlocks_phys.push_back(new G4PVPlacement(G4Transform3D(rot,m_deadPositions[i]),m_deadBlock_log,"dead",m_expHall_log,false,0,m_checkOverlaps));
+  }
+
   // ------------------------------------------------------
   // insert fibers 
   char name[50];
@@ -438,6 +455,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
   unsigned rowCount=0; // count of the number of rows across all segments
   const unsigned nFibSide = m_Nseg*m_NfibSeg;
 
+  if ( m_fillFibres )
   for ( unsigned i=0; i != nFibSide; i++ ) {
   
     // reset segCol to zero
@@ -523,6 +541,43 @@ void CMSHFDetectorConstruction::CalculateConstants()
     }
   }
 
+
+  m_deadPositions.clear();
+  // find positions on top
+  for ( unsigned i=0; i != m_deadSeg_top; i++ ) {
+    const double yPos = m_yPos + m_Wdy + segWy/2. + i*segWy;
+    for ( unsigned j=0; j != m_Nseg; j++ ) {
+      const double xPos = m_xPos-xOffset+j*segWx;
+      m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
+    }
+  }
+  // find positions on right
+  const unsigned nRightTot = m_deadSeg_right+m_deadSeg_top+m_deadSeg_bottom;
+  for ( unsigned i=0; i != nRightTot; i++ ) {
+    const double yPos = m_yPos-yOffset-m_deadSeg_bottom*segWy+i*segWy;
+    for ( unsigned j=0; j != m_Nseg; j++ ) {
+      const double xPos = m_xPos + m_Wdx + segWx/2. + j*segWx;
+      m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
+    }
+  }
+  // find positions on bottom
+  for ( unsigned i=0; i != m_deadSeg_bottom; i++ ) {
+    const double yPos = m_yPos - m_Wdy - segWx/2. - i*segWy;
+    for ( unsigned j=0; j != m_Nseg; j++ ) {
+      const double xPos = m_xPos-xOffset+j*segWx;
+      m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
+    }
+  }
+  // find positions on left
+  const unsigned nLeftTot = m_deadSeg_left+m_deadSeg_top+m_deadSeg_bottom;
+  for ( unsigned i=0; i != nLeftTot; i++ ) {
+    const double yPos = m_yPos-yOffset-m_deadSeg_bottom*segWy+i*segWy;
+    for ( unsigned j=0; j != m_Nseg; j++ ) {
+      const double xPos = m_xPos - m_Wdx - segWx/2. - j*segWx;
+      m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
+    }
+  }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -534,7 +589,7 @@ void CMSHFDetectorConstruction::SetPositionXYZ(const G4ThreeVector &detPos)
   m_yPos = detPos.y();
   m_zPos = detPos.z();
 
-  if ( !m_isConstructed ) return;
+  /*if ( !m_isConstructed ) return;
 
   ClearPhysicalVolumes();
   //ClearLogicalVolumes();
@@ -543,7 +598,7 @@ void CMSHFDetectorConstruction::SetPositionXYZ(const G4ThreeVector &detPos)
   //SetupGeometry();
   SetupDetectors();
 
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();*/
 
 }
 
@@ -553,7 +608,7 @@ void CMSHFDetectorConstruction::SetLength(G4double l)
 
   m_length = l;
 
-  if ( !m_isConstructed ) return;
+  /*if ( !m_isConstructed ) return;
 
   ClearPhysicalVolumes();
   ClearLogicalVolumes();
@@ -566,14 +621,14 @@ void CMSHFDetectorConstruction::SetLength(G4double l)
   //  m_gun->SetInitDist(m_length);
   //}
 
-  G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
+  G4RunManager::GetRunManager()->GeometryHasBeenModified(); */
 
 }
 
 void CMSHFDetectorConstruction::SetNFibSeg(unsigned N)
 {
 
-  if ( m_isConstructed ) {
+  /*if ( m_isConstructed ) {
 
     ClearPhysicalVolumes();
     ClearLogicalVolumes();
@@ -586,7 +641,7 @@ void CMSHFDetectorConstruction::SetNFibSeg(unsigned N)
 
     G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
-  }
+  }*/
 
   m_NfibSeg = N;
 
@@ -595,7 +650,7 @@ void CMSHFDetectorConstruction::SetNFibSeg(unsigned N)
 void CMSHFDetectorConstruction::SetNSeg(unsigned N)
 {
 
-  if ( m_isConstructed ) {
+  /*if ( m_isConstructed ) {
     ClearPhysicalVolumes();
     ClearLogicalVolumes();
   
@@ -607,10 +662,86 @@ void CMSHFDetectorConstruction::SetNSeg(unsigned N)
   
     G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
-  }
+  }*/
 
   m_Nseg = N;
   
+}
+
+void CMSHFDetectorConstruction::SetDeadTop(unsigned N)
+{
+
+  m_deadSeg_top = N;
+
+  /*if ( m_isConstructed ) {
+    ClearPhysicalVolumes();
+    ClearLogicalVolumes();
+  
+
+    CalculateConstants();
+    SetupGeometry();
+    SetupDetectors();
+  
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+  }*/
+  
+}
+
+void CMSHFDetectorConstruction::SetDeadBottom(unsigned N)
+{
+  m_deadSeg_bottom = N;
+
+  /*if ( m_isConstructed ) {
+    ClearPhysicalVolumes();
+    ClearLogicalVolumes();
+  
+
+    CalculateConstants();
+    SetupGeometry();
+    SetupDetectors();
+  
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+  }*/
+  
+}
+
+void CMSHFDetectorConstruction::SetDeadRight(unsigned N)
+{
+  m_deadSeg_right = N;
+
+  /*if ( m_isConstructed ) {
+    ClearPhysicalVolumes();
+    ClearLogicalVolumes();
+  
+
+    CalculateConstants();
+    SetupGeometry();
+    SetupDetectors();
+  
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+  }*/
+
+}
+
+void CMSHFDetectorConstruction::SetDeadLeft(unsigned N)
+{
+  m_deadSeg_left = N;
+
+  /*if ( m_isConstructed ) {
+    ClearPhysicalVolumes();
+    ClearLogicalVolumes();
+
+    CalculateConstants();
+    SetupGeometry();
+    SetupDetectors();
+  
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+  }*/
+
 }
 
 
@@ -619,7 +750,7 @@ void CMSHFDetectorConstruction::SetPitchAndYaw(G4double pitch, G4double yaw) {
   m_pitch = pitch;
   m_yaw = yaw;
 
-  if ( m_isConstructed ){
+  /*if ( m_isConstructed ){
     ClearPhysicalVolumes();
     ClearLogicalVolumes();
   
@@ -629,7 +760,12 @@ void CMSHFDetectorConstruction::SetPitchAndYaw(G4double pitch, G4double yaw) {
    
     G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
     
-  }
+  }*/
+}
+
+void CMSHFDetectorConstruction::SetFibres(const bool b) {
+  m_fillFibres = b;
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 
@@ -706,6 +842,12 @@ void CMSHFDetectorConstruction::ClearPhysicalVolumes()
 
   m_tungBlock_phys.clear();
 
+  m_deadBlock_log->ClearDaughters();
+  const unsigned nDead = m_deadBlocks_phys.size();
+  for ( unsigned i=0; i != nDead; i++ ) 
+    delete m_deadBlocks_phys[i];
+  m_deadBlocks_phys.clear();
+
   const unsigned nFibs = m_fibresCher.size();
   for ( unsigned i=0; i != nFibs; i++ ) {
     m_fibresCher[i]->GetLogicalVolume()->RemoveDaughter(m_fibresCher[i]);
@@ -767,6 +909,7 @@ void CMSHFDetectorConstruction::ClearLogicalVolumes()
   m_cladScin_log.clear();
 
   delete m_glass_log;
+  delete m_deadBlock_log;
 
   //m_expHall_log->RemoveDaughter(m_expHall_phys);
   //delete m_expHall_phys;
@@ -774,6 +917,18 @@ void CMSHFDetectorConstruction::ClearLogicalVolumes()
   //delete m_expHall_log;
   //delete m_expHall_box;
 
+}
+
+void CMSHFDetectorConstruction::RefreshGeometry()
+{
+    ClearPhysicalVolumes();
+    ClearLogicalVolumes();
+
+    CalculateConstants();
+    SetupGeometry();
+    SetupDetectors();
+  
+    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
 void CMSHFDetectorConstruction::SetMagneticField(const G4ThreeVector &vec)

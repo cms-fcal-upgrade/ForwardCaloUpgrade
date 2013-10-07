@@ -1,8 +1,15 @@
 
 /testBeam/detPosition 31.4 0 592 mm
-/testBeam/rotate 0 3 0 deg
+/testBeam/rotate -1.5 3 0 deg
+/testBeam/fibres false
 #/testBeam/magField 0. 0. 3.8 tesla
-#/testBeam/checkOverlaps true
+/testBeam/checkOverlaps true
+/testBeam/NdeadTop 2
+/testBeam/NdeadBottom 2
+/testBeam/NdeadRight 1
+/testBeam/NdeadLeft 1
+/testBeam/Nseg 1 
+/testBeam/refreshGeometry true
 
 
 #/output/storeOpticalInfo true
@@ -39,7 +46,7 @@
 /vis/drawVolume
 #
 # Specify view angle:
-/vis/viewer/set/viewpointThetaPhi 150. 45.
+#/vis/viewer/set/viewpointThetaPhi 150. 45.
 #
 # Specify zoom value:
 /vis/viewer/zoom 1.5

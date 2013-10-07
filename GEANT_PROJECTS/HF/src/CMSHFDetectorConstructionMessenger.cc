@@ -79,6 +79,35 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_rotCmd->SetDefaultUnit("deg");
   m_rotCmd->AvailableForStates(G4State_Idle);
 
+  m_fillFibres = new G4UIcmdWithABool("/testBeam/fibres",this);
+  m_fillFibres->SetGuidance("Turn on fibres, this is important");
+  m_fillFibres->SetDefaultValue(false);
+  m_fillFibres->AvailableForStates(G4State_Idle);
+
+  m_NsegTopCmd = new G4UIcmdWithAnInteger("/testBeam/NdeadTop",this);
+  m_NsegTopCmd->SetGuidance("Set number of dead segments on top of block");
+  m_NsegTopCmd->SetDefaultValue(1);
+  m_NsegTopCmd->AvailableForStates(G4State_Idle);
+
+  m_NsegBottomCmd = new G4UIcmdWithAnInteger("/testBeam/NdeadBottom",this);
+  m_NsegBottomCmd->SetGuidance("Set number of dead segments on bottom of block");
+  m_NsegBottomCmd->SetDefaultValue(1);
+  m_NsegBottomCmd->AvailableForStates(G4State_Idle);
+
+  m_NsegLeftCmd = new G4UIcmdWithAnInteger("/testBeam/NdeadLeft",this);
+  m_NsegLeftCmd->SetGuidance("Set number of dead segments on left of block");
+  m_NsegLeftCmd->SetDefaultValue(1);
+  m_NsegLeftCmd->AvailableForStates(G4State_Idle);
+
+  m_NsegRightCmd = new G4UIcmdWithAnInteger("/testBeam/NdeadRight",this);
+  m_NsegRightCmd->SetGuidance("Set number of dead segments on right of block");
+  m_NsegRightCmd->SetDefaultValue(1);
+  m_NsegRightCmd->AvailableForStates(G4State_Idle);
+
+  m_refreshCmd = new G4UIcmdWithABool("/testBeam/refreshGeometry",this);
+  m_refreshCmd->SetGuidance("Force refresh of geometry and rebuild");
+  m_refreshCmd->SetDefaultValue(true);
+  m_refreshCmd->AvailableForStates(G4State_Idle);
 
 }
 
@@ -93,6 +122,12 @@ CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
   delete m_cladIndexCmd;
   delete m_overlapCheckCmd;
   delete m_rotCmd;
+  delete m_fillFibres;
+  delete m_NsegTopCmd;
+  delete m_NsegBottomCmd;
+  delete m_NsegRightCmd;
+  delete m_NsegLeftCmd;
+  delete m_refreshCmd;
 
 }
 
@@ -128,6 +163,24 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   else if ( cmd == m_rotCmd ) {
     const G4ThreeVector & vec = m_rotCmd->GetNew3VectorValue(newValue);
     m_detector->SetPitchAndYaw(vec.x(),vec.y());
+  }
+  else if ( cmd == m_fillFibres ) {
+    m_detector->SetFibres( m_fillFibres->GetNewBoolValue(newValue));
+  }
+  else if ( cmd == m_NsegTopCmd ) {
+    m_detector->SetDeadTop( m_NsegTopCmd->GetNewIntValue(newValue));
+  }
+  else if ( cmd == m_NsegBottomCmd ) {
+    m_detector->SetDeadBottom( m_NsegBottomCmd->GetNewIntValue(newValue));
+  }
+  else if ( cmd == m_NsegLeftCmd ) {
+    m_detector->SetDeadLeft( m_NsegLeftCmd->GetNewIntValue(newValue));
+  }
+  else if ( cmd == m_NsegRightCmd ) {
+    m_detector->SetDeadRight( m_NsegRightCmd->GetNewIntValue(newValue));
+  }
+  else if ( cmd == m_refreshCmd ) {
+    m_detector->RefreshGeometry();
   }
 
 }

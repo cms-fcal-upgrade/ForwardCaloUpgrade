@@ -3,10 +3,12 @@
 #/testBeam/rRod 2.5 mm
 #/testBeam/magField 0. 0. 3.8 tesla
 #/testBeam/detPosition 0 1055 3744 mm
-/testBeam/detPosition 31.4 0 599 mm
-/testBeam/rotation 0 3 0 deg
+#/testBeam/Nseg 1
+#/testBeam/detPosition 31.4 0 599 mm
+/testBeam/fibres true
+/testBeam/rotate -1.5 3 0 deg
 #/testBeam/checkOverlaps true
-#/testBeam/Nseg 32
+/testBeam/refreshGeometry true
 
 #/run/verbose 2
 #/event/verbose 2

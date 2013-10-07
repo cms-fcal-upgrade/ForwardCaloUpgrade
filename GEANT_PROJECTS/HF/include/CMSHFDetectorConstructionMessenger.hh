@@ -36,6 +36,12 @@ class CMSHFDetectorConstructionMessenger: public G4UImessenger
    G4UIcmdWithABool * m_overlapCheckCmd;
    G4UIcmdWith3VectorAndUnit * m_fieldCmd;
    G4UIcmdWith3VectorAndUnit * m_rotCmd; // command to rotate detector elements
+   G4UIcmdWithABool * m_fillFibres;
+   G4UIcmdWithAnInteger * m_NsegTopCmd;
+   G4UIcmdWithAnInteger * m_NsegBottomCmd;
+   G4UIcmdWithAnInteger * m_NsegRightCmd;
+   G4UIcmdWithAnInteger * m_NsegLeftCmd;
+   G4UIcmdWithABool * m_refreshCmd;
 
 };
 

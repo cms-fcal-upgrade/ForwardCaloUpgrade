@@ -95,6 +95,18 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // pitch is applied first, then yaw
     void SetPitchAndYaw(G4double, G4double);
 
+    // turn on fiber filling
+    void SetFibres(const bool);
+
+    // functions to set dead segments around block
+    void SetDeadTop(const unsigned );
+    void SetDeadBottom(const unsigned );
+    void SetDeadRight(const unsigned );
+    void SetDeadLeft(const unsigned );
+
+    // refresh geometry and force a rebuild
+    void RefreshGeometry();
+
 
     // ---- accessor methods -----
     void PrintCalorParameters() { return; }
@@ -142,10 +154,18 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     unsigned m_Nseg;     // number of segments on detector side
     G4double m_segWidth;
 
+    // number of dead segments to put on sides of active area
+    unsigned m_deadSeg_bottom;
+    unsigned m_deadSeg_top;
+    unsigned m_deadSeg_right;
+    unsigned m_deadSeg_left;
+
     unsigned m_nQseg;  // number of Q fibres in a segment
     unsigned m_nSseg;  // number of S fibres in a segment
+    bool m_fillFibres;
 
     std::vector<G4ThreeVector> m_segPositions;
+    std::vector<G4ThreeVector> m_deadPositions;
 
     G4double m_nFib;
     G4double m_nClad;
@@ -202,6 +222,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4LogicalVolume *> m_qFibreScin_log;
     std::vector<G4LogicalVolume *> m_cladScin_log;
     G4LogicalVolume * m_glass_log;
+    G4LogicalVolume * m_deadBlock_log;
 
     // physical volumes
     G4VPhysicalVolume * m_expHall_phys;
@@ -211,6 +232,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
     std::vector<G4VPhysicalVolume *> m_glass_phys;
+    std::vector<G4VPhysicalVolume *> m_deadBlocks_phys;
 
     // uniform magnetic field
     G4UniformMagField *m_Bfield;
