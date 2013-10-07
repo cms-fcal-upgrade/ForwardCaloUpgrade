@@ -75,7 +75,7 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
 
   m_rotCmd = new G4UIcmdWith3VectorAndUnit("/testBeam/rotate", this);
   m_rotCmd->SetGuidance("Define the pitch and yaw of the detector.  Requires a 3 vector (the third element is a dummy inpur)");
-  m_rotCmd->SetDefaultValue(false);
+  m_rotCmd->SetDefaultValue(G4ThreeVector(0.,0.,0.));
   m_rotCmd->SetDefaultUnit("deg");
   m_rotCmd->AvailableForStates(G4State_Idle);
 
