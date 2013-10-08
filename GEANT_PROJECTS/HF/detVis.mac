@@ -1,14 +1,14 @@
 
-/testBeam/detPosition 31.4 0 592 mm
-/testBeam/rotate -1.5 3 0 deg
+/testBeam/detPosition 0 723 3744 mm
+/testBeam/rotate 0 3 0 deg
 /testBeam/fibres false
-#/testBeam/magField 0. 0. 3.8 tesla
-/testBeam/checkOverlaps true
-/testBeam/NdeadTop 2
-/testBeam/NdeadBottom 2
+/testBeam/magField 0. 0. 3.8 tesla
+/testBeam/checkOverlaps false
+/testBeam/NdeadTop 1
+/testBeam/NdeadBottom 1
 /testBeam/NdeadRight 1
 /testBeam/NdeadLeft 1
-/testBeam/Nseg 1 
+/testBeam/Nseg 32 
 /testBeam/refreshGeometry true
 
 
@@ -46,7 +46,7 @@
 /vis/drawVolume
 #
 # Specify view angle:
-#/vis/viewer/set/viewpointThetaPhi 150. 45.
+/vis/viewer/set/viewpointThetaPhi 150. 45.
 #
 # Specify zoom value:
 /vis/viewer/zoom 1.5
@@ -56,11 +56,12 @@
 
 /vis/viewer/set/auxiliaryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 100
-/vis/viewer/set/viewpointVector -0.1 0.1 0.9
+#/vis/viewer/set/viewpointVector -0.1 0.1 0.9
 /vis/viewer/set/lightsVector -0.5 0.5 0
 /vis/geometry/set/visibility World 0 false
 #/vis/geometry/set/colour WRodLog 0 1 1 0 0.5
 /vis/geometry/set/colour glass 1 0 0 0.75
+/vis/geometry/set/colour DeadMaterial 0 0 1 0.75
 
 #
 # Draw coordinate axes:
@@ -103,7 +104,7 @@
 /gun/particle e-
 /gun/energy 10 GeV
 /gun/position 0 0 0 m
-/gun/direction 0 0 1
+/gun/direction 0 0.052 0.998 
 # To superimpose all of the events from a given run:
 /vis/scene/endOfEventAction accumulate
 #

@@ -552,10 +552,10 @@ void CMSHFDetectorConstruction::CalculateConstants()
     }
   }
   // find positions on right
-  const unsigned nRightTot = m_deadSeg_right+m_deadSeg_top+m_deadSeg_bottom;
+  const unsigned nRightTot = m_Nseg+m_deadSeg_top+m_deadSeg_bottom;
   for ( unsigned i=0; i != nRightTot; i++ ) {
     const double yPos = m_yPos-yOffset-m_deadSeg_bottom*segWy+i*segWy;
-    for ( unsigned j=0; j != m_Nseg; j++ ) {
+    for ( unsigned j=0; j != m_deadSeg_right; j++ ) {
       const double xPos = m_xPos + m_Wdx + segWx/2. + j*segWx;
       m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
     }
@@ -569,10 +569,10 @@ void CMSHFDetectorConstruction::CalculateConstants()
     }
   }
   // find positions on left
-  const unsigned nLeftTot = m_deadSeg_left+m_deadSeg_top+m_deadSeg_bottom;
+  const unsigned nLeftTot = m_Nseg+m_deadSeg_top+m_deadSeg_bottom;
   for ( unsigned i=0; i != nLeftTot; i++ ) {
     const double yPos = m_yPos-yOffset-m_deadSeg_bottom*segWy+i*segWy;
-    for ( unsigned j=0; j != m_Nseg; j++ ) {
+    for ( unsigned j=0; j != m_deadSeg_left; j++ ) {
       const double xPos = m_xPos - m_Wdx - segWx/2. - j*segWx;
       m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
     }
