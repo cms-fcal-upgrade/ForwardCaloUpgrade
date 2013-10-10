@@ -5,6 +5,9 @@
 #/testBeam/detPosition 0 1055 3744 mm
 #/testBeam/Nseg 1
 #/testBeam/detPosition 31.4 0 599 mm
+/testBeam/buildWorBrass false
+/testBeam/fibreSpacing 2. mm
+/testBeam/length 1. m
 /testBeam/fibres true
 /testBeam/rotate -1.5 3 0 deg
 #/testBeam/checkOverlaps true

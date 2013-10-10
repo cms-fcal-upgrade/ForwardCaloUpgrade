@@ -113,6 +113,8 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_deadSeg_left = 1U;
 
   m_fillFibres = false; // by default don't insert fibers
+  
+  m_buildW = true; // by default this is a W calorimeter
 
   m_checkOverlaps = false;
   m_messenger = new CMSHFDetectorConstructionMessenger(this);
@@ -179,6 +181,7 @@ void CMSHFDetectorConstruction::DefineMaterials()
   G4Element* Cu = man->FindOrBuildElement("Cu");
   G4Element* C = man->FindOrBuildElement("C");
   G4Element* H = man->FindOrBuildElement("H");
+  G4Element* Zn = man->FindOrBuildElement("Zn");
 
   m_air = new G4Material("Air", density=1.29*mg/cm3, nelements=2);
   m_air->AddElement(N, 70.*perCent);
@@ -191,6 +194,11 @@ void CMSHFDetectorConstruction::DefineMaterials()
   m_tungsten->AddElement(W,90.*perCent);
   m_tungsten->AddElement(Ni,5.*perCent);
   m_tungsten->AddElement(Cu,5.*perCent);
+
+  // Brass
+  m_brass = new G4Material("Brass",8.525*g/cm3,2);
+  m_brass->AddElement(Cu,70.*perCent);
+  m_brass->AddElement(Zn,30.*perCent);
 
   // Iron
   m_iron = new G4Material("Iron", z=26, a=55.845*g/mole, density=7.874*g/cm3);
@@ -375,7 +383,8 @@ void CMSHFDetectorConstruction::SetupGeometry()
 
   for ( unsigned i=0; i != segTot; i++ ) {
     // A tungsten rod
-    m_tungBlock_log[i] = new G4LogicalVolume(m_tungBlock,m_tungsten,"Wblock",0,0,0);
+    if ( m_buildW ) m_tungBlock_log[i] = new G4LogicalVolume(m_tungBlock,m_tungsten,"Wblock",0,0,0);
+    else m_tungBlock_log[i] = new G4LogicalVolume(m_tungBlock,m_brass,"Wblock",0,0,0);
   
     // Quartz fibre
     m_qFibreCher_log[i] = new G4LogicalVolume(m_qFibreCher,m_quartz,"quartzFibreLog",0,0,0);
@@ -395,7 +404,8 @@ void CMSHFDetectorConstruction::SetupGeometry()
   m_glass_log = new G4LogicalVolume(m_glass_box,m_glass,"glassLog",0,0,0); 
 
   // dead material
-  m_deadBlock_log = new G4LogicalVolume(m_tungBlock,m_tungsten,"DeadMaterial",0,0,0);
+  if ( m_buildW ) m_deadBlock_log = new G4LogicalVolume(m_tungBlock,m_tungsten,"DeadMaterial",0,0,0);
+  else m_deadBlock_log = new G4LogicalVolume(m_tungBlock,m_brass,"DeadMaterial",0,0,0);
 
   // set limits on the time to propagate photons
   // needs a G4StepLimiter needs to be added to OpticalPhoton
@@ -761,6 +771,14 @@ void CMSHFDetectorConstruction::SetPitchAndYaw(G4double pitch, G4double yaw) {
     G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
     
   }*/
+}
+
+void CMSHFDetectorConstruction::SetFibSpacing( G4double a ) {
+  m_a = a;
+}
+
+void CMSHFDetectorConstruction::BuildWorBrass(const bool b ) {
+  m_buildW = b;
 }
 
 void CMSHFDetectorConstruction::SetFibres(const bool b) {

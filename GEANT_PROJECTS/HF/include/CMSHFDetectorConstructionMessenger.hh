@@ -42,6 +42,8 @@ class CMSHFDetectorConstructionMessenger: public G4UImessenger
    G4UIcmdWithAnInteger * m_NsegRightCmd;
    G4UIcmdWithAnInteger * m_NsegLeftCmd;
    G4UIcmdWithABool * m_refreshCmd;
+   G4UIcmdWithABool * m_materialCmd;
+   G4UIcmdWithADoubleAndUnit * m_fibSpaceCmd;
 
 };
 

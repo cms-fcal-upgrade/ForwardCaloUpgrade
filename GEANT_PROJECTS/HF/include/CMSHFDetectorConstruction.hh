@@ -73,6 +73,9 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // set N segments per side of detector.  sqrt(Ntot) of detector
     void SetNSeg(unsigned N);
 
+    // set fibre spacing
+    void SetFibSpacing(G4double a);
+
     // set the fibre index of refraction
     void SetFibreIndex(G4double n);
 
@@ -103,6 +106,11 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     void SetDeadBottom(const unsigned );
     void SetDeadRight(const unsigned );
     void SetDeadLeft(const unsigned );
+
+    // switch for detector material
+    // passing true -> build W absorber
+    // passing false -> build Brass absorber
+    void BuildWorBrass(const bool);
 
     // refresh geometry and force a rebuild
     void RefreshGeometry();
@@ -179,6 +187,8 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_nGlass;
     G4double m_absGlass;
 
+    bool m_buildW; // switch for tungsten (true) or brass (false)
+
     // radii for fibers and cladding ( C for Cherenkov and S for scintillation)
     G4double m_rCFib;
     G4double m_rCClad;
@@ -199,6 +209,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4Material * m_air;
     G4Material * m_quartz;
     G4Material * m_tungsten;
+    G4Material * m_brass;
     G4Material * m_glass;
     G4Material * m_cladCher;
     G4Material * m_scsf78;

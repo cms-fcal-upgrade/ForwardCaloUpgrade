@@ -1,6 +1,9 @@
 
 /testBeam/detPosition 0 723 3744 mm
 /testBeam/rotate 0 3 0 deg
+/testBeam/buildWorBrass false
+/testBeam/fibreSpacing 2. mm
+/testBeam/length 1. m
 /testBeam/fibres false
 /testBeam/magField 0. 0. 3.8 tesla
 /testBeam/checkOverlaps false

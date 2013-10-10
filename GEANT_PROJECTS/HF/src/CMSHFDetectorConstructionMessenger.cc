@@ -109,6 +109,17 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_refreshCmd->SetDefaultValue(true);
   m_refreshCmd->AvailableForStates(G4State_Idle);
 
+  m_materialCmd = new G4UIcmdWithABool("/testBeam/buildWorBrass",this);
+  m_materialCmd->SetGuidance("Build detector with W (true) or Brass (false) absorber");
+  m_materialCmd->SetDefaultValue(true);
+  m_materialCmd->AvailableForStates(G4State_Idle);
+
+  m_fibSpaceCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/fibreSpacing",this);
+  m_fibSpaceCmd->SetGuidance("Set the center to center separation of fibres");
+  m_fibSpaceCmd->SetDefaultValue(1.2);
+  m_fibSpaceCmd->SetDefaultUnit("cm");
+  m_fibSpaceCmd->AvailableForStates(G4State_Idle);
+
 }
 
 CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
@@ -128,6 +139,8 @@ CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
   delete m_NsegRightCmd;
   delete m_NsegLeftCmd;
   delete m_refreshCmd;
+  delete m_materialCmd;
+  delete m_fibSpaceCmd;
 
 }
 
@@ -181,6 +194,12 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   }
   else if ( cmd == m_refreshCmd ) {
     m_detector->RefreshGeometry();
+  }
+  else if ( cmd == m_materialCmd ) {
+    m_detector->BuildWorBrass( m_materialCmd->GetNewBoolValue(newValue));
+  }
+  else if ( cmd == m_fibSpaceCmd ) {
+    m_detector->SetFibSpacing( m_fibSpaceCmd->GetNewDoubleValue(newValue));
   }
 
 }
