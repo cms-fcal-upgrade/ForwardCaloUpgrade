@@ -439,6 +439,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
   // set the fibre orientation in stacking action
   if ( m_stacking ) {
     m_stacking->SetFibreDirection(rot(G4ThreeVector(0.,0.,1.)));
+    m_stacking->SetFibLength(m_length*2.);
   }
 
 
@@ -524,6 +525,7 @@ void CMSHFDetectorConstruction::CalculateConstants()
   
   if ( m_stacking ) {
      m_stacking->SetFiberRadius(m_rCClad);
+     m_stacking->SetFibLength(m_length);
   }
 
   m_segWidth = m_a*m_NfibSeg; 
@@ -617,6 +619,9 @@ void CMSHFDetectorConstruction::SetLength(G4double l)
 {
 
   m_length = l;
+  if ( m_stacking ) {
+    m_stacking->SetFibLength(m_length);
+  }
 
   /*if ( !m_isConstructed ) return;
 

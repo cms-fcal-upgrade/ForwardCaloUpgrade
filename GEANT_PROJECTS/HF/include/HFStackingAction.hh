@@ -91,6 +91,9 @@ class HFStackingAction : public G4UserStackingAction
 
     // set air index of refraction
     void SetAirIndex(G4double n) { m_nAir = n; }
+
+    // set fibre length
+    void SetFibLength(G4double l) { m_fibLength = l; }
   
     // set the low end of the optical photon wavelength cutoff
     void SetOptLowCut(G4double c) { m_lCutLow = c; }

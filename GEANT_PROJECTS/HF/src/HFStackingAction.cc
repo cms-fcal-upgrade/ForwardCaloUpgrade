@@ -122,7 +122,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       Fiber fib;
       fib.radius = m_rFibre;
       fib.attenuation = 28.1*m;
-      fib.lengthTotal = 1.2*m;
+      fib.lengthTotal = m_fibLength;
       fib.refrIndCore = m_nFibre;
       fib.refrIndClad = m_nClad;
       fib.refrIndAir = 1.;
