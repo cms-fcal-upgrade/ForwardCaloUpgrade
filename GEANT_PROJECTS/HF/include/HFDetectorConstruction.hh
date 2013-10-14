@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-// $Id: HFDetectorConstruction.hh,v 1.5 2013/04/23 17:44:04 heli Exp $
+// $Id: HFDetectorConstruction.hh,v 1.6 2013/05/17 19:19:10 cowden Exp $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -118,6 +118,10 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_nClad;
     G4double m_absFib;
     G4double m_absClad;
+    G4double m_nSFib;
+    G4double m_nSClad;
+    G4double m_absSFib;
+    G4double m_absSClad;
     G4double m_length;
     G4double m_length2;
     G4double m_nGlass;
@@ -126,8 +130,13 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_h;
     G4double m_l;
     G4double m_y;
-    G4double m_rFib;
-    G4double m_rClad;
+    G4double m_del;
+    G4double m_x;
+    G4double m_o;
+    G4double m_rSFib;
+    G4double m_rCFib;
+    G4double m_rSClad;
+    G4double m_rCClad;
 
     G4bool m_checkOverlaps;
 
@@ -136,28 +145,36 @@ class HFDetectorConstruction : public G4VUserDetectorConstruction
     G4Material * m_quartz;
     G4Material * m_tungsten;
     G4Material * m_glass;
-    G4Material * m_clad;
+    G4Material * m_cladCher;
+    G4Material * m_scsf78;
+    G4Material * m_cladScin;
     G4Material * m_iron;
 
     // primitives
     G4Box * m_expHall_box;
     G4Tubs * m_tungRod;
-    G4Tubs * m_qFibre;
+    G4Tubs * m_qFibreCher;
+    G4Tubs * m_qFibreScin;
     G4Box * m_glass_box;
-    G4Tubs * m_clad_tube;
+    G4Tubs * m_cladScin_tube;
+    G4Tubs * m_cladCher_tube;
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
-    G4LogicalVolume * m_tungRod_log;
-    G4LogicalVolume * m_qFibre_log;
+    std::vector<G4LogicalVolume *> m_tungRod_log;
+    std::vector<G4LogicalVolume *> m_qFibreCher_log;
+    G4LogicalVolume * m_qFibreScin_log;
     G4LogicalVolume * m_glass_log;
-    G4LogicalVolume * m_clad_log;
+    std::vector<G4LogicalVolume *> m_cladCher_log;
+    G4LogicalVolume * m_cladScin_log;
 
     // physical volumes
     G4VPhysicalVolume * m_expHall_phys;
     std::vector<G4VPhysicalVolume *> m_rods;
-    std::vector<G4VPhysicalVolume *> m_fibres;
-    std::vector<G4VPhysicalVolume *> m_cladding;
+    std::vector<G4VPhysicalVolume *> m_Sfibres;
+    std::vector<G4VPhysicalVolume *> m_Cfibres;
+    std::vector<G4VPhysicalVolume *> m_Scladding;
+    std::vector<G4VPhysicalVolume *> m_Ccladding;
     G4VPhysicalVolume * m_glass_phys;
 
     HFDetectorConstructionMessenger *m_messenger;

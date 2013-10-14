@@ -163,11 +163,11 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
      
       if ( lambda <= m_lCutLow ) classification = fKill;
 
-      if ( vName.contains("fib") &&  lambda > m_lCutLow && isDetected ) {
+      if ( vName.contains("Cfib") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fCherenkov);
-      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) { 
+      } else if ( vName.contains("Sfib") &&  lambda > m_lCutLow && isDetected ) { 
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fScintillation);

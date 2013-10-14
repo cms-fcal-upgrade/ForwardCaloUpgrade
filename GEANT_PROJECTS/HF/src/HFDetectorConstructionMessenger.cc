@@ -25,7 +25,7 @@ HFDetectorConstructionMessenger::HFDetectorConstructionMessenger(HFDetectorConst
   m_nRodCmd = new G4UIcmdWithAnInteger("/testBeam/nRods",this);
   m_nRodCmd->SetGuidance("Set number of rods along diagonal");
   m_nRodCmd->SetParameterName("nRods",false);
-  m_nRodCmd->SetDefaultValue(268);
+  m_nRodCmd->SetDefaultValue(4);
   m_nRodCmd->AvailableForStates(G4State_Idle);
   
 
