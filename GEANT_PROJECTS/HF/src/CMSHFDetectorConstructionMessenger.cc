@@ -117,7 +117,7 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_fibSpaceCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/fibreSpacing",this);
   m_fibSpaceCmd->SetGuidance("Set the center to center separation of fibres");
   m_fibSpaceCmd->SetDefaultValue(1.2);
-  m_fibSpaceCmd->SetDefaultUnit("cm");
+  m_fibSpaceCmd->SetDefaultUnit("mm");
   m_fibSpaceCmd->AvailableForStates(G4State_Idle);
 
 }
