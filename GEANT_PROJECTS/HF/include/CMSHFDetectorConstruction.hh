@@ -107,6 +107,12 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     void SetDeadRight(const unsigned );
     void SetDeadLeft(const unsigned );
 
+    // functions to set define the sinctillator properties
+    void SetScinYield(const G4double);
+    void SetScinFastConst(const G4double);
+    void SetScinSlowConst(const G4double);
+    void SetScinYieldRatio(const G4double);
+
     // switch for detector material
     // passing true -> build W absorber
     // passing false -> build Brass absorber
@@ -132,6 +138,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
   private:
    // -------------- private member functions --------
    void DefineMaterials();
+   void DefineScintillator();
    void SetupWorld();
    void SetupGeometry();
    void SetupDetectors(); 
@@ -139,7 +146,6 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
    void ClearPhysicalVolumes();
    void ClearLogicalVolumes();
-
 
    //  ------------- private data -------------------
    G4bool m_isConstructed;
@@ -186,6 +192,12 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_length;
     G4double m_nGlass;
     G4double m_absGlass;
+
+    // scintillator properties
+    G4double m_scinFastConst;
+    G4double m_scinSlowConst;
+    G4double m_scinYield;
+    G4double m_scinYieldRatio;
 
     bool m_buildW; // switch for tungsten (true) or brass (false)
 

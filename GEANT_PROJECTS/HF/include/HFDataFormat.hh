@@ -34,18 +34,17 @@ enum ROType {
 /// to the ntuple filling procedure.
 struct StackingStruct {
   double wavelength;
-  double energy;
-  double na;
+  double costh;
   double x;
   double y;
-  double z;
+  double depth;
   double t;
   double tprop;
 
 
-  inline StackingStruct(double w, double e, double n,double gx, double gy,double gz, double gt, double pt)
-    :wavelength(w),energy(e),na(n)
-    ,x(gx),y(gy),z(gz),t(gt),tprop(pt)
+  inline StackingStruct(double w, double cos, double gx, double gy,double gd, double gt, double pt)
+    :wavelength(w),costh(cos)
+    ,x(gx),y(gy),depth(gd),t(gt),tprop(pt)
     { }
 };
 
@@ -204,20 +203,18 @@ private:
   // tree branches
   // event branches
   std::vector<double>  m_opt_wavelength;
-  std::vector<double>  m_opt_energy;
-  std::vector<double>  m_opt_na;
+  std::vector<double>  m_opt_costh;
   std::vector<double>  m_opt_fx;
   std::vector<double>  m_opt_fy;
-  std::vector<double>  m_opt_fz;
+  std::vector<double>  m_opt_depth;
   std::vector<double>  m_opt_t;
   std::vector<double>  m_opt_tprop;
 
   std::vector<double>  m_scin_wavelength;
-  std::vector<double>  m_scin_energy;
-  std::vector<double>  m_scin_na;
+  std::vector<double>  m_scin_costh;
   std::vector<double>  m_scin_fx;
   std::vector<double>  m_scin_fy;
-  std::vector<double>  m_scin_fz;
+  std::vector<double>  m_scin_depth;
   std::vector<double>  m_scin_t;
   std::vector<double>  m_scin_tprop;
 

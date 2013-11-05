@@ -117,6 +117,12 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   
   m_buildW = true; // by default this is a W calorimeter
 
+  // scintillation properties
+  m_scinFastConst = 1.*ns;
+  m_scinSlowConst = 10.*ns;
+  m_scinYield = 8300./MeV;
+  m_scinYieldRatio = 0.8;
+
   m_checkOverlaps = false;
   m_messenger = new CMSHFDetectorConstructionMessenger(this);
 }
@@ -219,15 +225,17 @@ void CMSHFDetectorConstruction::DefineMaterials()
   m_scsf78 = new G4Material("scsf78",2.2*g/cm3,2);
   m_scsf78->AddElement(Si,1);
   m_scsf78->AddElement(O,2);
-  //m_scsf78->AddElement(C,4);
-  //m_scsf78->AddElement(H,4);
+  // PS 
+  //m_scsf78->AddElement(C,8);
+  //m_scsf78->AddElement(H,8);
 
   // cladding material
   m_cladScin = new G4Material("claddingScin",2.2*g/cm3,2);
   m_cladScin->AddElement(Si,1);
   m_cladScin->AddElement(O,2);
-  //m_cladScin->AddElement(C,3);
-  //m_cladScin->AddElement(H,5);
+  // PMMA 
+  //m_cladScin->AddElement(C,5);
+  //m_cladScin->AddElement(H,8);
   //m_cladScin->AddElement(O,2);
 
   //
@@ -300,7 +308,14 @@ void CMSHFDetectorConstruction::DefineMaterials()
   cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
   m_cladCher->SetMaterialPropertiesTable(cProps);
 
+  // set up the material properties for the scintillating fibers
+  DefineScintillator();
 
+}
+
+// define the scintillator properties
+void CMSHFDetectorConstruction::DefineScintillator()
+{
   const unsigned nScinEnergies = 6;
   G4double scinEnergies[nScinEnergies] = {3.1*eV, 2.9*eV, 2.76*eV, 2.48*eV, 2.25*eV, 2.07*eV };
   G4double scinValues[nScinEnergies] = {0.0, 5.0, 10., 5.0, 2.0, 1.0};
@@ -308,6 +323,7 @@ void CMSHFDetectorConstruction::DefineMaterials()
   G4double scinAbsLength[nScinEnergies] = { m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib };
   G4double scinCladRindex[nScinEnergies] = { m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad };
   G4double scinCladAbsLength[nScinEnergies] = { m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad };
+
 
   G4MaterialPropertiesTable *scsfProps = new G4MaterialPropertiesTable();
   scsfProps->AddProperty("RINDEX",scinEnergies,scinRindex,nScinEnergies);
@@ -319,23 +335,28 @@ void CMSHFDetectorConstruction::DefineMaterials()
   //
   // see http://infoscience.epfl.ch/record/164027/files/EPFL_TH5033.pdf
   // for scintillation yield
-  scsfProps->AddConstProperty("SCINTILLATIONYIELD", 8300./MeV);
+  scsfProps->AddConstProperty("SCINTILLATIONYIELD", m_scinYield);
   scsfProps->AddConstProperty("RESOLUTIONSCALE", 2.0);
-  scsfProps->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
-  scsfProps->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
-  scsfProps->AddConstProperty("YIELDRATIO", 0.8);
+  scsfProps->AddConstProperty("FASTTIMECONSTANT", m_scinFastConst);
+  scsfProps->AddConstProperty("SLOWTIMECONSTANT", m_scinSlowConst);
+  scsfProps->AddConstProperty("YIELDRATIO", m_scinYieldRatio);
 
   G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
   scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
   scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
 
+  G4MaterialPropertiesTable *oldProps = m_scsf78->GetMaterialPropertiesTable();
+
   //m_scsf78->SetMaterialPropertiesTable(scsfProps);
   m_scsf78->SetMaterialPropertiesTable(scsfProps);
+  if ( oldProps ) delete oldProps;
+
+  oldProps = m_cladScin->GetMaterialPropertiesTable();
   m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
-
-
+  if ( oldProps ) delete oldProps;
 
 }
+
 
 // Setup the world geometry
 void CMSHFDetectorConstruction::SetupWorld()
@@ -840,6 +861,45 @@ void CMSHFDetectorConstruction::SetCladIndex(G4double n)
   G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
 }
 
+void CMSHFDetectorConstruction::SetScinYield(const G4double yield )
+{
+  m_scinYield = yield;
+  
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void CMSHFDetectorConstruction::SetScinFastConst(const G4double tau)
+{
+  m_scinFastConst = tau;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+}
+
+void CMSHFDetectorConstruction::SetScinSlowConst(const G4double tau)
+{
+  m_scinSlowConst = tau;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+}
+
+void CMSHFDetectorConstruction::SetScinYieldRatio(const G4double r)
+{
+  m_scinYieldRatio = r;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+} 
+
 
 void CMSHFDetectorConstruction::SetOverlapCheck(G4bool check)
 {
@@ -948,6 +1008,7 @@ void CMSHFDetectorConstruction::RefreshGeometry()
     ClearPhysicalVolumes();
     ClearLogicalVolumes();
 
+    DefineScintillator();
     CalculateConstants();
     SetupGeometry();
     SetupDetectors();

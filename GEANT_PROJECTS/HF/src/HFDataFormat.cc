@@ -26,11 +26,10 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st)
 {
   if (_storeOpticalInfo){
     m_opt_wavelength.push_back(st.wavelength);
-    m_opt_energy.push_back(st.energy);
-    m_opt_na.push_back(st.na);
+    m_opt_costh.push_back(st.costh);
     m_opt_fx.push_back(st.x);
     m_opt_fy.push_back(st.y);
-    m_opt_fz.push_back(st.z);
+    m_opt_depth.push_back(st.depth);
     m_opt_t.push_back(st.t);
     m_opt_tprop.push_back(st.tprop);
   }
@@ -41,20 +40,18 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
   if (_storeOpticalInfo){
     if ( t == fCherenkov ) {
       m_opt_wavelength.push_back(st.wavelength);
-      m_opt_energy.push_back(st.energy);
-      m_opt_na.push_back(st.na);
+      m_opt_costh.push_back(st.costh);
       m_opt_fx.push_back(st.x);
       m_opt_fy.push_back(st.y);
-      m_opt_fz.push_back(st.z);
+      m_opt_depth.push_back(st.depth);
       m_opt_t.push_back(st.t);
       m_opt_tprop.push_back(st.tprop);
     } else {
       m_scin_wavelength.push_back(st.wavelength);
-      m_scin_energy.push_back(st.energy);
-      m_scin_na.push_back(st.na);
+      m_scin_costh.push_back(st.costh);
       m_scin_fx.push_back(st.x);
       m_scin_fy.push_back(st.y);
-      m_scin_fz.push_back(st.z);
+      m_scin_depth.push_back(st.depth);
       m_scin_t.push_back(st.t);
       m_scin_tprop.push_back(st.tprop);
     }
@@ -163,20 +160,18 @@ void HFDataFormat::generateTrees()
   // generate event tree
   if (_storeOpticalInfo){
     m_event->Branch("opt_wavelength",&m_opt_wavelength);
-    m_event->Branch("opt_energy",&m_opt_energy);
-    m_event->Branch("opt_na",&m_opt_na);
+    m_event->Branch("opt_costh",&m_opt_costh);
     m_event->Branch("opt_fx",&m_opt_fx);
     m_event->Branch("opt_fy",&m_opt_fy);
-    m_event->Branch("opt_fz",&m_opt_fz);
+    m_event->Branch("opt_depth",&m_opt_depth);
     m_event->Branch("opt_t",&m_opt_t);
     m_event->Branch("opt_tprop",&m_opt_tprop);
 
     m_event->Branch("scin_wavelength",&m_scin_wavelength);
-    m_event->Branch("scin_energy",&m_scin_energy);
-    m_event->Branch("scin_na",&m_scin_na);
+    m_event->Branch("scin_costh",&m_scin_costh);
     m_event->Branch("scin_fx",&m_scin_fx);
     m_event->Branch("scin_fy",&m_scin_fy);
-    m_event->Branch("scin_fz",&m_scin_fz);
+    m_event->Branch("scin_depth",&m_scin_depth);
     m_event->Branch("scin_t",&m_scin_t);
     m_event->Branch("scin_tprop",&m_scin_tprop);
 
@@ -243,20 +238,18 @@ void HFDataFormat::clearStacking()
 {
   if (_storeOpticalInfo){
     m_opt_wavelength.clear();
-    m_opt_energy.clear();
-    m_opt_na.clear();
+    m_opt_costh.clear();
     m_opt_fx.clear();
     m_opt_fy.clear();
-    m_opt_fz.clear();
+    m_opt_depth.clear();
     m_opt_t.clear();
     m_opt_tprop.clear();
 
     m_scin_wavelength.clear();
-    m_scin_energy.clear();
-    m_scin_na.clear();
+    m_scin_costh.clear();
     m_scin_fx.clear();
     m_scin_fy.clear();
-    m_scin_fz.clear();
+    m_scin_depth.clear();
     m_scin_t.clear();
     m_scin_tprop.clear();
 

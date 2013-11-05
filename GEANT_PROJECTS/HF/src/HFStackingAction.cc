@@ -134,6 +134,9 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       fib.position.SetY( touchTrans.y() );
       fib.position.SetZ( touchTrans.z() );
 
+      // cosine between photon direction (at track origin) and fibre axis
+      const double costh = m_fibreDir.dot( mom ) / m_fibreDir.mag() / mom.mag();
+
       Photon ph;
       ph.position.SetX( pos.x() );
       ph.position.SetY( pos.y() );
@@ -144,6 +147,9 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       ph.dist = (touchTrans.z()+m_fibLength/2.-pos.z())/m_fibLength;
       assert( ph.dist <= 1. );
       assert( ph.dist >= 0. );      
+
+      // distance from font face of fiber
+      const double depth = m_fibLength*(1.-ph.dist);
 
       Travel trk = GetTimeAndProbability(ph,fib);
       double prob = trk.prob[0];
@@ -165,11 +171,11 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 
       if ( vName.contains("fib") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
-	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
+	StackingStruct st(lambda,costh,x,y,depth,t,probTime);
         m_df->fillStackingAction(st,fCherenkov);
       } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) { 
         gammaCounter++;
-	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
+	StackingStruct st(lambda,costh,x,y,depth,t,probTime);
         m_df->fillStackingAction(st,fScintillation);
       } else if ( vName.contains("glass")  ) {
 	// kill tracks created in the glass
