@@ -68,7 +68,8 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 ,m_absFib(28.1*m),m_absClad(28.1*m)
 //,m_nSFib(1.59),m_nSClad(1.49)
 ,m_nSFib(1.457),m_nSClad(1.42)
-,m_absSFib(4.*m),m_absSClad(4.*m)
+//,m_absSFib(4.*m),m_absSClad(4.*m)
+,m_absSFib(28.1*m),m_absSClad(28.1*m)
 ,m_nGlass(1.517),m_absGlass(.1)
 ,m_Bfield(NULL)
 ,m_stacking(NULL)
@@ -101,10 +102,13 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_rCClad = 0.333*mm;
   m_rSClad = m_rCClad;
 
+  m_rair = sqrt(2.*sqrt(3.)/pi)*m_rCFib;
+
   m_NfibSeg = 32U;
   m_Nseg = 32U;
 
-  m_a = 1.2*mm;
+  m_a = 1.32*mm;
+  m_h = sqrt(3)*m_a/2.;
 
   // dead material around block
   m_deadSeg_bottom = 1U;
@@ -115,6 +119,12 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_fillFibres = false; // by default don't insert fibers
   
   m_buildW = true; // by default this is a W calorimeter
+
+  // scintillation properties
+  m_scinFastConst = 1.*ns;
+  m_scinSlowConst = 10.*ns;
+  m_scinYield = 8300./MeV;
+  m_scinYieldRatio = 0.8;
 
   m_checkOverlaps = false;
   m_messenger = new CMSHFDetectorConstructionMessenger(this);
@@ -218,15 +228,17 @@ void CMSHFDetectorConstruction::DefineMaterials()
   m_scsf78 = new G4Material("scsf78",2.2*g/cm3,2);
   m_scsf78->AddElement(Si,1);
   m_scsf78->AddElement(O,2);
-  //m_scsf78->AddElement(C,4);
-  //m_scsf78->AddElement(H,4);
+  // PS 
+  //m_scsf78->AddElement(C,8);
+  //m_scsf78->AddElement(H,8);
 
   // cladding material
   m_cladScin = new G4Material("claddingScin",2.2*g/cm3,2);
   m_cladScin->AddElement(Si,1);
   m_cladScin->AddElement(O,2);
-  //m_cladScin->AddElement(C,3);
-  //m_cladScin->AddElement(H,5);
+  // PMMA 
+  //m_cladScin->AddElement(C,5);
+  //m_cladScin->AddElement(H,8);
   //m_cladScin->AddElement(O,2);
 
   //
@@ -299,7 +311,14 @@ void CMSHFDetectorConstruction::DefineMaterials()
   cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
   m_cladCher->SetMaterialPropertiesTable(cProps);
 
+  // set up the material properties for the scintillating fibers
+  DefineScintillator();
 
+}
+
+// define the scintillator properties
+void CMSHFDetectorConstruction::DefineScintillator()
+{
   const unsigned nScinEnergies = 6;
   G4double scinEnergies[nScinEnergies] = {3.1*eV, 2.9*eV, 2.76*eV, 2.48*eV, 2.25*eV, 2.07*eV };
   G4double scinValues[nScinEnergies] = {0.0, 5.0, 10., 5.0, 2.0, 1.0};
@@ -307,6 +326,7 @@ void CMSHFDetectorConstruction::DefineMaterials()
   G4double scinAbsLength[nScinEnergies] = { m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib };
   G4double scinCladRindex[nScinEnergies] = { m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad };
   G4double scinCladAbsLength[nScinEnergies] = { m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad };
+
 
   G4MaterialPropertiesTable *scsfProps = new G4MaterialPropertiesTable();
   scsfProps->AddProperty("RINDEX",scinEnergies,scinRindex,nScinEnergies);
@@ -318,23 +338,28 @@ void CMSHFDetectorConstruction::DefineMaterials()
   //
   // see http://infoscience.epfl.ch/record/164027/files/EPFL_TH5033.pdf
   // for scintillation yield
-  scsfProps->AddConstProperty("SCINTILLATIONYIELD", 8300./MeV);
+  scsfProps->AddConstProperty("SCINTILLATIONYIELD", m_scinYield);
   scsfProps->AddConstProperty("RESOLUTIONSCALE", 2.0);
-  scsfProps->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
-  scsfProps->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
-  scsfProps->AddConstProperty("YIELDRATIO", 0.8);
+  scsfProps->AddConstProperty("FASTTIMECONSTANT", m_scinFastConst);
+  scsfProps->AddConstProperty("SLOWTIMECONSTANT", m_scinSlowConst);
+  scsfProps->AddConstProperty("YIELDRATIO", m_scinYieldRatio);
 
   G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
   scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
   scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
 
+  G4MaterialPropertiesTable *oldProps = m_scsf78->GetMaterialPropertiesTable();
+
   //m_scsf78->SetMaterialPropertiesTable(scsfProps);
   m_scsf78->SetMaterialPropertiesTable(scsfProps);
+  if ( oldProps ) delete oldProps;
+
+  oldProps = m_cladScin->GetMaterialPropertiesTable();
   m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
-
-
+  if ( oldProps ) delete oldProps;
 
 }
+
 
 // Setup the world geometry
 void CMSHFDetectorConstruction::SetupWorld()
@@ -362,14 +387,15 @@ void CMSHFDetectorConstruction::SetupGeometry()
   // ------------- primitives -----------
   G4cout << "CMSHF Constructing W block: " << 2.*m_Wdx << "x" << 2.*m_Wdy << "x" << 2.*m_length << G4endl;
   //m_tungBlock = new G4Box("Wblock",m_Wdx,m_Wdy,m_length);
-  m_tungBlock = new G4Box("Wblock",m_segWidth/2.,m_segWidth/2.,m_length);
+  m_tungBlock = new G4Box("Wblock",m_segWidth/2.,m_segHeight/2.,m_length);
   //m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCFib,m_length,0.,2.*pi);
   //m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
   m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCClad,m_length,0.,2.*pi);
   m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
   m_qFibreScin = new G4Tubs("scsfFibre",0.,m_rSClad,m_length,0.,2.*pi);
   m_cladScin_tube = new G4Tubs("cladding",m_rSClad,m_rSFib,m_length,0,2.*pi);
-  m_glass_box = new G4Box("Glass",m_segWidth/2.,m_segWidth/2.,1.*cm);
+  m_air_gap = new G4Tubs("airGap",m_rCFib,m_rair,m_length,0,2.*pi);
+  m_glass_box = new G4Box("Glass",m_segWidth/2.,m_segHeight/2.,1.*cm);
 
   //
   // ------------- Volumes --------------
@@ -379,6 +405,7 @@ void CMSHFDetectorConstruction::SetupGeometry()
   m_cladCher_log.resize(segTot);
   m_qFibreScin_log.resize(segTot);
   m_cladScin_log.resize(segTot);
+  m_airGap_log.resize(segTot);
 
 
   for ( unsigned i=0; i != segTot; i++ ) {
@@ -397,6 +424,9 @@ void CMSHFDetectorConstruction::SetupGeometry()
   
     // Cladding on fibre
     m_cladScin_log[i] = new G4LogicalVolume(m_cladScin_tube,m_cladScin,"claddingScin",0,0,0);
+
+    // air gap 
+    m_airGap_log[i] = new G4LogicalVolume(m_air_gap,m_air,"AirGap",0,0,0);
   }
 
   // Glass 
@@ -473,7 +503,7 @@ void CMSHFDetectorConstruction::SetupDetectors()
     segCol=0;
 
     const unsigned iSubIndex = i%m_NfibSeg;
-    double yPos = m_a/2. - m_segWidth/2. + iSubIndex*m_a;
+    double yPos = m_h/2. - m_segHeight/2. + iSubIndex*m_h;
 
     const bool oddRow = i%2==0;
     for ( unsigned j=0; j != nFibSide; j++ ) {
@@ -482,21 +512,27 @@ void CMSHFDetectorConstruction::SetupDetectors()
       const unsigned segNum = segRow*m_Nseg+segCol;
       const unsigned jSubIndex = j%m_NfibSeg;
 
-      double xPos = m_a/2. - m_segWidth/2. + jSubIndex*m_a;
+      //double xPos = m_a/2. - m_segWidth/2. + jSubIndex*m_a;
+      double xPos = 1.001*m_rair - m_segWidth/2. + jSubIndex*m_a;
+      if ( oddRow ) xPos += 0.5*m_a;
+
+      unsigned airCount = 0;
 
       if ( doQuartz ) {
       // place quartz
-      	sprintf(name,"fib%d",count);
+      	sprintf(name,"Cfib%d",count);
       	m_fibresCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
       	sprintf(name,"clad%d",count);
       	m_claddingCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
+        m_airGap_phys.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_airGap_log[segNum],"air",m_tungBlock_log[segNum],false,airCount++,m_checkOverlaps));
       	count++;
       } else {
       // place scsf78
-	sprintf(name,"scsf%d",scsfCount);
+	sprintf(name,"Sfib%d",scsfCount);
 	m_fibresScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
 	sprintf(name,"cladScin%d",scsfCount);
 	m_claddingScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
+        m_airGap_phys.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_airGap_log[segNum],"air",m_tungBlock_log[segNum],false,airCount++,m_checkOverlaps));
  	scsfCount++;
       } 
 
@@ -529,8 +565,9 @@ void CMSHFDetectorConstruction::CalculateConstants()
   }
 
   m_segWidth = m_a*m_NfibSeg; 
+  m_segHeight = m_h*m_NfibSeg;
 
-  const double segWy = m_segWidth/cos(m_pitch);
+  const double segWy = m_segHeight/cos(m_pitch);
   const double segWx = m_segWidth/cos(m_yaw);
   m_Wdx = m_Nseg*segWx/2.;
   m_Wdy = m_Nseg*segWy/2.;
@@ -574,7 +611,7 @@ void CMSHFDetectorConstruction::CalculateConstants()
   }
   // find positions on bottom
   for ( unsigned i=0; i != m_deadSeg_bottom; i++ ) {
-    const double yPos = m_yPos - m_Wdy - segWx/2. - i*segWy;
+    const double yPos = m_yPos - m_Wdy - segWy/2. - i*segWy;
     for ( unsigned j=0; j != m_Nseg; j++ ) {
       const double xPos = m_xPos-xOffset+j*segWx;
       m_deadPositions.push_back(G4ThreeVector(xPos,yPos,m_zPos));
@@ -780,6 +817,7 @@ void CMSHFDetectorConstruction::SetPitchAndYaw(G4double pitch, G4double yaw) {
 
 void CMSHFDetectorConstruction::SetFibSpacing( G4double a ) {
   m_a = a;
+  m_h = sqrt(3)*m_a/2.;
 }
 
 void CMSHFDetectorConstruction::BuildWorBrass(const bool b ) {
@@ -838,6 +876,45 @@ void CMSHFDetectorConstruction::SetCladIndex(G4double n)
 
   G4RunManager::GetRunManager()->GeometryHasBeenModified(); 
 }
+
+void CMSHFDetectorConstruction::SetScinYield(const G4double yield )
+{
+  m_scinYield = yield;
+  
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void CMSHFDetectorConstruction::SetScinFastConst(const G4double tau)
+{
+  m_scinFastConst = tau;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+}
+
+void CMSHFDetectorConstruction::SetScinSlowConst(const G4double tau)
+{
+  m_scinSlowConst = tau;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+}
+
+void CMSHFDetectorConstruction::SetScinYieldRatio(const G4double r)
+{
+  m_scinYieldRatio = r;
+
+  if ( !m_isConstructed ) return;
+
+  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
+} 
 
 
 void CMSHFDetectorConstruction::SetOverlapCheck(G4bool check)
@@ -947,6 +1024,7 @@ void CMSHFDetectorConstruction::RefreshGeometry()
     ClearPhysicalVolumes();
     ClearLogicalVolumes();
 
+    DefineScintillator();
     CalculateConstants();
     SetupGeometry();
     SetupDetectors();

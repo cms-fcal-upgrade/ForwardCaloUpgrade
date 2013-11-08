@@ -117,8 +117,30 @@ CMSHFDetectorConstructionMessenger::CMSHFDetectorConstructionMessenger(CMSHFDete
   m_fibSpaceCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/fibreSpacing",this);
   m_fibSpaceCmd->SetGuidance("Set the center to center separation of fibres");
   m_fibSpaceCmd->SetDefaultValue(1.2);
-  m_fibSpaceCmd->SetDefaultUnit("cm");
+  m_fibSpaceCmd->SetDefaultUnit("mm");
   m_fibSpaceCmd->AvailableForStates(G4State_Idle);
+
+  m_scinYieldCmd = new G4UIcmdWithADouble("/testBeam/scinYield",this);
+  m_scinYieldCmd->SetGuidance("Set the scintillation yield in photons/MeV");
+  m_scinYieldCmd->SetDefaultValue(8300);
+  m_scinYieldCmd->AvailableForStates(G4State_Idle);
+
+  m_scinYieldRatioCmd = new G4UIcmdWithADouble("/testBeam/scinYieldRatio",this);
+  m_scinYieldRatioCmd->SetGuidance("Set the ratio of scintillation light between fast and slow components");
+  m_scinYieldRatioCmd->SetDefaultValue(0.8);
+  m_scinYieldRatioCmd->AvailableForStates(G4State_Idle);
+
+  m_scinFastConstCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/scinFastTimeConst",this);
+  m_scinFastConstCmd->SetGuidance("Set the fast time constant for the scintillation response. ");
+  m_scinFastConstCmd->SetDefaultValue(1.);
+  m_scinFastConstCmd->SetDefaultUnit("ns");
+  m_scinFastConstCmd->AvailableForStates(G4State_Idle);
+
+  m_scinSlowConstCmd = new G4UIcmdWithADoubleAndUnit("/testBeam/scinSlowTimeConst",this);
+  m_scinSlowConstCmd->SetGuidance("Set the slow time constant for the scintillation response.");
+  m_scinSlowConstCmd->SetDefaultValue(10.);
+  m_scinSlowConstCmd->SetDefaultUnit("ns");
+  m_scinSlowConstCmd->AvailableForStates(G4State_Idle);
 
 }
 
@@ -141,6 +163,10 @@ CMSHFDetectorConstructionMessenger::~CMSHFDetectorConstructionMessenger()
   delete m_refreshCmd;
   delete m_materialCmd;
   delete m_fibSpaceCmd;
+  delete m_scinYieldCmd;
+  delete m_scinYieldRatioCmd;
+  delete m_scinFastConstCmd;
+  delete m_scinSlowConstCmd;
 
 }
 
@@ -200,6 +226,18 @@ void CMSHFDetectorConstructionMessenger::SetNewValue(G4UIcommand* cmd,G4String n
   }
   else if ( cmd == m_fibSpaceCmd ) {
     m_detector->SetFibSpacing( m_fibSpaceCmd->GetNewDoubleValue(newValue));
+  }
+  else if ( cmd == m_scinYieldCmd ) {
+    m_detector->SetScinYield( m_scinYieldCmd->GetNewDoubleValue(newValue)/MeV );
+  }
+  else if ( cmd == m_scinYieldRatioCmd ) {
+    m_detector->SetScinYieldRatio( m_scinYieldRatioCmd->GetNewDoubleValue(newValue) );
+  }
+  else if ( cmd == m_scinFastConstCmd ) {
+    m_detector->SetScinFastConst( m_scinFastConstCmd->GetNewDoubleValue(newValue) );
+  }
+  else if ( cmd == m_scinSlowConstCmd ) {
+    m_detector->SetScinSlowConst( m_scinSlowConstCmd->GetNewDoubleValue(newValue) );
   }
 
 }

@@ -1,17 +1,17 @@
 
-/testBeam/detPosition 0 723 3744 mm
-/testBeam/rotate 0 3 0 deg
-/testBeam/buildWorBrass false
-/testBeam/fibreSpacing 2. mm
+#/testBeam/detPosition 0 723 3744 mm
+#/testBeam/rotate 0 3 0 deg
+#/testBeam/buildWorBrass false
+#/testBeam/fibreSpacing 2. mm
 /testBeam/length 1. m
-/testBeam/fibres false
+/testBeam/fibres true
 /testBeam/magField 0. 0. 3.8 tesla
 /testBeam/checkOverlaps false
 /testBeam/NdeadTop 1
 /testBeam/NdeadBottom 1
 /testBeam/NdeadRight 1
 /testBeam/NdeadLeft 1
-/testBeam/Nseg 32 
+/testBeam/Nseg 1 
 /testBeam/refreshGeometry true
 
 
@@ -49,13 +49,13 @@
 /vis/drawVolume
 #
 # Specify view angle:
-/vis/viewer/set/viewpointThetaPhi 150. 45.
+/vis/viewer/set/viewpointThetaPhi 180. 0.
 #
 # Specify zoom value:
-/vis/viewer/zoom 1.5
+/vis/viewer/zoom 20
 #
 # Specify style (surface or wireframe):
-/vis/viewer/set/style solid
+/vis/viewer/set/style wireframe
 
 /vis/viewer/set/auxiliaryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 100

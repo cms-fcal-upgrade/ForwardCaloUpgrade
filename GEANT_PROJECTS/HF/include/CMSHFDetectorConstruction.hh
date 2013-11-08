@@ -107,6 +107,12 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     void SetDeadRight(const unsigned );
     void SetDeadLeft(const unsigned );
 
+    // functions to set define the sinctillator properties
+    void SetScinYield(const G4double);
+    void SetScinFastConst(const G4double);
+    void SetScinSlowConst(const G4double);
+    void SetScinYieldRatio(const G4double);
+
     // switch for detector material
     // passing true -> build W absorber
     // passing false -> build Brass absorber
@@ -132,6 +138,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
   private:
    // -------------- private member functions --------
    void DefineMaterials();
+   void DefineScintillator();
    void SetupWorld();
    void SetupGeometry();
    void SetupDetectors(); 
@@ -139,7 +146,6 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
    void ClearPhysicalVolumes();
    void ClearLogicalVolumes();
-
 
    //  ------------- private data -------------------
    G4bool m_isConstructed;
@@ -161,6 +167,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     unsigned m_NfibSeg;  // number of fibres on segment side
     unsigned m_Nseg;     // number of segments on detector side
     G4double m_segWidth;
+    G4double m_segHeight;
 
     // number of dead segments to put on sides of active area
     unsigned m_deadSeg_bottom;
@@ -187,6 +194,12 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_nGlass;
     G4double m_absGlass;
 
+    // scintillator properties
+    G4double m_scinFastConst;
+    G4double m_scinSlowConst;
+    G4double m_scinYield;
+    G4double m_scinYieldRatio;
+
     bool m_buildW; // switch for tungsten (true) or brass (false)
 
     // radii for fibers and cladding ( C for Cherenkov and S for scintillation)
@@ -194,9 +207,11 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_rCClad;
     G4double m_rSFib;
     G4double m_rSClad;
+    G4double m_rair; // radius of air gap
 
-    // grid spacing
+    // fiber spacing  (not a grid)
     G4double m_a;
+    G4double m_h; // sqrt(3)/2 * m_a
 
     // rotation matrix for the wedge
     // this describes how a wedge is shifted from a normal position
@@ -224,6 +239,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4Box * m_glass_box;
     G4Tubs * m_cladCher_tube;
     G4Tubs * m_cladScin_tube;
+    G4Tubs * m_air_gap;
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
@@ -232,6 +248,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4LogicalVolume *> m_cladCher_log;
     std::vector<G4LogicalVolume *> m_qFibreScin_log;
     std::vector<G4LogicalVolume *> m_cladScin_log;
+    std::vector<G4LogicalVolume *> m_airGap_log;
     G4LogicalVolume * m_glass_log;
     G4LogicalVolume * m_deadBlock_log;
 
@@ -242,6 +259,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_claddingCher;
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
+    std::vector<G4VPhysicalVolume *> m_airGap_phys;
     std::vector<G4VPhysicalVolume *> m_glass_phys;
     std::vector<G4VPhysicalVolume *> m_deadBlocks_phys;
 
