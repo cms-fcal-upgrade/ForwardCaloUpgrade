@@ -110,6 +110,8 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const G4ThreeVector & trans = volume->GetTranslation();
 
       const G4ThreeVector & touchTrans = aTrack->GetTouchable()->GetTranslation();
+      const G4RotationMatrix * touchRot = aTrack->GetTouchable()->GetRotation();
+      const G4ThreeVector & fibAxis = (*touchRot)( G4ThreeVector(0.,0.,1.) );
       //assert( trans.x() == touchTrans.x() );
 
       const G4ThreeVector & pos = aTrack->GetPosition();
@@ -127,9 +129,9 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       fib.refrIndClad = m_nClad;
       fib.refrIndAir = 1.;
       fib.refrIndDet = m_nGlass;
-      fib.direction.SetX(m_fibreDir.x());
-      fib.direction.SetY(m_fibreDir.y());
-      fib.direction.SetZ(m_fibreDir.z());
+      fib.direction.SetX( fibAxis.x() );
+      fib.direction.SetY( fibAxis.y() );
+      fib.direction.SetZ( fibAxis.z() );
       fib.position.SetX( touchTrans.x() );
       fib.position.SetY( touchTrans.y() );
       fib.position.SetZ( touchTrans.z() );
@@ -144,9 +146,12 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       ph.direction.SetX( mom.x() );
       ph.direction.SetY( mom.y() );
       ph.direction.SetZ( mom.z() );
-      ph.dist = (touchTrans.z()+m_fibLength/2.-pos.z())/m_fibLength;
+      //ph.dist = (touchTrans.z()+m_fibLength/2.-pos.z())/m_fibLength;
+      const G4ThreeVector & delta = pos - touchTrans;
+      const double dot = delta.dot( fibAxis );
+      ph.dist = (m_fibLength/2. - (pos - touchTrans).dot( fibAxis ))/m_fibLength;
       assert( ph.dist <= 1. );
-      assert( ph.dist >= 0. );      
+      assert( ph.dist >= 0. ); 
 
       // distance from font face of fiber
       const double depth = m_fibLength*(1.-ph.dist);
@@ -157,7 +162,8 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       double sumProb = 0.;
       for (int i=0; i<trk.nmax; i++ )  sumProb += trk.prob[i];
       double rndnm = m_r1.Rndm();
-      bool isDetected = 0. < rndnm && rndnm < trk.prob[0];
+      bool isDetected = 0. < rndnm && rndnm < trk.prob[0]; 
+      //bool isDetected = true;
 
 
       //////////////////////
@@ -172,10 +178,12 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       if ( vName.contains("fib") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
 	StackingStruct st(lambda,costh,x,y,depth,t,probTime);
+	//StackingStruct st(lambda,costh,x,y,z,t,0.);
         m_df->fillStackingAction(st,fCherenkov);
       } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) { 
         gammaCounter++;
 	StackingStruct st(lambda,costh,x,y,depth,t,probTime);
+	//StackingStruct st(lambda,costh,x,y,z,t,0.);
         m_df->fillStackingAction(st,fScintillation);
       } else if ( vName.contains("glass")  ) {
 	// kill tracks created in the glass

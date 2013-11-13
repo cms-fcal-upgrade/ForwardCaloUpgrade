@@ -42,6 +42,7 @@ class G4LogicalVolume;
 class G4PhysicalVolume;
 class G4Material;
 class G4Box;
+class G4Trd;
 class G4Tubs;
 class G4UserLimits;
 
@@ -160,6 +161,9 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_xPos;
     G4double m_yPos;
 
+    // Trapezoid stuff
+    G4double m_dTheta;
+
     // Tungsten block parameters
     G4double m_Wdx;
     G4double m_Wdy;
@@ -230,7 +234,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
     // primitives
     G4Box * m_expHall_box;
-    G4Box * m_tungBlock;
+    G4Trd * m_tungBlock;
     G4Tubs * m_qFibreCher;
     G4Tubs * m_qFibreScin;
     G4Box * m_glass_box;
@@ -239,7 +243,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
-    std::vector<G4LogicalVolume *> m_tungBlock_log;
+    G4LogicalVolume * m_tungBlock_log;
     std::vector<G4LogicalVolume *> m_qFibreCher_log;
     std::vector<G4LogicalVolume *> m_cladCher_log;
     std::vector<G4LogicalVolume *> m_qFibreScin_log;
