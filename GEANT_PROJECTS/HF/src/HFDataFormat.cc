@@ -10,7 +10,10 @@ HFDataFormat::HFDataFormat(const std::string &fileName)
   _storeGeneratorInfo = true; 
   _storePMTInfo = true;
   _messenger = new HFDataFormatMessenger(this);
+  m_opt_num = 0;
+  m_scin_num = 0;
   SetFileName(fileName);
+  max_photon_num = 10000;
 }
 
 HFDataFormat::~HFDataFormat()
@@ -40,6 +43,8 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
 {
   if (_storeOpticalInfo){
     if ( t == fCherenkov ) {
+      m_opt_num ++;
+
       m_opt_wavelength.push_back(st.wavelength);
       m_opt_energy.push_back(st.energy);
       m_opt_na.push_back(st.na);
@@ -49,6 +54,8 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
       m_opt_t.push_back(st.t);
       m_opt_tprop.push_back(st.tprop);
     } else {
+      m_scin_num ++;
+
       m_scin_wavelength.push_back(st.wavelength);
       m_scin_energy.push_back(st.energy);
       m_scin_na.push_back(st.na);
@@ -92,6 +99,13 @@ void HFDataFormat::fillGenerator(const GeneratorStruct &gn)
   if (_storeGeneratorInfo){
     m_gen_x.push_back(gn.x);
     m_gen_y.push_back(gn.y);
+    m_gen_z.push_back(gn.z);
+    m_gen_px.push_back(gn.px);
+    m_gen_py.push_back(gn.py);
+    m_gen_pz.push_back(gn.pz);
+    m_gen_energy.push_back(gn.energy);
+    m_gen_momentum.push_back(gn.momentum);
+    m_gen_pdgID.push_back(gn.pdgID);
   }
 }
 
@@ -139,6 +153,59 @@ void HFDataFormat::fillSteppingAction(const SteppingStruct &st, const ROType t)
 
 void HFDataFormat::store()
 {
+  if( max_photon_num != -1 && (int)m_opt_num > max_photon_num ){
+     std::vector<unsigned int> idxVec; idxVec.reserve(m_opt_num);
+     for(unsigned int ip=0; ip<m_opt_num; ip++){ idxVec.push_back(ip); }
+     std::random_shuffle(idxVec.begin(), idxVec.end());
+     std::vector<float> tmp_m_opt_wavelength, tmp_m_opt_energy, tmp_m_opt_na, tmp_m_opt_fx, tmp_m_opt_fy, tmp_m_opt_fz, tmp_m_opt_t, tmp_m_opt_tprop;
+     tmp_m_opt_wavelength.reserve(max_photon_num); tmp_m_opt_energy.reserve(max_photon_num); tmp_m_opt_na.reserve(max_photon_num); tmp_m_opt_fx.reserve(max_photon_num); tmp_m_opt_fy.reserve(max_photon_num); tmp_m_opt_fz.reserve(max_photon_num); tmp_m_opt_t.reserve(max_photon_num); tmp_m_opt_tprop.reserve(max_photon_num);
+     for(unsigned int ip=0; ip<max_photon_num; ip++){
+        unsigned int peridx = idxVec[ip];
+        tmp_m_opt_wavelength.push_back(m_opt_wavelength[peridx]); 
+        tmp_m_opt_energy.push_back(m_opt_energy[peridx]); 
+        tmp_m_opt_na.push_back(m_opt_na[peridx]); 
+        tmp_m_opt_fx.push_back(m_opt_fx[peridx]); 
+        tmp_m_opt_fy.push_back(m_opt_fy[peridx]); 
+        tmp_m_opt_fz.push_back(m_opt_fz[peridx]); 
+        tmp_m_opt_t.push_back(m_opt_t[peridx]); 
+        tmp_m_opt_tprop.push_back(m_opt_tprop[peridx]); 
+     }
+     m_opt_wavelength.swap(tmp_m_opt_wavelength);
+     m_opt_energy.swap(tmp_m_opt_energy);
+     m_opt_na.swap(tmp_m_opt_na);
+     m_opt_fx.swap(tmp_m_opt_fx);
+     m_opt_fy.swap(tmp_m_opt_fy);
+     m_opt_fz.swap(tmp_m_opt_fz);
+     m_opt_t.swap(tmp_m_opt_t);
+     m_opt_tprop.swap(tmp_m_opt_tprop);
+  }
+  if( max_photon_num != -1 && (int)m_scin_num > max_photon_num ){
+     std::vector<unsigned int> idxVec; idxVec.reserve(m_scin_num);
+     for(unsigned int ip=0; ip<m_scin_num; ip++){ idxVec.push_back(ip); }
+     std::random_shuffle(idxVec.begin(), idxVec.end());
+     std::vector<float> tmp_m_scin_wavelength, tmp_m_scin_energy, tmp_m_scin_na, tmp_m_scin_fx, tmp_m_scin_fy, tmp_m_scin_fz, tmp_m_scin_t, tmp_m_scin_tprop;
+     tmp_m_scin_wavelength.reserve(max_photon_num); tmp_m_scin_energy.reserve(max_photon_num); tmp_m_scin_na.reserve(max_photon_num); tmp_m_scin_fx.reserve(max_photon_num); tmp_m_scin_fy.reserve(max_photon_num); tmp_m_scin_fz.reserve(max_photon_num); tmp_m_scin_t.reserve(max_photon_num); tmp_m_scin_tprop.reserve(max_photon_num);
+     for(unsigned int ip=0; ip<max_photon_num; ip++){
+        unsigned int peridx = idxVec[ip];
+        tmp_m_scin_wavelength.push_back(m_scin_wavelength[peridx]); 
+        tmp_m_scin_energy.push_back(m_scin_energy[peridx]); 
+        tmp_m_scin_na.push_back(m_scin_na[peridx]); 
+        tmp_m_scin_fx.push_back(m_scin_fx[peridx]); 
+        tmp_m_scin_fy.push_back(m_scin_fy[peridx]); 
+        tmp_m_scin_fz.push_back(m_scin_fz[peridx]); 
+        tmp_m_scin_t.push_back(m_scin_t[peridx]); 
+        tmp_m_scin_tprop.push_back(m_scin_tprop[peridx]); 
+     }
+     m_scin_wavelength.swap(tmp_m_scin_wavelength);
+     m_scin_energy.swap(tmp_m_scin_energy);
+     m_scin_na.swap(tmp_m_scin_na);
+     m_scin_fx.swap(tmp_m_scin_fx);
+     m_scin_fy.swap(tmp_m_scin_fy);
+     m_scin_fz.swap(tmp_m_scin_fz);
+     m_scin_t.swap(tmp_m_scin_t);
+     m_scin_tprop.swap(tmp_m_scin_tprop);
+  }
+
   m_event->Fill();
 
   clearStacking();
@@ -170,6 +237,7 @@ void HFDataFormat::generateTrees()
     m_event->Branch("opt_fz",&m_opt_fz);
     m_event->Branch("opt_t",&m_opt_t);
     m_event->Branch("opt_tprop",&m_opt_tprop);
+    m_event->Branch("opt_num", &m_opt_num, "opt_num/i");
 
     m_event->Branch("scin_wavelength",&m_scin_wavelength);
     m_event->Branch("scin_energy",&m_scin_energy);
@@ -179,12 +247,14 @@ void HFDataFormat::generateTrees()
     m_event->Branch("scin_fz",&m_scin_fz);
     m_event->Branch("scin_t",&m_scin_t);
     m_event->Branch("scin_tprop",&m_scin_tprop);
-
+    m_event->Branch("scin_num", &m_scin_num, "scin_num/i");
+/*
     m_event->Branch("ion_E",&m_scinIon_E);
     m_event->Branch("ion_x",&m_scinIon_x);
     m_event->Branch("ion_y",&m_scinIon_y);
     m_event->Branch("ion_z",&m_scinIon_z);
     m_event->Branch("ion_t",&m_scinIon_t);
+*/
   }
 
   if (_storeParticleInfo){
@@ -201,6 +271,13 @@ void HFDataFormat::generateTrees()
   if (_storeGeneratorInfo){
     m_event->Branch("gen_x",&m_gen_x);
     m_event->Branch("gen_y",&m_gen_y);
+    m_event->Branch("gen_z",&m_gen_z);
+    m_event->Branch("gen_px",&m_gen_px);
+    m_event->Branch("gen_py",&m_gen_py);
+    m_event->Branch("gen_pz",&m_gen_pz);
+    m_event->Branch("gen_energy",&m_gen_energy);
+    m_event->Branch("gen_momentum",&m_gen_momentum);
+    m_event->Branch("gen_pdgID",&m_gen_pdgID);
   }
 
   if ( _storePMTInfo ) {
@@ -250,6 +327,7 @@ void HFDataFormat::clearStacking()
     m_opt_fz.clear();
     m_opt_t.clear();
     m_opt_tprop.clear();
+    m_opt_num = 0;
 
     m_scin_wavelength.clear();
     m_scin_energy.clear();
@@ -259,6 +337,7 @@ void HFDataFormat::clearStacking()
     m_scin_fz.clear();
     m_scin_t.clear();
     m_scin_tprop.clear();
+    m_scin_num = 0;
 
     m_scinIon_E.clear();
     m_scinIon_x.clear();
@@ -312,6 +391,13 @@ void HFDataFormat::clearGenerator()
   if (_storeGeneratorInfo){
     m_gen_x.clear();
     m_gen_y.clear();
+    m_gen_z.clear();
+    m_gen_px.clear();
+    m_gen_py.clear();
+    m_gen_pz.clear();
+    m_gen_energy.clear();
+    m_gen_momentum.clear();
+    m_gen_pdgID.clear();
   }
 }
 

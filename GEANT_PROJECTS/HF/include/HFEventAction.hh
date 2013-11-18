@@ -5,6 +5,8 @@
 #include "G4UserEventAction.hh"
 #include "HFDataFormat.hh"
 
+class G4Timer;
+
 class HFEventAction : public G4UserEventAction
 {
   public:
@@ -16,6 +18,7 @@ class HFEventAction : public G4UserEventAction
 
   private:
     HFDataFormat *m_df;
+    G4Timer* timer;
 };
     
 

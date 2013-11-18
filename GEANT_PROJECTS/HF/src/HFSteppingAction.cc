@@ -30,7 +30,7 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
 
   // get the particle
   G4Track * theTrack = step->GetTrack();
-  const G4ThreeVector & pos = theTrack->GetPosition();
+//  const G4ThreeVector & pos = theTrack->GetPosition();
 
   const double time = theTrack->GetGlobalTime();
   if ( time > 100*ns ) theTrack->SetTrackStatus(fStopAndKill);
@@ -41,7 +41,7 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
 
     const G4String & postName = postVolume->GetName();
     if ( postName.contains("glass") ) {
-
+/*
       const G4DynamicParticle * theParticle = theTrack->GetDynamicParticle();
       const double wavelength = hbarc*twopi/theParticle->GetTotalEnergy()*1.e+6;
 
@@ -49,10 +49,10 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
 
       SteppingStruct st(pos,time,theTrack->GetLocalTime(),theTrack->GetTrackLength(),wavelength,pol.x(),pol.y());
       if ( wavelength > 350. )  {
-  	if ( isFibre ) m_df->fillSteppingAction( st, fCherenkov );
-  	else if ( isScinFibre ) m_df->fillSteppingAction( st, fScintillation );
+  	//if ( isFibre ) m_df->fillSteppingAction( st, fCherenkov );
+  	//else if ( isScinFibre ) m_df->fillSteppingAction( st, fScintillation );
       }
-
+*/
       // kill the track after readout
       theTrack->SetTrackStatus(fStopAndKill);
 
@@ -62,9 +62,9 @@ void HFSteppingAction::UserSteppingAction(const G4Step * step)
     }
 
   } else if ( preVolume == postVolume && preName.contains("scsf") ) {
-    const double E = step->GetTotalEnergyDeposit();
-    IoniStruct is(E,pos,time);
-    m_df->fillIonization(is); 
+//    const double E = step->GetTotalEnergyDeposit();
+//    IoniStruct is(E,pos,time);
+    //m_df->fillIonization(is); 
   } 
 
 }

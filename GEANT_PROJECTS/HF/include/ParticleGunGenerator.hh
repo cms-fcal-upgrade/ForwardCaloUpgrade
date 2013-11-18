@@ -63,7 +63,10 @@ public:
   ESmearingMode GetGunMomentumSmearingMode(void)                   { return fGunMomentumSmearingMode; }
   G4double GetOptPhotonPolar(void)                                 { return fGunOptPolar; }
   G4ThreeVector GetGunPosition(void)                               { return fGunPosition; }
-  
+  G4ThreeVector GetGunDirection(void)                              { return fGunDirection; }
+  G4double GetGunSmearedMomentum(void)                             { return fGunMomentum; }
+  G4double GetGunEnergy(void)                                      { return fGunEnergy; }
+  G4int GetGunParticlePDGid(void)                                  { return fGunParticlePDGid; }
 
 private:
   G4ParticleGun * fParticleGun;
@@ -78,7 +81,12 @@ private:
   G4double      fGunMomentumStep;
 
   G4ThreeVector fGunPosition;
+  G4ThreeVector fGunDirection;
   
+  G4double      fGunMomentum;
+  G4double      fGunEnergy;
+  G4int         fGunParticlePDGid;
+
   G4double      fGunMomentumSmearing;
   ESmearingMode fGunPositionSmearingMode;
   ESmearingMode fGunDirectionSmearingMode;

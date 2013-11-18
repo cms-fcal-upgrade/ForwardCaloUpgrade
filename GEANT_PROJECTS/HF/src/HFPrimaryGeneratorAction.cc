@@ -56,7 +56,18 @@ void HFPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
       if ( m_df ) {
         double x = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunPosition()[0];
         double y = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunPosition()[1];
-        GeneratorStruct gs(x,y);
+        double z = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunPosition()[2];
+
+        double px = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunDirection()[0];
+        double py = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunDirection()[1];
+        double pz = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunDirection()[2];
+
+        double energy = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunEnergy();
+        double momentum = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunSmearedMomentum();
+   
+        int pdgID = dynamic_cast<ParticleGunGenerator*>(fPrimaryGenerator)->GetGunParticlePDGid();
+
+        GeneratorStruct gs(x,y,z, px,py,pz, energy,momentum, pdgID);
         m_df->fillGenerator(gs);
       }
     }

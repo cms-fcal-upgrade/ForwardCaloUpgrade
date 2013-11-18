@@ -42,7 +42,12 @@ ParticleGunGenerator::ParticleGunGenerator(void):
   fGunDirectionSmearingMode = kGaussian;
   fGunMomentumSmearingMode = kGaussian;
 
+  fGunMomentum =0;
+  fGunEnergy =0;
+  fGunParticlePDGid =0;
+
   fGunPosition = G4ThreeVector(0,0,0);
+  fGunDirection = G4ThreeVector(0,0,0); 
 }
 
 ParticleGunGenerator::~ParticleGunGenerator(void)
@@ -112,6 +117,8 @@ void ParticleGunGenerator::GeneratePrimaryVertex(G4Event *evt)
       break;
   }
 
+  fGunDirection = smearedDirection;
+
   // ... and momentum
   G4double smearedMomentum ;
   switch (fGunMomentumSmearingMode) {
@@ -122,6 +129,11 @@ void ParticleGunGenerator::GeneratePrimaryVertex(G4Event *evt)
       smearedMomentum = savedMomentum + (2 * G4UniformRand() - 1) * fGunMomentumSmearing;
       break;
   }
+
+  fGunMomentum = smearedMomentum;
+  fGunEnergy = savedEnergy;
+
+  fGunParticlePDGid = fParticleGun->GetParticleDefinition()->GetPDGEncoding();
         
   // apply smeared properties
   fParticleGun->SetParticlePosition(smearedPosition);

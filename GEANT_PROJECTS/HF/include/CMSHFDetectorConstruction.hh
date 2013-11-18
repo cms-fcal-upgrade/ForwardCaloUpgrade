@@ -36,6 +36,8 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "CMSHFDetectorConstructionMessenger.hh"
 
+#include "G4RotationMatrix.hh"
+
 class G4LogicalVolume;
 class G4PhysicalVolume;
 class G4Material;
@@ -71,6 +73,9 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // set N segments per side of detector.  sqrt(Ntot) of detector
     void SetNSeg(unsigned N);
 
+    // set fibre spacing
+    void SetFibSpacing(G4double a);
+
     // set the fibre index of refraction
     void SetFibreIndex(G4double n);
 
@@ -88,6 +93,28 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
 
     // set the magnetic field
     void SetMagneticField( const G4ThreeVector &vec);
+
+    // set the pitch of the detector
+    // pitch is applied first, then yaw
+    void SetPitchAndYaw(G4double, G4double);
+
+    // turn on fiber filling
+    void SetFibres(const bool);
+
+    // functions to set dead segments around block
+    void SetDeadTop(const unsigned );
+    void SetDeadBottom(const unsigned );
+    void SetDeadRight(const unsigned );
+    void SetDeadLeft(const unsigned );
+
+    // switch for detector material
+    // passing true -> build W absorber
+    // passing false -> build Brass absorber
+    void BuildWorBrass(const bool);
+
+    // refresh geometry and force a rebuild
+    void RefreshGeometry();
+
 
     // ---- accessor methods -----
     void PrintCalorParameters() { return; }
@@ -135,10 +162,18 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     unsigned m_Nseg;     // number of segments on detector side
     G4double m_segWidth;
 
+    // number of dead segments to put on sides of active area
+    unsigned m_deadSeg_bottom;
+    unsigned m_deadSeg_top;
+    unsigned m_deadSeg_right;
+    unsigned m_deadSeg_left;
+
     unsigned m_nQseg;  // number of Q fibres in a segment
     unsigned m_nSseg;  // number of S fibres in a segment
+    bool m_fillFibres;
 
     std::vector<G4ThreeVector> m_segPositions;
+    std::vector<G4ThreeVector> m_deadPositions;
 
     G4double m_nFib;
     G4double m_nClad;
@@ -152,6 +187,8 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_nGlass;
     G4double m_absGlass;
 
+    bool m_buildW; // switch for tungsten (true) or brass (false)
+
     // radii for fibers and cladding ( C for Cherenkov and S for scintillation)
     G4double m_rCFib;
     G4double m_rCClad;
@@ -161,12 +198,18 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // grid spacing
     G4double m_a;
 
+    // rotation matrix for the wedge
+    // this describes how a wedge is shifted from a normal position
+    double m_pitch; 
+    double m_yaw;
+
     G4bool m_checkOverlaps;
 
     // materials
     G4Material * m_air;
     G4Material * m_quartz;
     G4Material * m_tungsten;
+    G4Material * m_brass;
     G4Material * m_glass;
     G4Material * m_cladCher;
     G4Material * m_scsf78;
@@ -190,6 +233,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4LogicalVolume *> m_qFibreScin_log;
     std::vector<G4LogicalVolume *> m_cladScin_log;
     G4LogicalVolume * m_glass_log;
+    G4LogicalVolume * m_deadBlock_log;
 
     // physical volumes
     G4VPhysicalVolume * m_expHall_phys;
@@ -198,7 +242,8 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_claddingCher;
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
-    G4VPhysicalVolume * m_glass_phys;
+    std::vector<G4VPhysicalVolume *> m_glass_phys;
+    std::vector<G4VPhysicalVolume *> m_deadBlocks_phys;
 
     // uniform magnetic field
     G4UniformMagField *m_Bfield;

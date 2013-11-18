@@ -62,6 +62,12 @@ class HFStackingAction : public G4UserStackingAction
 	m_fibreNA = -1.; // force recalculation
       }
 
+   //  set the fibre direction
+   void SetFibreDirection(const G4ThreeVector & dir) 
+      {
+	m_fibreDir = dir;
+      }
+
     // set the cladding index of refraction
     void SetCladIndex(G4double n) 
       { 
@@ -85,6 +91,9 @@ class HFStackingAction : public G4UserStackingAction
 
     // set air index of refraction
     void SetAirIndex(G4double n) { m_nAir = n; }
+
+    // set fibre length
+    void SetFibLength(G4double l) { m_fibLength = l; }
   
     // set the low end of the optical photon wavelength cutoff
     void SetOptLowCut(G4double c) { m_lCutLow = c; }
@@ -118,6 +127,8 @@ class HFStackingAction : public G4UserStackingAction
     G4double m_nGlass;
     G4double m_nAir;
     G4double m_fibLength;
+
+    G4ThreeVector m_fibreDir;
 
     HFDataFormat * m_df;
 

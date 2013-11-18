@@ -55,6 +55,7 @@ HFStackingAction::HFStackingAction(HFDataFormat *df)
 , m_nGlass(1.517)
 , m_nAir(1.)
 , m_fibLength(120*cm)
+, m_fibreDir(0.,0.,1.)
 , m_df(df)
 , m_optDef( G4OpticalPhoton::OpticalPhotonDefinition() )
 {
@@ -81,6 +82,11 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 
   if ( !volume ) return classification;
 
+  // kill tracks created in the glass
+  if( vName.contains("glass") ){
+     if( aTrack->GetDefinition() == m_optDef && aTrack->GetParentID()>0 ) return fKill;
+     else return classification;
+  }
   // kill optical photon
   //if ( aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() ) classification = fKill;
 
@@ -90,7 +96,8 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     if(aTrack->GetParentID()>0)
     { // particle is secondary
 
-      //classification = fKill;
+      // kill all photons	
+      classification = fKill;
 
       const G4DynamicParticle *aParticle = aTrack->GetDynamicParticle();
       const double E = aParticle->GetTotalEnergy();
@@ -101,35 +108,33 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       const double pz = mom.z();
       assert( fabs(mom.mag() - 1.) < 1.e-6);
       
-      const G4ThreeVector & pos = aTrack->GetPosition();
-      const double x = pos.x();
-      const double y = pos.y();
-      const double z = pos.z();
-      const double t = aTrack->GetGlobalTime();
-
       //////////////////////////////////////////////////
       // Find the fiber's central axis, and the displancement
       // of the photon production point from the that axis in
       // a plane perpendicular to the fiber.
       const G4ThreeVector & trans = volume->GetTranslation();
-      const G4ThreeVector rho = pos - trans;
-      const double rhox = rho.x();
-      const double rhoy = rho.y();
 
       const G4ThreeVector & touchTrans = aTrack->GetTouchable()->GetTranslation();
       //assert( trans.x() == touchTrans.x() );
 
+      const G4ThreeVector & pos = aTrack->GetPosition();
+      const double x = touchTrans.x();  // record center to fibre rather
+      const double y = touchTrans.y();
+      const double z = pos.z();
+      const double t = aTrack->GetGlobalTime();
+
+
       Fiber fib;
       fib.radius = m_rFibre;
       fib.attenuation = 28.1*m;
-      fib.lengthTotal = 1.2*m;
+      fib.lengthTotal = m_fibLength;
       fib.refrIndCore = m_nFibre;
       fib.refrIndClad = m_nClad;
       fib.refrIndAir = 1.;
       fib.refrIndDet = m_nGlass;
-      fib.direction.SetX(0.);
-      fib.direction.SetY(0.);
-      fib.direction.SetZ(1.);
+      fib.direction.SetX(m_fibreDir.x());
+      fib.direction.SetY(m_fibreDir.y());
+      fib.direction.SetZ(m_fibreDir.z());
       fib.position.SetX( touchTrans.x() );
       fib.position.SetY( touchTrans.y() );
       fib.position.SetZ( touchTrans.z() );
@@ -154,16 +159,6 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       bool isDetected = 0. < rndnm && rndnm < trk.prob[0];
 
 
-      /////////////////////////////////////////////////
-      // calculate the angle the photon makes with the core/clad
-      // interface surface normal.  
-      // eta is the angle between the photon and the surface normal 
-      // in the transverse plane
-      // psi is the angle between the photon and fiber's central axis.
-      const double sinEta = (rhox*py-rhoy*px)/m_rFibre;
-      const double sinPsi = sqrt(1.-pz*pz);
-      //const double na = sinPsi*cos(asin(sinEta));  // equal to cos(Xi)
-     
       //////////////////////
       // This is the old method to check photon acceptance
       const double na = sqrt(px*px+py*py);
@@ -171,24 +166,27 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
       //const G4VProcess * proc = aTrack->GetCreatorProcess();
       //const G4String & procName = proc ? proc->GetProcessName() : "no";
      
-      if ( lambda <= m_lCutLow ) classification = fKill;
+      if( lambda <= m_lCutLow ){ classification = fKill; return classification; }
+      if( !isDetected ){ return classification; }
+      // kill tracks created in the glass
+//      if( vName.contains("glass") ){ return fKill; }
 
       if ( vName.contains("fib") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fCherenkov);
-      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) { 
+      } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
 	StackingStruct st(lambda,E,na,x,y,z,t,probTime);
         m_df->fillStackingAction(st,fScintillation);
-      } else if ( vName.contains("glass")  ) {
+      }/* else if ( vName.contains("glass")  ) {
 	// kill tracks created in the glass
 	classification = fKill;
-      } 
+      }*/
     }
 
   } else {
-
+/*
     const G4DynamicParticle * particle = aTrack->GetDynamicParticle();
     const double E = particle->GetTotalEnergy();
     const int pdgId = particle->GetPDGcode();
@@ -198,7 +196,7 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 
     ParticleStruct pt(pdgId,mom,pos,E);
     m_df->fillParticle(pt);
-
+*/
   }
 
 
