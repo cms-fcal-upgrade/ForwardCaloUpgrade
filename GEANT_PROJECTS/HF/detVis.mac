@@ -1,17 +1,17 @@
 
-/testBeam/detPosition 0 723 3744 mm
-/testBeam/rotate 0 3 0 deg
-/testBeam/buildWorBrass false
-/testBeam/fibreSpacing 2. mm
-/testBeam/length 1. m
-/testBeam/fibres false
-/testBeam/magField 0. 0. 3.8 tesla
+#/testBeam/detPosition 0 723 3744 mm
+#/testBeam/rotate 12 30 0 deg
+#/testBeam/buildWorBrass false
+#/testBeam/fibreSpacing 2. mm
+#/testBeam/length 1. m
+/testBeam/fibres true
+#/testBeam/magField 0. 0. 3.8 tesla
 /testBeam/checkOverlaps false
-/testBeam/NdeadTop 1
-/testBeam/NdeadBottom 1
-/testBeam/NdeadRight 1
-/testBeam/NdeadLeft 1
-/testBeam/Nseg 32 
+/testBeam/NdeadTop 0
+/testBeam/NdeadBottom 0
+/testBeam/NdeadRight 0
+/testBeam/NdeadLeft 0
+/testBeam/Nseg 1 
 /testBeam/refreshGeometry true
 
 
@@ -68,7 +68,7 @@
 
 #
 # Draw coordinate axes:
-/vis/scene/add/axes 0 0 0 10 cm
+#/vis/scene/add/axes 0 0 0 10 cm
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:

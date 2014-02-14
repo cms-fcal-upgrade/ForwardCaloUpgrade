@@ -13,11 +13,15 @@
 // WARNING: typically one needs 25 MB/100 events at the LHC.
 // Therefore large event samples may be impractical.
 
-#include "Pythia.h"
-#include "HepMCInterface.h"
+#include <vector>
+#include <string>
+
+#include "Pythia8/Pythia.h"
+#include "Pythia8/Pythia8ToHepMC.h"
 
 #include "HepMC/GenEvent.h"   
 #include "HepMC/IO_GenEvent.h"
+#include "HepMC/GenParticle.h"
 
 // Following line is a deprecated alternative, removed in recent versions.
 //#include "HepMC/IO_Ascii.h"
@@ -28,6 +32,11 @@
 #ifdef HEPMC_HAS_UNITS
 #include "HepMC/Units.h"
 #endif
+
+
+// root stuff for an analysis
+//#include "TFile.h"
+//#include "TTree.h"
 
 using namespace Pythia8; 
 
@@ -108,12 +117,14 @@ int main(int argc, char* argv[]) {
 
 // Interface for conversion from Pythia8::Event to HepMC one. 
 //------------------------------------------------------------
-  HepMC::I_Pythia8 ToHepMC;
+  HepMC::Pythia8ToHepMC ToHepMC;
 //  ToHepMC.set_crash_on_problem();
 
 // Specify file where HepMC events will be stored.
 //-------------------------------------------------
   HepMC::IO_GenEvent ascii_io(argv[2], std::ios::out);
+
+  std::string oFile("minbias.root");
 
 // Following line is a deprecated alternative, removed in recent versions
 // HepMC::IO_Ascii ascii_io("hepmcout32.dat", std::ios::out);
@@ -148,7 +159,8 @@ int main(int argc, char* argv[]) {
 //------------------------------------------------------------------------
 //TA  pythia.readString("ProcessLevel:all = off");
   //TA taken from MinBias_8TeV_pythia8_cff.py
-  pythia.readString("SoftQCD:minBias = on");
+  //pythia.readString("SoftQCD:minBias = on");  // no longer in pythia8180
+  pythia.readString("SoftQCD:nonDiffractive = on");
   pythia.readString("Main:timesAllowErrors = 10000");
   pythia.readString("ParticleDecays:limitTau0 = on");
   pythia.readString("ParticleDecays:tauMax = 10");
@@ -169,6 +181,22 @@ int main(int argc, char* argv[]) {
   pythia.readString("Next:numberShowInfo = 0");
   pythia.readString("Next:numberShowProcess = 0");
   pythia.readString("Next:numberShowEvent = 0"); 
+
+// setup root output
+  /*TFile *tFile = new TFile(oFile.c_str(),"RECREATE");
+  TTree *tree = new TTree("tree","tree");
+
+  std::vector<int> * p_id=0;
+  std::vector<double> * p_e=0;
+  std::vector<double> * p_eta=0;
+  std::vector<double> * p_phi=0;
+  std::vector<double> * p_pt=0;
+
+  tree->Branch("id",&p_id);
+  tree->Branch("e",&p_e);
+  tree->Branch("eta",&p_eta);
+  tree->Branch("phi",&p_phi);
+  tree->Branch("pt",&p_pt);*/
 
 // Initialization.
 //----------------
@@ -202,7 +230,7 @@ int main(int argc, char* argv[]) {
       break;
     }
 
-// List first few events.
+// LisT FIRST Few events.
 //-----------------------
     if (iEvent < nList) {
       event.list();
@@ -240,12 +268,42 @@ int main(int argc, char* argv[]) {
 //---------------------------------------------
 //    cout << hepmcevt; 
     ascii_io << hepmcevt;
+
+    // fill tree for ntuple output
+    /*HepMC::GenEvent::particle_iterator itr = hepmcevt->particles_begin();
+    HepMC::GenEvent::particle_iterator itrEnd = hepmcevt->particles_end();
+    for ( ; itr != itrEnd; itr++ ) {
+      const unsigned status = (*itr)->status();
+      if ( status == 1U ) {
+	p_id->push_back((*itr)->pdg_id());
+  	const HepMC::FourVector & mom = (*itr)->momentum();
+	p_e->push_back(mom.e());
+  	p_eta->push_back(mom.eta());
+ 	p_phi->push_back(mom.phi());
+	p_pt->push_back(mom.perp());
+      }
+    } 
+
+    tree->Fill();
+
+    p_id->clear();
+    p_e->clear();
+    p_eta->clear();
+    p_phi->clear();
+    p_pt->clear();*/
+
     delete hepmcevt;
 
 // End of event loop. Statistics. 
 //--------------------------------
   }
 //TA  pythia.stat();
+
+  //tree->Write();
+  //tFile->Close();
+
+  //tree->Delete();
+  //tFile->Delete();
 
 // Done.
 //------

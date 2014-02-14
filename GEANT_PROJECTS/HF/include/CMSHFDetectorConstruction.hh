@@ -206,6 +206,8 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_rCClad;
     G4double m_rSFib;
     G4double m_rSClad;
+    G4double m_rCBuff;
+    G4double m_rSBuff;
 
     // grid spacing
     G4double m_a;
@@ -227,6 +229,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4Material * m_scsf78;
     G4Material * m_cladScin;
     G4Material * m_iron;
+    G4Material * m_buffer; // fibre buffer material
 
     // primitives
     G4Box * m_expHall_box;
@@ -236,14 +239,18 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4Box * m_glass_box;
     G4Tubs * m_cladCher_tube;
     G4Tubs * m_cladScin_tube;
+    G4Tubs * m_buffCher_tube;
+    G4Tubs * m_buffScin_tube;
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
     std::vector<G4LogicalVolume *> m_tungBlock_log;
     std::vector<G4LogicalVolume *> m_qFibreCher_log;
     std::vector<G4LogicalVolume *> m_cladCher_log;
+    std::vector<G4LogicalVolume *> m_buffCher_log;
     std::vector<G4LogicalVolume *> m_qFibreScin_log;
     std::vector<G4LogicalVolume *> m_cladScin_log;
+    std::vector<G4LogicalVolume *> m_buffScin_log;
     G4LogicalVolume * m_glass_log;
     G4LogicalVolume * m_deadBlock_log;
 
@@ -252,8 +259,10 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_tungBlock_phys;
     std::vector<G4VPhysicalVolume *> m_fibresCher;
     std::vector<G4VPhysicalVolume *> m_claddingCher;
+    std::vector<G4VPhysicalVolume *> m_bufferCher;
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
+    std::vector<G4VPhysicalVolume *> m_bufferScin;
     std::vector<G4VPhysicalVolume *> m_glass_phys;
     std::vector<G4VPhysicalVolume *> m_deadBlocks_phys;
 

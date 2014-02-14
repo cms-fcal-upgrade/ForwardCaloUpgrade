@@ -102,6 +102,9 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_rCClad = 0.333*mm;
   m_rSClad = m_rCClad;
 
+  m_rCBuff = 0.4*mm;
+  m_rSBuff = m_rCBuff;
+
   m_NfibSeg = 32U;
   m_Nseg = 32U;
 
@@ -193,6 +196,8 @@ void CMSHFDetectorConstruction::DefineMaterials()
   m_air = new G4Material("Air", density=1.29*mg/cm3, nelements=2);
   m_air->AddElement(N, 70.*perCent);
   m_air->AddElement(O, 30.*perCent);
+
+  m_buffer = man->FindOrBuildMaterial("G4_KAPTON");
 
   // Tungsten
   // 
@@ -391,6 +396,8 @@ void CMSHFDetectorConstruction::SetupGeometry()
   m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
   m_qFibreScin = new G4Tubs("scsfFibre",0.,m_rSClad,m_length,0.,2.*pi);
   m_cladScin_tube = new G4Tubs("cladding",m_rSClad,m_rSFib,m_length,0,2.*pi);
+  m_buffCher_tube = new G4Tubs("buffer",m_rCFib,m_rCBuff,m_length,0.,2.*pi);
+  m_buffScin_tube = new G4Tubs("buffer",m_rSFib,m_rSBuff,m_length,0.,2.*pi);
   m_glass_box = new G4Box("Glass",m_segWidth/2.,m_segWidth/2.,1.*cm);
 
   //
@@ -401,6 +408,8 @@ void CMSHFDetectorConstruction::SetupGeometry()
   m_cladCher_log.resize(segTot);
   m_qFibreScin_log.resize(segTot);
   m_cladScin_log.resize(segTot);
+  m_buffCher_log.resize(segTot);
+  m_buffScin_log.resize(segTot);
 
 
   for ( unsigned i=0; i != segTot; i++ ) {
@@ -413,12 +422,18 @@ void CMSHFDetectorConstruction::SetupGeometry()
   
     // Cladding on fibre
     m_cladCher_log[i] = new G4LogicalVolume(m_cladCher_tube,m_cladCher,"claddingCher",0,0,0);
+
+    // buffer on fibre
+    m_buffCher_log[i] = new G4LogicalVolume(m_buffCher_tube,m_buffer,"bufferCher",0,0,0);
   
     // Scintillating scsf-78
     m_qFibreScin_log[i] = new G4LogicalVolume(m_qFibreScin,m_scsf78,"scsf78FibreLog",0,0,0);
   
     // Cladding on fibre
     m_cladScin_log[i] = new G4LogicalVolume(m_cladScin_tube,m_cladScin,"claddingScin",0,0,0);
+ 
+    // buffer on fibre
+    m_buffScin_log[i] = new G4LogicalVolume(m_buffScin_tube,m_buffer,"bufferScin",0,0,0);
   }
 
   // Glass 
@@ -512,6 +527,8 @@ void CMSHFDetectorConstruction::SetupDetectors()
       	m_fibresCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
       	sprintf(name,"clad%d",count);
       	m_claddingCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
+	sprintf(name,"buff%d",count);
+	m_bufferCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_buffCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
       	count++;
       } else {
       // place scsf78
@@ -519,6 +536,8 @@ void CMSHFDetectorConstruction::SetupDetectors()
 	m_fibresScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
 	sprintf(name,"cladScin%d",scsfCount);
 	m_claddingScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
+	sprintf(name,"buffScin%d",scsfCount);
+    	m_bufferScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_buffScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
  	scsfCount++;
       } 
 
@@ -936,21 +955,27 @@ void CMSHFDetectorConstruction::ClearPhysicalVolumes()
   for ( unsigned i=0; i != nFibs; i++ ) {
     m_fibresCher[i]->GetLogicalVolume()->RemoveDaughter(m_fibresCher[i]);
     m_claddingCher[i]->GetLogicalVolume()->RemoveDaughter(m_claddingCher[i]);
+    m_bufferCher[i]->GetLogicalVolume()->RemoveDaughter(m_bufferCher[i]);
     delete m_fibresCher[i];
     delete m_claddingCher[i];
+    delete m_bufferCher[i];
   }
   m_fibresCher.clear();
   m_claddingCher.clear();
+  m_bufferCher.clear();
 
   const unsigned nScin = m_fibresScin.size();
   for ( unsigned i=0; i != nScin; i++ ) {
     m_fibresScin[i]->GetLogicalVolume()->RemoveDaughter(m_fibresScin[i]);
     m_claddingScin[i]->GetLogicalVolume()->RemoveDaughter(m_claddingScin[i]);
+    m_bufferScin[i]->GetLogicalVolume()->RemoveDaughter(m_bufferScin[i]);
     delete m_fibresScin[i];
     delete m_claddingScin[i];
+    delete m_bufferScin[i];
   }
   m_fibresScin.clear();
   m_claddingScin.clear();
+  m_bufferScin.clear();
 
   m_glass_log->ClearDaughters();
   //delete m_glass_phys;
@@ -962,6 +987,8 @@ void CMSHFDetectorConstruction::ClearPhysicalVolumes()
   for ( unsigned i=0; i != segTot; i++ ) {
     m_cladScin_log[i]->ClearDaughters();  
     m_cladCher_log[i]->ClearDaughters();
+    m_buffCher_log[i]->ClearDaughters();
+    m_buffScin_log[i]->ClearDaughters();
     m_qFibreScin_log[i]->ClearDaughters();
     m_qFibreCher_log[i]->ClearDaughters();
     m_tungBlock_log[i]->ClearDaughters();
@@ -985,12 +1012,16 @@ void CMSHFDetectorConstruction::ClearLogicalVolumes()
     delete m_cladCher_log[i];
     delete m_qFibreScin_log[i];
     delete m_cladScin_log[i];
+    delete m_buffCher_log[i];
+    delete m_buffScin_log[i];
   }
   m_tungBlock_log.clear();
   m_qFibreCher_log.clear();
   m_cladCher_log.clear();
   m_qFibreScin_log.clear();
   m_cladScin_log.clear();
+  m_buffCher_log.clear();
+  m_buffScin_log.clear();
 
   delete m_glass_log;
   delete m_deadBlock_log;

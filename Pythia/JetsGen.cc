@@ -13,8 +13,9 @@
 // WARNING: typically one needs 25 MB/100 events at the LHC.
 // Therefore large event samples may be impractical.
 
-#include "Pythia.h"
-#include "HepMCInterface.h"
+#include "Pythia8/Pythia.h"
+//#include "HepMCInterface.h"
+#include "Pythia8/Pythia8ToHepMC.h"
 
 #include "HepMC/GenEvent.h"   
 #include "HepMC/IO_GenEvent.h"
@@ -22,6 +23,12 @@
 // Following line is a deprecated alternative, removed in recent versions.
 //#include "HepMC/IO_Ascii.h"
 //#include "HepMC/IO_AsciiParticles.h"
+
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TTree.h"
+#include "TFile.h"
+
 
 // Following line to be used with HepMC 2.04 onwards.
 //---------------------------------------------------
@@ -36,7 +43,7 @@ using namespace Pythia8;
 // Simple method to do the filling of partons into the event record.
 //-------------------------------------------------------------------
 //void fillPartons(int type, double ee, Event& event, ParticleData& pdt, Rndm& rndm) {
-void fillPartons(int type, double ee, Event& event, ParticleData& pdt) {
+void fillPartons(int type, double ee, double eta, double phi, Event& event, ParticleData& pdt) {
 
 // Reset event record to allow for new event.
 //-------------------------------------------
@@ -44,7 +51,6 @@ void fillPartons(int type, double ee, Event& event, ParticleData& pdt) {
 
 // Information on a q qbar system, to be hadronized.
 // Generate one jet along z+ axis and another jet
-// in the backward direction.
 //--------------------------
   if (type == 1) {
     int    id = 1;
@@ -57,8 +63,24 @@ void fillPartons(int type, double ee, Event& event, ParticleData& pdt) {
     int    id = 2;
     double mm = pdt.m0(id);
     double pp = sqrtpos(ee*ee - mm*mm);
-    event.append(  id, 23, 101,   0, 0., 0.,  pp, ee, mm);
-    event.append( -id, 23,   0, 101, 0., 0., -pp, ee, mm);
+    double pt = pp/cosh(eta);
+    double px = pt*cos(phi);
+    double py = pt*sin(phi);
+    double pz = pp*tanh(eta);
+    event.append(id,23,101,0,px,py,pz,ee,mm);
+    event.append(-id,23,0,101,-px,-py,-pz,ee,mm);
+//  eta=1.5; phi=20deg
+//    event.append(  id, 23, 101,   0, 0., 0.	,  pp, ee, mm); 
+//    event.append( -id, 23,   0, 101, 0., 0., -pp, ee, mm);
+//  eta 3.5 and phi 25 deg
+    /*event.append( id, 23, 101, 0, 0.05468637996390685112*pp, 0.02550067777394384022*pp, 0.99817789761119870928*pp, ee, mm);
+    event.append( -id, 23, 0, 101, -0.05468637996390685112*pp, -0.02550067777394384022*pp, -0.99817789761119870928*pp, ee, mm);*/
+//  eta 2.0  and phi 25 deg
+    /*event.append( id, 23, 101, 0, 0.24089862980402399785*pp, 0.11233287591666237805*pp, 0.96402758007581688395*pp, ee,mm);
+    event.append( -id, 23, 0, 101, -0.24089862980402399785*pp, -0.11233287591666237805*pp, -0.96402758007581688395*pp, ee,mm);*/
+    // eta 1.5
+    /*event.append(  id, 23, 101,   0, 0.39946*pp, 0.145391*pp, 0.905148*pp, ee, mm);
+    event.append(  -id, 23, 0,   101, -0.39946*pp, -0.145391*pp, -0.905148*pp, ee, mm);*/
   }
   else if (type == 3) {
     int    id = 3;
@@ -106,9 +128,32 @@ int main(int argc, char* argv[]) {
        << " <<< \n >>> HepMC events will be written to file " 
        << argv[2] << " <<< \n" << endl;
 
+//
+//---------------------------------------------------------------
+
+
+  TFile tFile("jets.root","RECREATE");
+  TH1D mult("mult","",10,0,100);
+  TH1D energy("energy","",10,0,410);
+
+  TTree tree("tree","tree");
+
+  std::vector<int> * p_id=0;
+  std::vector<double> * p_e=0;
+  std::vector<double> * p_eta=0;
+  std::vector<double> * p_phi=0;
+  std::vector<double> * p_pt=0;
+
+  tree.Branch("id",&p_id);
+  tree.Branch("e",&p_e);
+  tree.Branch("eta",&p_eta);
+  tree.Branch("phi",&p_phi);
+  tree.Branch("pt",&p_pt);
+  
+
 // Interface for conversion from Pythia8::Event to HepMC one. 
 //------------------------------------------------------------
-  HepMC::I_Pythia8 ToHepMC;
+  HepMC::Pythia8ToHepMC ToHepMC;
 //  ToHepMC.set_crash_on_problem();
 
 // Specify file where HepMC events will be stored.
@@ -143,6 +188,10 @@ int main(int argc, char* argv[]) {
 //----------------------------
   int type =  pythia.mode("Main:spareMode1");
   double ee = pythia.parm("Main:spareParm1");
+  double eta = pythia.parm("Main:spareParm2");
+  double phi = pythia.parm("Main:spareParm3");
+
+  std::cout << "ETA: " << eta << " PHI: " << phi << std::endl;
 
 // Key requirement: switch off ProcessLevel, and thereby also PartonLevel.
 //------------------------------------------------------------------------
@@ -173,7 +222,7 @@ int main(int argc, char* argv[]) {
 // Set up parton-level configuration.
 //-----------------------------------
 //    fillPartons( type, ee, event, pdt, pythia.rndm); 
-    fillPartons( type, ee, event, pdt); 
+    fillPartons( type, ee, eta, phi, event, pdt); 
 
 // Generate event. 
 //----------------
@@ -217,7 +266,7 @@ int main(int argc, char* argv[]) {
 
 // Fill HepMC event, including PDF info.
 //--------------------------------------
-    ToHepMC.set_convert_to_mev( false );
+    //ToHepMC.set_convert_to_mev( false );
     ToHepMC.fill_next_event( pythia, hepmcevt );
 
 // This alternative older method fills event, without PDF info.
@@ -226,12 +275,49 @@ int main(int argc, char* argv[]) {
 // Write the HepMC event to file. Done with it.
 //---------------------------------------------
     ascii_io << hepmcevt;
+
+    HepMC::GenEvent::particle_iterator itr = hepmcevt->particles_begin();
+    HepMC::GenEvent::particle_iterator itrEnd = hepmcevt->particles_end();
+    double E = 0.;
+    int count = 0;
+    for ( ; itr != itrEnd; itr++ ) {
+      const unsigned status = (*itr)->status();
+      if ( status == 1U ) {
+	p_id->push_back((*itr)->pdg_id());
+  	const HepMC::FourVector & mom = (*itr)->momentum();
+	p_e->push_back(mom.e());
+  	p_eta->push_back(mom.eta());
+ 	p_phi->push_back(mom.phi());
+	p_pt->push_back(mom.perp());
+	E += mom.e();
+	count++;
+      }
+    } 
+
+    mult.Fill(count);
+    energy.Fill(E);
+
+    tree.Fill();
+
+    p_id->clear();
+    p_e->clear();
+    p_eta->clear();
+    p_phi->clear();
+    p_pt->clear();
+
     delete hepmcevt;
 
 // End of event loop. Statistics. 
 //--------------------------------
   }
   pythia.stat();
+
+  mult.Write();
+  energy.Write();
+  tree.Write();
+  tFile.Close();
+
+
 
 // Done.
 //------

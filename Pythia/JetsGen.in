@@ -7,11 +7,15 @@
 ! 1) Settings that will be used in a main program.
 !-------------------------------------------------
 Main:numberOfEvents = 100           ! number of events to generate
-Main:numberToList = 3              ! number of events to list
+Main:numberToList = 0              ! number of events to list
 Main:timesAllowErrors = 3          ! abort run after this many flawed events
 
 ! 2) Settings related to input parameters
 !-------------------------------------------
 Main:spareMode1     =  2           ! set parton type: quark (1,2,3) or gluon (21)
-Main:spareParm1     =  20.         ! energy per parton (jet energy) (GeV) 
+Main:spareParm1     =  500.         ! energy per parton (jet energy) (GeV) 
+Main:spareParm2	    =  1.5	   ! set the eta of the parton
+Main:spareParm3     =  0.43633     ! set the phi (radians) of the parton
 !--------------------------------------------------------------------------
+Random:setSeed = true
+Random:seed = 34159265

@@ -35,12 +35,12 @@ all:
 # Owing to excessive warning output -Wshadow is not used for HepMC.
 ifneq (x$(HEPMCLOCATION),x)
   JetsGen ParticleGunGen MinbiasGen: \
-	$(PYTHIA8LOCATION)/$(LIBDIRARCH)/libpythia8.a $(PYTHIA8LOCATION)/$(LIBDIRARCH)/libhepmcinterface.a
+	$(PYTHIA8LOCATION)/$(LIBDIRARCH)/libpythia8.a $(PYTHIA8LOCATION)/$(LIBDIRARCH)/libpythia8tohepmc.a
 	@mkdir -p $(BINDIR)
-	$(CXX) $(CXXFLAGS) -Wno-shadow -I$(PYTHIA8LOCATION)/$(INCDIR) -I$(HEPMCLOCATION)/include \
-	$@.cc -o $(BINDIR)/$@.exe \
+	$(CXX) $(CXXFLAGS) $(ROOTCFLAGS) -Wno-shadow -I$(PYTHIA8LOCATION)/$(INCDIR) -I$(HEPMCLOCATION)/include \
+	$@.cc -o $(BINDIR)/$@.exe $(ROOTLIBS) \
 	-L$(PYTHIA8LOCATION)/$(LIBDIRARCH) -lpythia8 -llhapdfdummy $(LIBGZIP) \
-	-lhepmcinterface \
+	-lpythia8tohepmc \
 	-L$(HEPMCLOCATION)/lib -lHepMC
 	@ln -fs $(BINDIR)/$@.exe $@.exe
 else
@@ -53,4 +53,4 @@ endif
 clean:
 	rm -rf $(BINDIR)
 	rm -rf *.exe
-	rm -f *~; rm -f \#*; rm -f core*
+	 rm -f *~; rm -f \#*; rm -f core*

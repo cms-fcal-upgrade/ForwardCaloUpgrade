@@ -6,7 +6,7 @@
 
 ! 1) Settings that will be used in a main program.
 !-------------------------------------------------
-Main:numberOfEvents = 30000           ! number of events to generate
+Main:numberOfEvents = 3000           ! number of events to generate
 Main:numberToList = 3              ! number of events to list
 Main:timesAllowErrors = 3          ! abort run after this many flawed events
 
@@ -15,3 +15,5 @@ Main:timesAllowErrors = 3          ! abort run after this many flawed events
 Main:spareMode1     =  2           ! set parton type: quark (1,2,3) or gluon (21)
 Main:spareParm1     =  20.         ! energy per parton (jet energy) (GeV) 
 !--------------------------------------------------------------------------
+Random:setSeed = true
+Random:seed = 34159265
