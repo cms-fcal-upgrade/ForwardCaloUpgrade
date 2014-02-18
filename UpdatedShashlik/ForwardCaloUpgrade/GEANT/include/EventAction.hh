@@ -81,6 +81,8 @@ private:
    G4int       printModulo;                     
    G4int       evtNbOld;
    G4int       RecVtxOpt;
+   G4double    XOffset;
+   G4double    YOffset;
 
 };
 

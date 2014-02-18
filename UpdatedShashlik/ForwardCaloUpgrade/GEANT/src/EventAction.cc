@@ -47,6 +47,7 @@ void EventAction::BeginOfEventAction(const G4Event* evt)
   nEcalCells   = detCon->GetNbOfEcalCells();
   nHcalCells   = detCon->GetNbOfHcalCells();
 
+
 // initialize dynamic bin arrays
 //-----------------------------
   dEdL     = new G4double[nLtot];
@@ -146,6 +147,13 @@ void EventAction::EndOfEventAction(const G4Event* evt)
   if (RecVtxOpt > 0)
   {  myana -> GrabGenInfo(evt, RecVtxOpt);  }
 
+// fill XYoffsets
+//------------------------------------------
+  XOffset = detCon->GetECalXOffset();
+  YOffset = detCon->GetECalYOffset();
+  myana-> XYoffsets( XOffset, YOffset );
+
+  
 //print per event (modulo n)
 //---------------------------
   G4int evtNb = evt->GetEventID();

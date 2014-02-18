@@ -63,6 +63,7 @@ HistoManager::~HistoManager()
   delete tree_hcell;	
   delete tree_genvtx;   
   delete tree_genpart;
+  delete tree_xyoffsets;
 	
   delete histoMessenger;
 }
@@ -130,6 +131,9 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   tree_genpart->Branch("genpart_vtx", genpart_vtx,"genpart_vtx[n_genpart]/I");
   tree_genpart->Branch("genpart_id", genpart_id,"genpart_id[n_genpart]/I");    
 
+  tree_xyoffsets = new TTree("XYOffsets", "user defined xy offset");
+  tree_xyoffsets->Branch("x_offset", &x_offset, "x_offset/D");
+  tree_xyoffsets->Branch("y_offset", &y_offset, "y_offset/D");
 	
 
 // Ecal transverse shower profile  in [mm]
@@ -227,10 +231,11 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   tree_tot = 0;
   tree_vec = 0;
   tree_ran = 0;
-  tree_cell= 0;
-  tree_hcell= 0;
-  tree_genvtx=0;
-  tree_genpart=0;
+  tree_cell = 0;
+  tree_hcell = 0;
+  tree_genvtx = 0;
+  tree_genpart = 0;
+  tree_xyoffsets = 0;
 
   return;
 }
@@ -253,6 +258,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
   tree_hcell-> Write();
   tree_genvtx->Write();
   tree_genpart->Write();
+  tree_xyoffsets->Write();
 	
   file-> Close();
   delete file;
@@ -533,6 +539,16 @@ void HistoManager::GrabGenInfo(const G4Event* evt, G4int option)
   { RecVtxOption = Value;}
 
 
+//Record XY offsets
+//---------------------------------------------
+void HistoManager::XYoffsets( G4double XOFFSET, G4double YOFFSET)
+{
+  x_offset = XOFFSET;
+  y_offset = YOFFSET;
+  
+  tree_xyoffsets->Fill();
+
+}
 
 
 // Set binning for Ecal transverse shower profile

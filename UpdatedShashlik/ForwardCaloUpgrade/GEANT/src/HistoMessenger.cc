@@ -90,6 +90,7 @@ HistoMessenger::HistoMessenger(HistoManager * man)
   RecVtxCmd = new G4UIcmdWithAnInteger("/test/histo/setRecVtx",this);
   RecVtxCmd->SetGuidance("Set vertex recording option");
   RecVtxCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+ 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -143,8 +144,8 @@ void HistoMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
    { histoManager->SetJobRunNumber(RunNumberCmd->GetNewIntValue(newValue));}
   
   if( command == RecVtxCmd )
-    { histoManager->SetRecVtxOption(RecVtxCmd->GetNewIntValue(newValue));}
-  
+   { histoManager->SetRecVtxOption(RecVtxCmd->GetNewIntValue(newValue));}
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

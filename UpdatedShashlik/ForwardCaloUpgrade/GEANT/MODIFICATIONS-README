@@ -19,9 +19,9 @@ is handled.
 
 The added capabilities to the Geant Ntuple are:
 
-- Moveable X,Y position of the ECells.
+- Moveable X,Y position of the Ecal cells.
 
-- Increased the number of Cells up to 50x50
+- Increased the number of Cells up to 100x100
 	-> This aided in the recording of jets.
 
 - The addition of a Beampipe hole option.
@@ -32,28 +32,33 @@ The added capabilities to the Geant Ntuple are:
 	   with # = 0 -> off, # = 1 -> on.
 
 - Added HCells.
-	-> records the same information as ECells, only for the HCal.
+	-> similar to ECells, only for the HCal.
 	-> the XY position of HCells is the same as ECells
+
+- Projective Geometry.
+	-> Hcal and Ecal cells are projected 1m behind primary interaction point
 
 - Recording of Generator Level Information.
 	-> takes and records information from the input HepMC ascii into
 	   trees in the output Ntuple.
 	-> this information includes:
 	    -> For the stored vertices:
-			-> The vertex barcodes.
-			-> vertex x,y,z position.
+		-> The vertex barcodes.
+		-> vertex x,y,z position.
 	        -> The number of vertices stored in each event.
 		-> For the stored particles:
             -> The vertex barcode that it came from.
 	        -> The particle's Px, Py, Pz.
-		    -> The particle's PDG code.
+		-> The particle's PDG code.
 	        -> The number of particles stored in each event.
 	-> The recording has 3 options that are given in the input file
        as /test/histo/setRecVtx #
 		-> # = 0 -> Nothing is recorded
 		-> # = 1 -> Only stored "primaries" are recorded (the verticies with 
-           barcodes > -1000000 i.e those from the pre-pilemc signal file)
+                       barcodes > -1000000 i.e those from the pre-pilemc signal file)
 		-> # = 2 -> All stored vertices and associated particles are recorded
+
+- Recorded the XY offset of the ECells and HCells (in mm)
 
 Note: I used the term "stored" because geant does not keep all of the
 vertices and particles at the end of a run. It only keeps particles that

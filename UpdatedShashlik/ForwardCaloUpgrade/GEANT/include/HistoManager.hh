@@ -65,6 +65,8 @@ class HistoManager : public G4UserEventAction
  
     void SetRecVtxOption(G4int);
 
+    void XYoffsets(G4double, G4double);
+
     G4int       GetnLtot()           {return nLtot;};
     G4int       GetnRtot()           {return nRtot;};
     G4double    GetdLbin()           {return dLbin;};
@@ -93,12 +95,10 @@ class HistoManager : public G4UserEventAction
     TTree*    tree_vec;
     TTree*    tree_ran;
     TTree*    tree_cell;
-    TTree*    tree_hcell;
-	
-	////////////////////////////////////////////////////////AKA
-	
+    TTree*    tree_hcell;	
 	TTree*    tree_genvtx;
 	TTree*    tree_genpart;
+    TTree*    tree_xyoffsets;
 	
     G4int     n_genvtx;
     G4int     n_genpart;
@@ -107,15 +107,14 @@ class HistoManager : public G4UserEventAction
 	
     G4int     genvtx_vtx[100000];
 
-  
-
-  G4double  genpart_px[1000000], genpart_py[1000000], genpart_pz[1000000], genpart_E[1000000];
+    G4double  genpart_px[1000000], genpart_py[1000000], genpart_pz[1000000], 
+              genpart_E[1000000];
 	
 	G4int	  genpart_id[1000000], genpart_vtx[1000000];
-	
-	
-	////////////////////////////////////////////////////////AKA
-
+		
+    G4double  x_offset;
+    G4double  y_offset;
+ 
     G4double  EdepEcalRad, EdepEcalLong;
     G4double  EdepAbsRad, EdepAbsLong;
     G4double  EdepHcalRad, EdepHcalLong;

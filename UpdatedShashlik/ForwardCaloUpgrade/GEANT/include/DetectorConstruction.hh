@@ -107,6 +107,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double           middleEcal;
      G4double		middleCables;
      G4int              NbOfEcalCells;
+     G4double           SqrtNbOfEcalCells;
      G4double           EcalCellSize;
      G4int              NbOfHcalCells;
      G4double           HcalCellSize;

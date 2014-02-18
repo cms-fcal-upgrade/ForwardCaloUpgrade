@@ -64,7 +64,8 @@ DetectorConstruction::DetectorConstruction():defaultMaterial(0),
   HcalSensThickness =   3.7*mm;
   NbOfHcalLayers    =  17;
   CalorSizeXY       = 540.0*cm;
-  BeamHoleRadius    =  31.5*cm;
+  BeamHoleRadius1   =  31.5*cm;  // eta=3.0
+  BeamHoleRadius2   =  11.5*cm;  // eta=4.0
   BeamHoleLength    = 1200.0*cm;
 
   LayerThickness = AbsorberThickness + AirGapThickness;
@@ -674,7 +675,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 				((offsetHcal - ZeroWrapThick) - (EcalCalorThickness + G10plateThickness))/2.;
 								   
   physiCables = new G4PVPlacement(0,                     
-                    G4ThreeVector(0.0,0.0, middleCables), 
+                    G4ThreeVector(0.0, 0.0, middleCables), 
                                    logicCables,             
                                   "Cables",             
                                    logicWorld,            
@@ -694,7 +695,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                    "G10plate");
                                      
   physiG10plate = new G4PVPlacement(0,
-                      G4ThreeVector(0.0,0.0,offsetEcal + EcalCalorThickness + G10plateThickness/2.),
+                      G4ThreeVector(0.0, 0.0, offsetEcal + EcalCalorThickness + G10plateThickness/2.),
                                      logicG10plate,  
                                     "G10plate",
                                      logicWorld,
@@ -718,7 +719,7 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                        
       physiEcal = new G4PVPlacement(0,                
 //                                    G4ThreeVector(-70.8*cm, 0.0, 0.0),        
-                                    G4ThreeVector(0.0,0.0, middleEcal),        
+                                    G4ThreeVector(0.0, 0.0, middleEcal),        
                                     logicEcal,       
                                     "Ecal",          
                                     logicWorld,       
@@ -791,6 +792,26 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                       0);                     
     }
 
+// Ecal zero layer
+//-------------------------
+  solEcalZero=0; logEcalZero=0; phyEcalZero=0;
+  if (NbOfEcalLayers>1 && EcalSensThickness > 0.)
+    { solEcalZero = new G4Box("EcalZero",
+                        CalorSizeXY/2.,CalorSizeXY/2.,EcalSensThickness/2.);
+
+      logEcalZero = new G4LogicalVolume(solEcalZero,
+                                        EcalSensMaterial,
+                                        EcalSensMaterial->GetName());
+
+      phyEcalZero = new G4PVPlacement(0,
+                        G4ThreeVector(0.,0.,offsetEcal - EcalSensThickness/2.),  
+                                      logEcalZero,
+                                      EcalSensMaterial->GetName(),
+                                      logicWorld,
+                                      false,
+                                      0);
+    }
+
 // Al support 4.5*mm in front of ECAL (at 3.2*cm in front of ECAL)
 //=============================================================
 
@@ -804,13 +825,12 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
                                     "Support");
 
   physiSupport = new G4PVPlacement(0,
-                     G4ThreeVector(0.0,0.0, offsetEcal - 3.2*cm),
+                     G4ThreeVector(0.0, 0.0, offsetEcal - 3.2*cm),
                                     logicSupport,
                                    "Support",
                                     logicWorld,
                                     false,
                                     0);
-  
 
   ////Changed PreShower(SE) Material to defaultMaterial in order to effectively remove it by changing it to a vacuum, or air, depending on default. To change back, uncomment the original material, and delete or comment "defaultMaterial" under "G4LogicalVolume"".
 // // Aluminium part of SE 27.2*mm in front of Ecal (at -16.5*cm from ECAL front)
@@ -867,11 +887,19 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 
   if ( BeamholeOption > 0 ){
 
-  solidBeamHole=0; logicBeamHole=0; physiBeamHole=0;
+    solidBeamHole=0; logicBeamHole=0; physiBeamHole=0;
   
   
-    { solidBeamHole = new G4Tubs("BeamHole",
-                        0.0, BeamHoleRadius, BeamHoleLength, 0.0, 2*pi);
+    { 
+      double Radius = BeamHoleRadius1;
+      if (BeamholeOption == 1) {
+        Radius = BeamHoleRadius1;
+      } else if (BeamholeOption == 2) {
+        Radius = BeamHoleRadius2;
+      }
+        
+      solidBeamHole = new G4Tubs("BeamHole",
+                        0.0, Radius, BeamHoleLength, 0.0, 2*pi);
 
      
       logicBeamHole = new G4LogicalVolume(solidBeamHole,                 
@@ -982,7 +1010,8 @@ G4VPhysicalVolume* DetectorConstruction::ConstructCalorimeter()
 
  {G4VisAttributes* atb= new G4VisAttributes(G4Colour(1.0,1.0,0.5));
   atb->SetForceSolid(true);  
-  logEcalSens->SetVisAttributes(atb);} 
+  logEcalSens->SetVisAttributes(atb);
+  if(logEcalZero) logEcalZero->SetVisAttributes(atb);}
 
  {G4VisAttributes* atb= new G4VisAttributes(G4Colour(0.0,0.0,1.0));
   atb->SetForceSolid(true);  
@@ -1202,10 +1231,10 @@ void DetectorConstruction::SetECalXOffset(G4double val)
 void DetectorConstruction::SetECalYOffset(G4double val)
 {
   offsetECalY = val;
-  if (fabs(offsetECalY) > 300.0)
+  if (fabs(offsetECalY) > 300.0*cm)
     { G4cout << "\n ===> Stop from DetectorConstruction::SetECalYOffset(): " 
              << "\n offsetECalY = " << offsetECalY
-             << " greater than 300.0. "
+             << " greater than 300.0 cm."
              << "\n Check value and units of offsetECalY. " 
              << G4endl;
       exit(1);
