@@ -1,0 +1,159 @@
+==================================================
+HF Upgrade Standalone Simulation
+==================================================
+
+The program compiled from this source code testBeam.cc and many
+of the classes defined in this package are modifications of the
+Geant4 novice example N06.  The geometry defined in the HFDetectorConstruction
+class is a hexagonal stack of tungsten rods with quartz fibres in the 
+spaces running the length of the module.  The size of the 
+tungsten rod, the width of the structure, and the fiber refractive
+indices can all be given through macro files parsed by the executable's
+UI.  The testBeam.cc main program also parses some command line options
+which can define the output ROOT file name and hadronic physics list.
+
+
+Class Descriptions
+--------------------------------------------------
+
+HFDetectorConstruction
+..................................................
+
+This class defines the detector geometry and materials.
+It can also interface to the HFStackingAction class in order
+to pass the fiber refractive indices.  
+
+HFMessenger
+..................................................
+
+The messenger classes define commands understood why a macro
+file is parsed.  This messenger passes all of its commands to 
+the HFDetectorConstruction which can then dessiminate what
+it needs to other clases.
+
+HFDataFormat
+..................................................
+
+This class defines and encapsulate the knowledge of the output
+ROOT file and its layout.  It is designed to support
+mulitple trees for various types of information.
+
+G4EmUserPhysics
+..................................................
+
+This class defines the Cherenkov and scintillation processes 
+as a module to 
+plugin to the hadronic physics list.  The HFPhysicsList 
+class is a left-over class which will define only EM
+processes and replace the hadronic physics lists.  That
+class is left in the package for the purposes of testing only.
+Any modifications to the setup of the Cherenkov and scintillation
+processes need to go into the G4EmuserPhysics class.
+
+HFStackingAction
+..................................................
+
+Whenever a new track is created, it is passed to the user
+stacking action (like HFStackingAction).  This class
+records optical photons if the have a wavelength above some
+minimal cutoff and they are with in the fiber's numerical
+apperature.  This class also records momentum and energy
+of particles in the shower.
+
+
+
+
+
+
+==================================================
+GEANT4 example N06 README
+===================================================
+$Id: README,v 1.1 2013/03/13 10:34:11 cowden Exp $
+-------------------------------------------------------------------
+
+     =========================================================
+     Geant4 - an Object-Oriented Toolkit for Simulation in HEP
+     =========================================================
+
+                            ExampleN06
+                            ----------
+
+This example presently illustrates the following basic concepts, and in
+particular (indicated with ***), how to use G4 for optical photon
+generation and transport. An extended example of what is possible
+in Geant4 with optical photons can be found at
+examples/extended/optical/LXe. 
+
+main()
+------
+
+ ==> define Random Number Engine and initial seed
+
+G4VUserPhysicsList 
+------------------
+
+ ==> define particles; including *** G4OpticalPhoton     ***
+     define processes; including *** G4Cerenkov          ***
+                                 *** G4Scintillation     ***
+                                 *** G4OpAbsorption      ***
+                                 *** G4OpRayleigh        ***
+                                 *** G4OpBoundaryProcess ***
+
+G4VUserDetectorConstruction 
+---------------------------
+
+ ==> define material: Air and Water
+     define simple G4box geometry
+     *** add G4MaterialPropertiesTable to G4Material       ***
+     *** define G4LogicalSurface(s)                        ***
+     *** define G4OpticalSurface                           ***
+     *** add G4MaterialPropertiesTable to G4OpticalSurface ***
+
+G4VUserPrimaryGeneratorAction
+-----------------------------
+
+ ==> Use G4ParticleGun to shoot a charge particle into a Cerenkov radiator
+ 
+ ==> A messenger command allows to define interactivly the polarization of an
+     primary optical photon (see for instance optPhoton.mac)
+     
+G4UserRunAction 
+---------------
+
+==> define G4Timer (start/stop)
+    set verbose levels
+
+G4UserStackingAction
+--------------------
+
+==> show how to count the number of secondary particles in an event
+
+Visualisation
+-------------
+ 
+ The Visualization Manager is set in the main().
+ The initialisation of the drawing is done via a set of /vis/ commands
+ in the macro vis.mac. This macro is automatically read from 
+ the main in case of interactive running mode.
+ 	
+ The detector has a default view which is a longitudinal view of the tank. 	
+ The tracks are drawn at the end of event, and erased at the end of run.
+ 
+ How to start
+ ------------
+ 
+ - compile and link to generate an executable
+ 	% cd N06
+ 	% gmake
+ 		
+ - execute N06 in 'batch' mode from macro files
+ 	% exampleN06   exampleN06.in
+ 		
+ - execute N06 in 'interactive mode' with visualization
+ 	% exampleN06
+ 	....
+ 	Idle> type your commands. For instance:
+ 	Idle> /control/execute optPhoton.mac
+ 	....
+ 	Idle> exit
+ 

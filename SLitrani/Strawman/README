@@ -1,0 +1,15 @@
+
+/////REQUIREMENTS: SLitrani to be set up //////////
+ 
+arguments:                                                                                                                                                           
+nphot : number of photons                                                                                                                                            
+draw : turns SLitrani display on or off                                                                                                                              
+layer : chooses the layer in which to generate photons                                                                                                               
+nlayers : sets the number of absorbing layers (there is one extra sensitive layer)                                                                                   
+so, for nlayers = 28 (default) there are sensitive layers with numbers 1 to 29                                                                                       
+the code outputs a few values related to photon efficiency into a root tree                                                                                          
+so examinations of multiple layers can be put together into a tree by using hadd on the generated files                                                              
+
+how to run:                                                                                                                                                          
+SLitrani 'shashlik_dual_senswrap.C(1e5,0,15)'                                                                                                                        
+

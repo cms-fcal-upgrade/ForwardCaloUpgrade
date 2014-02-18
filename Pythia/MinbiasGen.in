@@ -1,0 +1,17 @@
+! File: JetsGen.in
+! This file contains commands to be read in for a Pythia8 run. 
+! Lines not beginning with a letter or digit are comments.
+! Names are case-insensitive  -  but spellings-sensitive!
+! The changes here are illustrative, not always physics-motivated.
+
+! 1) Settings that will be used in a main program.
+!-------------------------------------------------
+Main:numberOfEvents = 30000           ! number of events to generate
+Main:numberToList = 3              ! number of events to list
+Main:timesAllowErrors = 3          ! abort run after this many flawed events
+
+! 2) Settings related to input parameters
+!-------------------------------------------
+Main:spareMode1     =  2           ! set parton type: quark (1,2,3) or gluon (21)
+Main:spareParm1     =  20.         ! energy per parton (jet energy) (GeV) 
+!--------------------------------------------------------------------------

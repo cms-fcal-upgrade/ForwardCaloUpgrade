@@ -1,0 +1,6 @@
+TODO list of technical tasks
+------------------------
+- PrimaryAction update
+|\- update the event generation to a more realistic beam
+| | Allow for wider angles of incoming particles
+| | and interface to event generator to study jets.  

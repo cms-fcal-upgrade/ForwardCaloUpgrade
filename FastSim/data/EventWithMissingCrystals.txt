@@ -1,0 +1,490 @@
+ic = 0 Entrance xp = 29.84 69.22
+ corners[0] 29.82 77.14
+ corners[1] 32.67 77.14
+ corners[2] 32.70 74.32
+ corners[3] 29.85 74.32
+ic = 1 Entrance xp = 29.71 68.67
+ corners[0] 29.73 70.84
+ corners[1] 32.58 70.84
+ corners[2] 32.60 68.02
+ corners[3] 29.75 68.02
+ic = 2 Entrance xp = 29.78 69.00
+ corners[0] 26.63 77.14
+ corners[1] 29.48 77.13
+ corners[2] 29.50 74.31
+ corners[3] 26.64 74.32
+ic = 3 Entrance xp = 29.71 68.68
+ corners[0] 29.70 73.73
+ corners[1] 32.55 73.73
+ corners[2] 32.58 70.91
+ corners[3] 29.73 70.91
+ic = 4 Entrance xp = 29.71 68.66
+ corners[0] 29.75 67.96
+ corners[1] 32.60 67.96
+ corners[2] 32.63 65.13
+ corners[3] 29.78 65.13
+ic = 5 Entrance xp = 29.78 68.99
+ corners[0] 23.72 77.14
+ corners[1] 26.57 77.13
+ corners[2] 26.59 74.31
+ corners[3] 23.73 74.32
+ic = 6 Entrance xp = 29.66 68.44
+ corners[0] 26.58 70.85
+ corners[1] 29.43 70.84
+ corners[2] 29.45 68.01
+ corners[3] 26.60 68.02
+ic = 7 Entrance xp = 29.84 69.23
+ corners[0] 32.73 77.14
+ corners[1] 35.58 77.14
+ corners[2] 35.61 74.32
+ corners[3] 32.76 74.32
+ic = 8 Entrance xp = 29.66 68.46
+ corners[0] 26.57 73.73
+ corners[1] 29.42 73.72
+ corners[2] 29.44 70.90
+ corners[3] 26.58 70.91
+ic = 9 Entrance xp = 29.66 68.43
+ corners[0] 26.59 67.96
+ corners[1] 29.44 67.95
+ corners[2] 29.46 65.12
+ corners[3] 26.61 65.13
+ic = 10 Entrance xp = 29.66 68.43
+ corners[0] 23.67 70.85
+ corners[1] 26.52 70.84
+ corners[2] 26.54 68.01
+ corners[3] 23.68 68.02
+ic = 11 Entrance xp = 29.71 68.67
+ corners[0] 32.63 70.84
+ corners[1] 35.48 70.84
+ corners[2] 35.51 68.02
+ corners[3] 32.66 68.02
+ic = 12 Entrance xp = 29.66 68.45
+ corners[0] 23.66 73.73
+ corners[1] 26.51 73.73
+ corners[2] 26.52 70.90
+ corners[3] 23.67 70.91
+ic = 13 Entrance xp = 29.65 68.42
+ corners[0] 23.68 67.96
+ corners[1] 26.53 67.95
+ corners[2] 26.55 65.12
+ corners[3] 23.69 65.13
+ic = 14 Entrance xp = 29.72 68.69
+ corners[0] 32.61 73.73
+ corners[1] 35.46 73.73
+ corners[2] 35.48 70.91
+ corners[3] 32.63 70.91
+ic = 15 Entrance xp = 29.84 69.24
+ corners[0] 29.79 80.01
+ corners[1] 32.64 80.01
+ corners[2] 32.67 77.19
+ corners[3] 29.82 77.19
+ic = 16 Entrance xp = 29.71 68.66
+ corners[0] 32.66 67.96
+ corners[1] 35.51 67.96
+ corners[2] 35.53 65.13
+ corners[3] 32.68 65.13
+ic = 17 Entrance xp = 29.78 68.99
+ corners[0] 20.81 77.14
+ corners[1] 23.66 77.13
+ corners[2] 23.67 74.31
+ corners[3] 20.82 74.32
+ic = 18 Entrance xp = 29.71 68.66
+ corners[0] 29.78 65.07
+ corners[1] 32.63 65.07
+ corners[2] 32.65 62.24
+ corners[3] 29.80 62.24
+ic = 19 Entrance xp = 29.79 69.01
+ corners[0] 26.61 80.01
+ corners[1] 29.47 80.00
+ corners[2] 29.48 77.18
+ corners[3] 26.63 77.20
+ic = 20 Entrance xp = 29.66 68.43
+ corners[0] 26.61 65.07
+ corners[1] 29.46 65.06
+ corners[2] 29.47 62.23
+ corners[3] 26.62 62.24
+ic = 21 Entrance xp = 29.66 68.43
+ corners[0] 20.76 70.85
+ corners[1] 23.61 70.84
+ corners[2] 23.63 68.01
+ corners[3] 20.77 68.02
+ic = 22 Entrance xp = 29.79 69.00
+ corners[0] 23.70 80.01
+ corners[1] 26.55 80.01
+ corners[2] 26.57 77.19
+ corners[3] 23.72 77.19
+ic = 23 Entrance xp = 29.66 68.45
+ corners[0] 20.75 73.73
+ corners[1] 23.60 73.73
+ corners[2] 23.61 70.90
+ corners[3] 20.76 70.91
+ic = 24 Entrance xp = 29.65 68.42
+ corners[0] 23.69 65.07
+ corners[1] 26.55 65.06
+ corners[2] 26.56 62.23
+ corners[3] 23.71 62.24
+ic = 25 Entrance xp = 29.65 68.42
+ corners[0] 20.77 67.96
+ corners[1] 23.62 67.95
+ corners[2] 23.64 65.12
+ corners[3] 20.78 65.13
+ic = 26 Entrance xp = 29.84 69.24
+ corners[0] 32.70 80.01
+ corners[1] 35.55 80.01
+ corners[2] 35.58 77.19
+ corners[3] 32.73 77.19
+ic = 27 Entrance xp = 29.84 69.24
+ corners[0] 35.63 77.14
+ corners[1] 38.48 77.13
+ corners[2] 38.51 74.31
+ corners[3] 35.66 74.32
+ic = 28 Entrance xp = 29.71 68.66
+ corners[0] 32.68 65.07
+ corners[1] 35.53 65.07
+ corners[2] 35.56 62.24
+ corners[3] 32.71 62.24
+ic = 29 Entrance xp = 29.71 68.68
+ corners[0] 35.54 70.85
+ corners[1] 38.38 70.84
+ corners[2] 38.41 68.01
+ corners[3] 35.56 68.02
+ic = 30 Entrance xp = 29.72 68.70
+ corners[0] 35.51 73.73
+ corners[1] 38.36 73.73
+ corners[2] 38.39 70.90
+ corners[3] 35.54 70.91
+ic = 31 Entrance xp = 29.71 68.68
+ corners[0] 35.56 67.96
+ corners[1] 38.41 67.95
+ corners[2] 38.44 65.12
+ corners[3] 35.59 65.13
+ic = 32 Entrance xp = 29.79 69.00
+ corners[0] 20.79 80.01
+ corners[1] 23.64 80.01
+ corners[2] 23.66 77.19
+ corners[3] 20.81 77.19
+ic = 33 Entrance xp = 29.78 68.99
+ corners[0] 17.90 77.14
+ corners[1] 20.75 77.14
+ corners[2] 20.76 74.32
+ corners[3] 17.91 74.32
+ic = 34 Entrance xp = 29.71 68.67
+ corners[0] 29.80 62.18
+ corners[1] 32.65 62.18
+ corners[2] 32.68 59.35
+ corners[3] 29.82 59.35
+ic = 35 Entrance xp = 29.65 68.42
+ corners[0] 20.78 65.07
+ corners[1] 23.64 65.07
+ corners[2] 23.65 62.23
+ corners[3] 20.80 62.24
+ic = 36 Entrance xp = 29.66 68.44
+ corners[0] 26.62 62.18
+ corners[1] 29.47 62.18
+ corners[2] 29.48 59.34
+ corners[3] 26.63 59.35
+ic = 37 Entrance xp = 29.66 68.44
+ corners[0] 17.85 70.84
+ corners[1] 20.70 70.84
+ corners[2] 20.72 68.02
+ corners[3] 17.86 68.02
+ic = 38 Entrance xp = 29.66 68.45
+ corners[0] 17.83 73.73
+ corners[1] 20.69 73.73
+ corners[2] 20.70 70.91
+ corners[3] 17.85 70.91
+ic = 39 Entrance xp = 29.66 68.43
+ corners[0] 23.71 62.18
+ corners[1] 26.56 62.18
+ corners[2] 26.57 59.34
+ corners[3] 23.72 59.35
+ic = 40 Entrance xp = 29.66 68.43
+ corners[0] 17.86 67.96
+ corners[1] 20.71 67.96
+ corners[2] 20.73 65.13
+ corners[3] 17.87 65.13
+ic = 41 Entrance xp = 29.84 69.25
+ corners[0] 35.60 80.01
+ corners[1] 38.45 80.01
+ corners[2] 38.48 77.19
+ corners[3] 35.63 77.19
+ic = 42 Entrance xp = 29.71 68.68
+ corners[0] 35.59 65.07
+ corners[1] 38.44 65.07
+ corners[2] 38.46 62.23
+ corners[3] 35.61 62.24
+ic = 43 Entrance xp = 29.71 68.67
+ corners[0] 32.71 62.18
+ corners[1] 35.56 62.18
+ corners[2] 35.58 59.35
+ corners[3] 32.73 59.35
+ic = 44 Entrance xp = 29.79 69.01
+ corners[0] 17.88 80.01
+ corners[1] 20.73 80.01
+ corners[2] 20.75 77.19
+ corners[3] 17.90 77.19
+ic = 45 Entrance xp = 29.66 68.43
+ corners[0] 20.80 62.18
+ corners[1] 23.65 62.18
+ corners[2] 23.66 59.35
+ corners[3] 20.81 59.35
+ic = 46 Entrance xp = 29.66 68.43
+ corners[0] 17.87 65.07
+ corners[1] 20.73 65.07
+ corners[2] 20.74 62.24
+ corners[3] 17.88 62.24
+ic = 47 Entrance xp = 29.71 68.69
+ corners[0] 35.61 62.18
+ corners[1] 38.46 62.18
+ corners[2] 38.48 59.35
+ corners[3] 35.64 59.35
+ic = 48 Entrance xp = 29.66 68.44
+ corners[0] 17.88 62.18
+ corners[1] 20.74 62.18
+ corners[2] 20.75 59.35
+ corners[3] 17.90 59.35
+ic = 49 Entrance xp = 30.21 70.89
+ corners[0] 27.22 72.50
+ corners[1] 30.14 72.49
+ corners[2] 30.15 69.59
+ corners[3] 27.23 69.60
+ic = 50 Entrance xp = 30.21 70.89
+ corners[0] 27.23 69.54
+ corners[1] 30.15 69.53
+ corners[2] 30.17 66.63
+ corners[3] 27.24 66.64
+ic = 51 Entrance xp = 30.22 70.91
+ corners[0] 27.20 75.45
+ corners[1] 30.13 75.44
+ corners[2] 30.14 72.55
+ corners[3] 27.22 72.56
+ic = 52 Entrance xp = 30.21 70.89
+ corners[0] 24.24 72.50
+ corners[1] 27.16 72.49
+ corners[2] 27.17 69.60
+ corners[3] 24.25 69.60
+ic = 53 Entrance xp = 30.27 71.12
+ corners[0] 30.44 72.50
+ corners[1] 33.36 72.50
+ corners[2] 33.39 69.60
+ corners[3] 30.47 69.60
+ic = 54 Entrance xp = 30.21 70.88
+ corners[0] 24.25 69.54
+ corners[1] 27.17 69.53
+ corners[2] 27.19 66.64
+ corners[3] 24.26 66.64
+ic = 55 Entrance xp = 30.22 70.90
+ corners[0] 24.22 75.45
+ corners[1] 27.15 75.45
+ corners[2] 27.16 72.55
+ corners[3] 24.24 72.56
+ic = 56 Entrance xp = 30.27 71.14
+ corners[0] 30.42 75.45
+ corners[1] 33.34 75.45
+ corners[2] 33.37 72.56
+ corners[3] 30.45 72.56
+ic = 57 Entrance xp = 30.26 71.12
+ corners[0] 30.47 69.54
+ corners[1] 33.39 69.54
+ corners[2] 33.42 66.64
+ corners[3] 30.50 66.64
+ic = 58 Entrance xp = 30.21 70.89
+ corners[0] 27.24 66.59
+ corners[1] 30.16 66.58
+ corners[2] 30.18 63.68
+ corners[3] 27.26 63.69
+ic = 59 Entrance xp = 30.21 70.89
+ corners[0] 21.26 72.50
+ corners[1] 24.18 72.49
+ corners[2] 24.19 69.60
+ corners[3] 21.27 69.60
+ic = 60 Entrance xp = 30.27 71.13
+ corners[0] 33.42 72.50
+ corners[1] 36.34 72.49
+ corners[2] 36.37 69.60
+ corners[3] 33.45 69.60
+ic = 61 Entrance xp = 30.34 71.45
+ corners[0] 27.27 78.93
+ corners[1] 30.19 78.92
+ corners[2] 30.20 76.03
+ corners[3] 27.28 76.04
+ic = 62 Entrance xp = 30.21 70.88
+ corners[0] 24.26 66.59
+ corners[1] 27.18 66.58
+ corners[2] 27.20 63.68
+ corners[3] 24.28 63.69
+ic = 63 Entrance xp = 30.22 70.90
+ corners[0] 21.24 75.45
+ corners[1] 24.17 75.45
+ corners[2] 24.18 72.56
+ corners[3] 21.26 72.56
+ic = 64 Entrance xp = 30.21 70.88
+ corners[0] 21.27 69.54
+ corners[1] 24.19 69.54
+ corners[2] 24.21 66.64
+ corners[3] 21.28 66.64
+ic = 65 Entrance xp = 30.27 71.14
+ corners[0] 33.39 75.45
+ corners[1] 36.31 75.45
+ corners[2] 36.34 72.56
+ corners[3] 33.42 72.56
+ic = 66 Entrance xp = 30.27 71.12
+ corners[0] 30.50 66.59
+ corners[1] 33.42 66.59
+ corners[2] 33.44 63.69
+ corners[3] 30.52 63.69
+ic = 67 Entrance xp = 30.27 71.12
+ corners[0] 33.44 69.54
+ corners[1] 36.36 69.54
+ corners[2] 36.39 66.64
+ corners[3] 33.47 66.64
+ic = 68 Entrance xp = 30.34 71.44
+ corners[0] 24.29 78.93
+ corners[1] 27.21 78.92
+ corners[2] 27.22 76.03
+ corners[3] 24.30 76.04
+ic = 69 Entrance xp = 30.39 71.68
+ corners[0] 30.54 78.93
+ corners[1] 33.46 78.93
+ corners[2] 33.49 76.04
+ corners[3] 30.57 76.04
+ic = 70 Entrance xp = 30.21 70.88
+ corners[0] 21.28 66.59
+ corners[1] 24.21 66.58
+ corners[2] 24.22 63.68
+ corners[3] 21.30 63.69
+ic = 71 Entrance xp = 30.27 71.12
+ corners[0] 33.47 66.59
+ corners[1] 36.39 66.58
+ corners[2] 36.41 63.68
+ corners[3] 33.50 63.69
+ic = 72 Entrance xp = 30.34 71.44
+ corners[0] 21.31 78.93
+ corners[1] 24.23 78.92
+ corners[2] 24.24 76.03
+ corners[3] 21.32 76.04
+ic = 73 Entrance xp = 30.22 70.90
+ corners[0] 27.26 63.63
+ corners[1] 30.18 63.62
+ corners[2] 30.19 60.72
+ corners[3] 27.27 60.73
+ic = 74 Entrance xp = 30.21 70.89
+ corners[0] 18.28 72.50
+ corners[1] 21.20 72.49
+ corners[2] 21.21 69.60
+ corners[3] 18.29 69.60
+ic = 75 Entrance xp = 30.27 71.14
+ corners[0] 36.39 72.50
+ corners[1] 39.31 72.49
+ corners[2] 39.34 69.60
+ corners[3] 36.42 69.60
+ic = 76 Entrance xp = 30.39 71.68
+ corners[0] 33.52 78.93
+ corners[1] 36.43 78.93
+ corners[2] 36.47 76.04
+ corners[3] 33.55 76.04
+ic = 77 Entrance xp = 30.21 70.89
+ corners[0] 24.28 63.63
+ corners[1] 27.20 63.62
+ corners[2] 27.21 60.72
+ corners[3] 24.29 60.73
+ic = 78 Entrance xp = 30.21 70.89
+ corners[0] 18.29 69.54
+ corners[1] 21.21 69.54
+ corners[2] 21.23 66.64
+ corners[3] 18.30 66.64
+ic = 79 Entrance xp = 30.22 70.91
+ corners[0] 18.26 75.45
+ corners[1] 21.19 75.45
+ corners[2] 21.20 72.56
+ corners[3] 18.28 72.56
+ic = 80 Entrance xp = 30.34 71.46
+ corners[0] 27.25 81.87
+ corners[1] 30.17 81.86
+ corners[2] 30.19 78.97
+ corners[3] 27.27 78.98
+ic = 81 Entrance xp = 30.27 71.16
+ corners[0] 36.37 75.45
+ corners[1] 39.29 75.45
+ corners[2] 39.31 72.56
+ corners[3] 36.40 72.56
+ic = 82 Entrance xp = 30.27 71.13
+ corners[0] 30.52 63.63
+ corners[1] 33.44 63.63
+ corners[2] 33.47 60.73
+ corners[3] 30.55 60.73
+ic = 83 Entrance xp = 30.27 71.14
+ corners[0] 36.42 69.54
+ corners[1] 39.34 69.54
+ corners[2] 39.36 66.64
+ corners[3] 36.45 66.64
+ic = 84 Entrance xp = 30.34 71.45
+ corners[0] 24.27 81.87
+ corners[1] 27.19 81.86
+ corners[2] 27.21 78.97
+ corners[3] 24.29 78.98
+ic = 85 Entrance xp = 30.39 71.69
+ corners[0] 30.51 81.87
+ corners[1] 33.43 81.87
+ corners[2] 33.46 78.98
+ corners[3] 30.54 78.98
+ic = 86 Entrance xp = 30.21 70.89
+ corners[0] 21.30 63.63
+ corners[1] 24.22 63.63
+ corners[2] 24.23 60.72
+ corners[3] 21.31 60.73
+ic = 87 Entrance xp = 30.21 70.89
+ corners[0] 18.30 66.59
+ corners[1] 21.23 66.58
+ corners[2] 21.24 63.68
+ corners[3] 18.32 63.69
+ic = 88 Entrance xp = 30.27 71.13
+ corners[0] 33.50 63.63
+ corners[1] 36.41 63.63
+ corners[2] 36.44 60.73
+ corners[3] 33.52 60.73
+ic = 89 Entrance xp = 30.27 71.14
+ corners[0] 36.45 66.59
+ corners[1] 39.36 66.58
+ corners[2] 39.39 63.68
+ corners[3] 36.47 63.69
+ic = 90 Entrance xp = 30.34 71.45
+ corners[0] 18.33 78.93
+ corners[1] 21.25 78.93
+ corners[2] 21.26 76.04
+ corners[3] 18.34 76.04
+ic = 91 Entrance xp = 30.34 71.45
+ corners[0] 21.29 81.87
+ corners[1] 24.21 81.86
+ corners[2] 24.23 78.98
+ corners[3] 21.31 78.98
+ic = 92 Entrance xp = 30.40 71.69
+ corners[0] 33.48 81.87
+ corners[1] 36.40 81.87
+ corners[2] 36.43 78.98
+ corners[3] 33.52 78.98
+ic = 93 Entrance xp = 30.40 71.70
+ corners[0] 36.49 78.93
+ corners[1] 39.41 78.92
+ corners[2] 39.44 76.03
+ corners[3] 36.52 76.04
+ic = 94 Entrance xp = 30.22 70.90
+ corners[0] 18.32 63.63
+ corners[1] 21.24 63.63
+ corners[2] 21.25 60.73
+ corners[3] 18.33 60.73
+ic = 95 Entrance xp = 30.27 71.15
+ corners[0] 36.47 63.63
+ corners[1] 39.39 63.63
+ corners[2] 39.41 60.72
+ corners[3] 36.50 60.73
+ic = 96 Entrance xp = 30.34 71.46
+ corners[0] 18.31 81.87
+ corners[1] 21.23 81.87
+ corners[2] 21.25 78.98
+ corners[3] 18.33 78.98
+ic = 97 Entrance xp = 30.40 71.71
+ corners[0] 36.46 81.87
+ corners[1] 39.38 81.86
+ corners[2] 39.41 78.98
+ corners[3] 36.49 78.98

@@ -1,0 +1,30 @@
+PbLSO
+dp = 0.8
+da = 0.2
+rho_p = 11.34
+rho_a = 7.4
+Zp = 82.
+Za = 56.6
+Ap = 207.2
+Aa = 138.2
+X0p = 6.36
+X0a = 8.52
+RMp = 1.63
+RMa = 2.32
+Lambda_p = 18.3 
+Lambda_a = 21.09
+LumiYield_a = 1610E3
+LightCollection = 0.01
+nonUnif = 0.00
+stochasticResolution = 0.136
+
+
+----- Lead
+#Material:     Lead     density: 11.340 g/cm3   RadL:   5.617 mm   Nucl.Int.Length:  18.275 cm   Imean: 823.000 eV 
+#   --->  Element: Lead ( )   Z = 82.0   N = 207.2   A = 207.20 g/mole  ElmMassFraction: 100.00 %  ElmAbundance 100.00 %
+
+----- LSO  = Lu2_Si_O5    and density 7.41 g/c3m
+#Material:      LSO     density:  7.410 g/cm3   RadL:   1.141 cm   Nucl.Int.Length:  20.893 cm   Imean: 418.807 eV 
+#   --->  Element: Lutecium (Lu)   Z = 71.0   N = 175.0   A = 174.96 g/mole  ElmMassFraction:  76.40 %  ElmAbundance  25.00 %
+#   --->  Element: Silicon (Si)   Z = 14.0   N =  28.1   A =  28.08 g/mole  ElmMassFraction:   6.13 %  ElmAbundance  12.50 %
+#   --->  Element: Oxygen (O)   Z =  8.0   N =  16.0   A =  16.00 g/mole  ElmMassFraction:  17.47 %  ElmAbundance  62.50 %
