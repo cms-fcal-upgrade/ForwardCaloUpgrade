@@ -171,11 +171,11 @@ HFStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 
       if ( vName.contains("fib") &&  lambda > m_lCutLow && isDetected ) {
         gammaCounter++;
-	StackingStruct st(lambda,costh,x,y,depth,t,probTime);
+	StackingStruct st(lambda,trk.costh,trk.cosg,x,y,depth,t,probTime);
         m_df->fillStackingAction(st,fCherenkov);
       } else if ( vName.contains("scsf") &&  lambda > m_lCutLow && isDetected ) { 
         gammaCounter++;
-	StackingStruct st(lambda,costh,x,y,depth,t,probTime);
+	StackingStruct st(lambda,trk.costh,trk.cosg,x,y,depth,t,probTime);
         m_df->fillStackingAction(st,fScintillation);
       } else if ( vName.contains("glass")  ) {
 	// kill tracks created in the glass

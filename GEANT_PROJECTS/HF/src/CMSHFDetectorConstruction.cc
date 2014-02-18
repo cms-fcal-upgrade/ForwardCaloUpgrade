@@ -66,14 +66,11 @@
 CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 :m_isConstructed(false),m_nFib(1.457),m_nClad(1.42)
 ,m_absFib(28.1*m),m_absClad(28.1*m)
-//,m_nSFib(1.59),m_nSClad(1.49)
-,m_nSFib(1.457),m_nSClad(1.42)
-//,m_absSFib(4.*m),m_absSClad(4.*m)
-,m_absSFib(28.1*m),m_absSClad(28.1*m)
+,m_nSFib(1.457)
+,m_absSCore(28.1*m)
 ,m_nGlass(1.517),m_absGlass(.1)
 ,m_Bfield(NULL)
 ,m_stacking(NULL)
-//,m_gun(NULL)
 {
 
   m_expHall_z = 20.0*m;
@@ -94,16 +91,20 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_xPos = 0.*m;
   m_yPos = 0.*m;
 
-  // This is the full radius including the cladding
-  // since the cladding is a daughter volume of the fiber 
-  m_rCFib = 0.366*mm;
-  m_rSFib = m_rCFib;
 
-  m_rCClad = 0.333*mm;
-  m_rSClad = m_rCClad;
-
+  // radii to describe the quartz fiber geometry (core,cladding,buffer)
+  m_rCFib = 0.333*mm;
+  m_rCClad = 0.366*mm;
   m_rCBuff = 0.4*mm;
-  m_rSBuff = m_rCBuff;
+
+
+  // radii to descrie the doped quartz fibers to caputre the scintillation signal
+  // (doped core, undoped jacket, clad, buffer)
+  m_rSCore = 0.03*mm;
+  m_rSFib = 0.0625*mm;
+  m_rSClad = 0.0725*mm;
+  m_rSBuff = 0.125*mm;
+
 
   m_NfibSeg = 32U;
   m_Nseg = 32U;
@@ -121,10 +122,10 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
   m_buildW = true; // by default this is a W calorimeter
 
   // scintillation properties
-  m_scinFastConst = 1.*ns;
-  m_scinSlowConst = 10.*ns;
+  m_scinFastConst = 55.*ns;
+  m_scinSlowConst = 640.*ns;
   m_scinYield = 8300./MeV;
-  m_scinYieldRatio = 0.8;
+  m_scinYieldRatio = 0.229;
 
   m_checkOverlaps = false;
   m_messenger = new CMSHFDetectorConstructionMessenger(this);
@@ -222,22 +223,18 @@ void CMSHFDetectorConstruction::DefineMaterials()
   m_quartz->AddElement(O,2);
 
   // cladding material
-  m_cladCher = new G4Material("claddingCher",2.2*g/cm3,2);
-  m_cladCher->AddElement(Si,1);
-  m_cladCher->AddElement(O,2);
+  m_clad = new G4Material("cladding",2.2*g/cm3,2);
+  m_clad->AddElement(Si,1);
+  m_clad->AddElement(O,2);
 
   // scsf
-  m_scsf78 = new G4Material("scsf78",2.2*g/cm3,2);
-  m_scsf78->AddElement(Si,1);
-  m_scsf78->AddElement(O,2);
+  m_scinCore = new G4Material("dopedCore",2.2*g/cm3,2);
+  m_scinCore->AddElement(Si,1);
+  m_scinCore->AddElement(O,2);
   // PS 
   //m_scsf78->AddElement(C,8);
   //m_scsf78->AddElement(H,8);
 
-  // cladding material
-  m_cladScin = new G4Material("claddingScin",2.2*g/cm3,2);
-  m_cladScin->AddElement(Si,1);
-  m_cladScin->AddElement(O,2);
   // PMMA 
   //m_cladScin->AddElement(C,5);
   //m_cladScin->AddElement(H,8);
@@ -311,7 +308,7 @@ void CMSHFDetectorConstruction::DefineMaterials()
   G4MaterialPropertiesTable *cProps = new G4MaterialPropertiesTable();
   cProps->AddProperty("RINDEX",energies,cRindex,nEnergies);
   cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
-  m_cladCher->SetMaterialPropertiesTable(cProps);
+  m_clad->SetMaterialPropertiesTable(cProps);
 
   // set up the material properties for the scintillating fibers
   DefineScintillator();
@@ -323,11 +320,11 @@ void CMSHFDetectorConstruction::DefineScintillator()
 {
   const unsigned nScinEnergies = 6;
   G4double scinEnergies[nScinEnergies] = {3.1*eV, 2.9*eV, 2.76*eV, 2.48*eV, 2.25*eV, 2.07*eV };
+
+  // optical properties (specular) for doped core
   G4double scinValues[nScinEnergies] = {0.0, 5.0, 10., 5.0, 2.0, 1.0};
   G4double scinRindex[nScinEnergies] = { m_nSFib, m_nSFib, m_nSFib, m_nSFib, m_nSFib, m_nSFib };
-  G4double scinAbsLength[nScinEnergies] = { m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib, m_absSFib };
-  G4double scinCladRindex[nScinEnergies] = { m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad, m_nSClad };
-  G4double scinCladAbsLength[nScinEnergies] = { m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad, m_absSClad };
+  G4double scinAbsLength[nScinEnergies] = { m_absSCore, m_absSCore, m_absSCore, m_absSCore, m_absSCore, m_absSCore };
 
 
   G4MaterialPropertiesTable *scsfProps = new G4MaterialPropertiesTable();
@@ -346,18 +343,9 @@ void CMSHFDetectorConstruction::DefineScintillator()
   scsfProps->AddConstProperty("SLOWTIMECONSTANT", m_scinSlowConst);
   scsfProps->AddConstProperty("YIELDRATIO", m_scinYieldRatio);
 
-  G4MaterialPropertiesTable *scsfCladProps = new G4MaterialPropertiesTable();
-  scsfCladProps->AddProperty("RINDEX",scinEnergies,scinCladRindex,nScinEnergies);
-  scsfCladProps->AddProperty("ABSLENGTH",scinEnergies,scinCladAbsLength,nScinEnergies);
+  G4MaterialPropertiesTable *oldProps = m_scinCore->GetMaterialPropertiesTable();
 
-  G4MaterialPropertiesTable *oldProps = m_scsf78->GetMaterialPropertiesTable();
-
-  //m_scsf78->SetMaterialPropertiesTable(scsfProps);
-  m_scsf78->SetMaterialPropertiesTable(scsfProps);
-  if ( oldProps ) delete oldProps;
-
-  oldProps = m_cladScin->GetMaterialPropertiesTable();
-  m_cladScin->SetMaterialPropertiesTable(scsfCladProps);
+  m_scinCore->SetMaterialPropertiesTable(scsfProps);
   if ( oldProps ) delete oldProps;
 
 }
@@ -390,14 +378,15 @@ void CMSHFDetectorConstruction::SetupGeometry()
   G4cout << "CMSHF Constructing W block: " << 2.*m_Wdx << "x" << 2.*m_Wdy << "x" << 2.*m_length << G4endl;
   //m_tungBlock = new G4Box("Wblock",m_Wdx,m_Wdy,m_length);
   m_tungBlock = new G4Box("Wblock",m_segWidth/2.,m_segWidth/2.,m_length);
-  //m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCFib,m_length,0.,2.*pi);
-  //m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
-  m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCClad,m_length,0.,2.*pi);
-  m_cladCher_tube = new G4Tubs("cladding",m_rCClad,m_rCFib,m_length,0,2.*pi);
-  m_qFibreScin = new G4Tubs("scsfFibre",0.,m_rSClad,m_length,0.,2.*pi);
-  m_cladScin_tube = new G4Tubs("cladding",m_rSClad,m_rSFib,m_length,0,2.*pi);
-  m_buffCher_tube = new G4Tubs("buffer",m_rCFib,m_rCBuff,m_length,0.,2.*pi);
-  m_buffScin_tube = new G4Tubs("buffer",m_rSFib,m_rSBuff,m_length,0.,2.*pi);
+
+  m_qFibreCher = new G4Tubs("quarzFibre",0.,m_rCFib,m_length,0.,2.*pi);
+  m_cladCher_tube = new G4Tubs("cladding",m_rCFib,m_rCClad,m_length,0,2.*pi);
+  m_buffCher_tube = new G4Tubs("buffer",m_rCClad,m_rCBuff,m_length,0.,2.*pi);
+
+  m_coreScin_tube = new G4Tubs("scsfCore",0.,m_rSCore,m_length,0.,2.*pi);
+  m_qFibreScin = new G4Tubs("scsfFibre",m_rSCore,m_rSFib,m_length,0.,2.*pi);
+  m_cladScin_tube = new G4Tubs("cladding",m_rSFib,m_rSClad,m_length,0,2.*pi);
+  m_buffScin_tube = new G4Tubs("buffer",m_rSClad,m_rSBuff,m_length,0.,2.*pi);
   m_glass_box = new G4Box("Glass",m_segWidth/2.,m_segWidth/2.,1.*cm);
 
   //
@@ -406,6 +395,7 @@ void CMSHFDetectorConstruction::SetupGeometry()
   m_tungBlock_log.resize(segTot);
   m_qFibreCher_log.resize(segTot);
   m_cladCher_log.resize(segTot);
+  m_coreScin_log.resize(segTot);
   m_qFibreScin_log.resize(segTot);
   m_cladScin_log.resize(segTot);
   m_buffCher_log.resize(segTot);
@@ -421,16 +411,20 @@ void CMSHFDetectorConstruction::SetupGeometry()
     m_qFibreCher_log[i] = new G4LogicalVolume(m_qFibreCher,m_quartz,"quartzFibreLog",0,0,0);
   
     // Cladding on fibre
-    m_cladCher_log[i] = new G4LogicalVolume(m_cladCher_tube,m_cladCher,"claddingCher",0,0,0);
+    m_cladCher_log[i] = new G4LogicalVolume(m_cladCher_tube,m_clad,"claddingCher",0,0,0);
 
     // buffer on fibre
     m_buffCher_log[i] = new G4LogicalVolume(m_buffCher_tube,m_buffer,"bufferCher",0,0,0);
-  
+
+
+    // doped fiber core
+    m_coreScin_log[i] = new G4LogicalVolume(m_coreScin_tube,m_scinCore,"scinCoreLog",0,0,0);
+
     // Scintillating scsf-78
-    m_qFibreScin_log[i] = new G4LogicalVolume(m_qFibreScin,m_scsf78,"scsf78FibreLog",0,0,0);
+    m_qFibreScin_log[i] = new G4LogicalVolume(m_qFibreScin,m_quartz,"scinJacketLog",0,0,0);
   
     // Cladding on fibre
-    m_cladScin_log[i] = new G4LogicalVolume(m_cladScin_tube,m_cladScin,"claddingScin",0,0,0);
+    m_cladScin_log[i] = new G4LogicalVolume(m_cladScin_tube,m_clad,"claddingScin",0,0,0);
  
     // buffer on fibre
     m_buffScin_log[i] = new G4LogicalVolume(m_buffScin_tube,m_buffer,"bufferScin",0,0,0);
@@ -531,12 +525,17 @@ void CMSHFDetectorConstruction::SetupDetectors()
 	m_bufferCher.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_buffCher_log[segNum],name,m_tungBlock_log[segNum],false,count,m_checkOverlaps));
       	count++;
       } else {
-      // place scsf78
-	sprintf(name,"scsf%d",scsfCount);
+      // place scintillator
+	sprintf(name,"scsfCore%d",scsfCount);
+	m_coreScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_coreScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
+
+	sprintf(name,"scsfJacket%d",scsfCount);
 	m_fibresScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_qFibreScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
 	sprintf(name,"cladScin%d",scsfCount);
+
 	m_claddingScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_cladScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
 	sprintf(name,"buffScin%d",scsfCount);
+
     	m_bufferScin.push_back(new G4PVPlacement(0,G4ThreeVector(xPos,yPos,0.),m_buffScin_log[segNum],name,m_tungBlock_log[segNum],false,scsfCount,m_checkOverlaps));
  	scsfCount++;
       } 
@@ -871,7 +870,7 @@ void CMSHFDetectorConstruction::SetCladIndex(G4double n)
   G4MaterialPropertiesTable *cProps = new G4MaterialPropertiesTable();
   cProps->AddProperty("RINDEX",energies,cRindex,nEnergies);
   cProps->AddProperty("ABSLENGTH",energies,cAbsLength,nEnergies);
-  m_cladCher->SetMaterialPropertiesTable(cProps);
+  m_clad->SetMaterialPropertiesTable(cProps);
 
   if ( m_stacking ) {
     m_stacking->SetCladIndex(n);
@@ -966,13 +965,16 @@ void CMSHFDetectorConstruction::ClearPhysicalVolumes()
 
   const unsigned nScin = m_fibresScin.size();
   for ( unsigned i=0; i != nScin; i++ ) {
+    m_coreScin[i]->GetLogicalVolume()->RemoveDaughter(m_coreScin[i]);
     m_fibresScin[i]->GetLogicalVolume()->RemoveDaughter(m_fibresScin[i]);
     m_claddingScin[i]->GetLogicalVolume()->RemoveDaughter(m_claddingScin[i]);
     m_bufferScin[i]->GetLogicalVolume()->RemoveDaughter(m_bufferScin[i]);
+    delete m_coreScin[i];
     delete m_fibresScin[i];
     delete m_claddingScin[i];
     delete m_bufferScin[i];
   }
+  m_coreScin.clear();
   m_fibresScin.clear();
   m_claddingScin.clear();
   m_bufferScin.clear();
@@ -989,6 +991,7 @@ void CMSHFDetectorConstruction::ClearPhysicalVolumes()
     m_cladCher_log[i]->ClearDaughters();
     m_buffCher_log[i]->ClearDaughters();
     m_buffScin_log[i]->ClearDaughters();
+    m_coreScin_log[i]->ClearDaughters();
     m_qFibreScin_log[i]->ClearDaughters();
     m_qFibreCher_log[i]->ClearDaughters();
     m_tungBlock_log[i]->ClearDaughters();
@@ -1010,6 +1013,7 @@ void CMSHFDetectorConstruction::ClearLogicalVolumes()
     delete m_tungBlock_log[i];
     delete m_qFibreCher_log[i];
     delete m_cladCher_log[i];
+    delete m_coreScin_log[i];
     delete m_qFibreScin_log[i];
     delete m_cladScin_log[i];
     delete m_buffCher_log[i];
@@ -1018,6 +1022,7 @@ void CMSHFDetectorConstruction::ClearLogicalVolumes()
   m_tungBlock_log.clear();
   m_qFibreCher_log.clear();
   m_cladCher_log.clear();
+  m_coreScin_log.clear();
   m_qFibreScin_log.clear();
   m_cladScin_log.clear();
   m_buffCher_log.clear();

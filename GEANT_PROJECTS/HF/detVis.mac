@@ -6,12 +6,13 @@
 #/testBeam/length 1. m
 /testBeam/fibres true
 #/testBeam/magField 0. 0. 3.8 tesla
-/testBeam/checkOverlaps false
+/testBeam/checkOverlaps true
 /testBeam/NdeadTop 0
 /testBeam/NdeadBottom 0
 /testBeam/NdeadRight 0
 /testBeam/NdeadLeft 0
 /testBeam/Nseg 1 
+/testBeam/Nfib 2
 /testBeam/refreshGeometry true
 
 
@@ -21,7 +22,7 @@
 
 # Use this open statement to create an OpenGL view:
 #/vis/open OGL 600x600-0+0
-/vis/open OGLIX 600x600-0+0
+#/vis/open OGLIX 600x600-0+0
 #
 # Use this open statement to create a .prim file suitable for
 # viewing in DAWN:
@@ -33,7 +34,7 @@
 #
 # Use this open statement to create a .wrl file suitable for
 # viewing in a VRML viewer:
-#/vis/open VRML2FILE
+/vis/open VRML2FILE
 #
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
@@ -49,13 +50,15 @@
 /vis/drawVolume
 #
 # Specify view angle:
-/vis/viewer/set/viewpointThetaPhi 150. 45.
+#/vis/viewer/set/viewpointThetaPhi 150. 45.
+/vis/viewer/set/viewpointThetaPhi 180. 0.
+/vis/viewer/set/viewpointVector 0 0 -5 mm
 #
 # Specify zoom value:
-/vis/viewer/zoom 1.5
+#/vis/viewer/zoom 10.5
 #
 # Specify style (surface or wireframe):
-/vis/viewer/set/style solid
+/vis/viewer/set/style wireframe
 
 /vis/viewer/set/auxiliaryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 100
@@ -63,8 +66,15 @@
 /vis/viewer/set/lightsVector -0.5 0.5 0
 /vis/geometry/set/visibility World 0 false
 #/vis/geometry/set/colour WRodLog 0 1 1 0 0.5
-/vis/geometry/set/colour glass 1 0 0 0.75
+/vis/geometry/set/colour glassLog 1 0 0 0.75
 /vis/geometry/set/colour DeadMaterial 0 0 1 0.75
+/vis/geometry/set/colour quartzFibreLog 0 0 1 1
+/vis/geometry/set/colour claddingCher 0 0 1 1
+/vis/geometry/set/colour bufferCher 0 1 0 1
+/vis/geometry/set/colour scinCoreLog 1 0 0 1
+/vis/geometry/set/colour scinJacketLog 0 1 0 0.75
+/vis/geometry/set/colour claddingScin 0.5 0.5 0 0.75
+/vis/geometry/set/colour bufferScin 0 1 0 0.75
 
 #
 # Draw coordinate axes:

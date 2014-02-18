@@ -27,6 +27,7 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st)
   if (_storeOpticalInfo){
     m_opt_wavelength.push_back(st.wavelength);
     m_opt_costh.push_back(st.costh);
+    m_opt_cosg.push_back(st.cosg);
     m_opt_fx.push_back(st.x);
     m_opt_fy.push_back(st.y);
     m_opt_depth.push_back(st.depth);
@@ -41,6 +42,7 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
     if ( t == fCherenkov ) {
       m_opt_wavelength.push_back(st.wavelength);
       m_opt_costh.push_back(st.costh);
+      m_opt_cosg.push_back(st.cosg);
       m_opt_fx.push_back(st.x);
       m_opt_fy.push_back(st.y);
       m_opt_depth.push_back(st.depth);
@@ -49,6 +51,7 @@ void HFDataFormat::fillStackingAction(const StackingStruct &st, const ROType t)
     } else {
       m_scin_wavelength.push_back(st.wavelength);
       m_scin_costh.push_back(st.costh);
+      m_scin_cosg.push_back(st.cosg);
       m_scin_fx.push_back(st.x);
       m_scin_fy.push_back(st.y);
       m_scin_depth.push_back(st.depth);
@@ -161,6 +164,7 @@ void HFDataFormat::generateTrees()
   if (_storeOpticalInfo){
     m_event->Branch("opt_wavelength",&m_opt_wavelength);
     m_event->Branch("opt_costh",&m_opt_costh);
+    m_event->Branch("opt_cosg",&m_opt_cosg);
     m_event->Branch("opt_fx",&m_opt_fx);
     m_event->Branch("opt_fy",&m_opt_fy);
     m_event->Branch("opt_depth",&m_opt_depth);
@@ -169,6 +173,7 @@ void HFDataFormat::generateTrees()
 
     m_event->Branch("scin_wavelength",&m_scin_wavelength);
     m_event->Branch("scin_costh",&m_scin_costh);
+    m_event->Branch("scin_cosg",&m_scin_cosg);
     m_event->Branch("scin_fx",&m_scin_fx);
     m_event->Branch("scin_fy",&m_scin_fy);
     m_event->Branch("scin_depth",&m_scin_depth);
@@ -239,6 +244,7 @@ void HFDataFormat::clearStacking()
   if (_storeOpticalInfo){
     m_opt_wavelength.clear();
     m_opt_costh.clear();
+    m_opt_cosg.clear();
     m_opt_fx.clear();
     m_opt_fy.clear();
     m_opt_depth.clear();
@@ -247,6 +253,7 @@ void HFDataFormat::clearStacking()
 
     m_scin_wavelength.clear();
     m_scin_costh.clear();
+    m_scin_cosg.clear();
     m_scin_fx.clear();
     m_scin_fy.clear();
     m_scin_depth.clear();

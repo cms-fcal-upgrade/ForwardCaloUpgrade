@@ -32,6 +32,8 @@ struct Travel{
   int      nmax;
   double   prob[10];
   double   time[10];
+  double   costh;
+  double   cosg;
 };
 
 

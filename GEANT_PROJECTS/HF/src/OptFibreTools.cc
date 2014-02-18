@@ -33,6 +33,8 @@ Travel GetTimeAndProbability(Photon ph, Fiber fib)
     result.time[i] = 1e+9;
   }
   result.nmax = 5;
+  result.costh = 0.;
+  result.cosg  = 1.;
   
   double cosTheta = fib.direction * ph.direction;
   double theta = acos(cosTheta);
@@ -55,6 +57,9 @@ Travel GetTimeAndProbability(Photon ph, Fiber fib)
   // check if there is a total internal reflection off the fiber walls
   if( acos(cosGamma*sin(theta))<asin(fib.refrIndClad/fib.refrIndCore) ) return result;
 
+  result.costh = cosTheta;
+  result.cosg  = cosGamma;
+
   double relDistance = 0.;
   double probReflections = 1.;
   if(cosTheta>0){
@@ -73,5 +78,4 @@ Travel GetTimeAndProbability(Photon ph, Fiber fib)
 
   return result;    
 }
-
 

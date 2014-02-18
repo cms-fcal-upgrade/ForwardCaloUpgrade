@@ -35,6 +35,7 @@ enum ROType {
 struct StackingStruct {
   double wavelength;
   double costh;
+  double cosg;
   double x;
   double y;
   double depth;
@@ -42,8 +43,8 @@ struct StackingStruct {
   double tprop;
 
 
-  inline StackingStruct(double w, double cos, double gx, double gy,double gd, double gt, double pt)
-    :wavelength(w),costh(cos)
+  inline StackingStruct(double w, double cos,double cg, double gx, double gy,double gd, double gt, double pt)
+    :wavelength(w),costh(cos),cosg(cg)
     ,x(gx),y(gy),depth(gd),t(gt),tprop(pt)
     { }
 };
@@ -204,6 +205,7 @@ private:
   // event branches
   std::vector<double>  m_opt_wavelength;
   std::vector<double>  m_opt_costh;
+  std::vector<double>  m_opt_cosg;
   std::vector<double>  m_opt_fx;
   std::vector<double>  m_opt_fy;
   std::vector<double>  m_opt_depth;
@@ -212,6 +214,7 @@ private:
 
   std::vector<double>  m_scin_wavelength;
   std::vector<double>  m_scin_costh;
+  std::vector<double>  m_scin_cosg;
   std::vector<double>  m_scin_fx;
   std::vector<double>  m_scin_fy;
   std::vector<double>  m_scin_depth;

@@ -186,9 +186,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4double m_absFib;
     G4double m_absClad;
     G4double m_nSFib;
-    G4double m_nSClad;
-    G4double m_absSFib;
-    G4double m_absSClad;
+    G4double m_absSCore;
     G4double m_length;
     G4double m_nGlass;
     G4double m_absGlass;
@@ -204,9 +202,11 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     // radii for fibers and cladding ( C for Cherenkov and S for scintillation)
     G4double m_rCFib;
     G4double m_rCClad;
+    G4double m_rCBuff;
+
+    G4double m_rSCore;
     G4double m_rSFib;
     G4double m_rSClad;
-    G4double m_rCBuff;
     G4double m_rSBuff;
 
     // grid spacing
@@ -225,9 +225,8 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4Material * m_tungsten;
     G4Material * m_brass;
     G4Material * m_glass;
-    G4Material * m_cladCher;
-    G4Material * m_scsf78;
-    G4Material * m_cladScin;
+    G4Material * m_clad;
+    G4Material * m_scinCore;
     G4Material * m_iron;
     G4Material * m_buffer; // fibre buffer material
 
@@ -241,6 +240,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     G4Tubs * m_cladScin_tube;
     G4Tubs * m_buffCher_tube;
     G4Tubs * m_buffScin_tube;
+    G4Tubs * m_coreScin_tube;
 
     // logical volumes
     G4LogicalVolume * m_expHall_log;
@@ -248,6 +248,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4LogicalVolume *> m_qFibreCher_log;
     std::vector<G4LogicalVolume *> m_cladCher_log;
     std::vector<G4LogicalVolume *> m_buffCher_log;
+    std::vector<G4LogicalVolume *> m_coreScin_log;
     std::vector<G4LogicalVolume *> m_qFibreScin_log;
     std::vector<G4LogicalVolume *> m_cladScin_log;
     std::vector<G4LogicalVolume *> m_buffScin_log;
@@ -260,6 +261,7 @@ class CMSHFDetectorConstruction : public G4VUserDetectorConstruction
     std::vector<G4VPhysicalVolume *> m_fibresCher;
     std::vector<G4VPhysicalVolume *> m_claddingCher;
     std::vector<G4VPhysicalVolume *> m_bufferCher;
+    std::vector<G4VPhysicalVolume *> m_coreScin;
     std::vector<G4VPhysicalVolume *> m_fibresScin;
     std::vector<G4VPhysicalVolume *> m_claddingScin;
     std::vector<G4VPhysicalVolume *> m_bufferScin;
