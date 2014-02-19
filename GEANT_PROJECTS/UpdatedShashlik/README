@@ -1,0 +1,13 @@
+Before getting started, you must have a copy of HepMC, Xerces, clhep,
+and geant4. Within SarahEno/HlLHC you must edit the setup.sh and 
+setup_geant_temp.sh (or .csh) files to contain the correct paths to your 
+local copies of geant, HepMC, clhep, and Xerces. Then you must source 
+these files.
+
+To aid in compatibilities issues, the versions of the software used
+in developing this version of the stand-alone code are:
+
+Geant4 - geant4.9.4.p04
+clhep - x86_64-slc5-gcc43-opt
+Xerces - xerces-c-3.1.1-x86_64-linux-gcc-3.4
+HepMC - 2.06.08
