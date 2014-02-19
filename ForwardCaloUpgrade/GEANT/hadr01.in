@@ -1,0 +1,28 @@
+#================================================
+#     Macro file for hadr01
+#================================================
+/control/verbose 2
+/run/verbose 1
+/tracking/verbose 0
+#
+# Set production cut range for the choosen regions
+# "Brass" and "Scintillator"
+#
+/run/setCutForRegion Brass 0.1 mm
+/run/setCutForRegion Scintillator 0.02 mm
+/run/dumpRegion
+/run/particle/setCut 0.1 mm
+#
+# Set type of particle, energy and position. If position
+# of particle x = -10.0*cm then simulation carries out 
+# only for HE and if position x = -110.0*cm - simulation
+# provides full setup (SE + ECAL + HE + dead material)
+#
+/gun/particle pi-
+##/gun/particle e-
+/gun/position -10. 0. 0. cm
+/gun/energy 20. GeV
+#
+/run/initialize
+/run/beamOn 1000
+#

@@ -1,0 +1,22 @@
+ This is the short instruction how to generate Jets using
+ Pythia8 program. Jets are produced from q qbar or g g systems
+ which are hadronized. Output events are written in HepMC 
+ ASCII text format.
+
+ Files config.csh, config.mk and Makefile contain all
+ necessary information for setting environment for this job. 
+ User can change this setting for his choice.   
+
+ For running job you need to perform the next steps:
+
+ 1. source config.csh or config.sh - set environment;
+
+ 2. make JetsGen - produce executable;
+
+ 3. change input values in JetsGen.in - file;
+
+ 4. run job
+
+  ./JetsGen.exe JetsGen.in HepMCoutJets.dat > test_out01
+
+  

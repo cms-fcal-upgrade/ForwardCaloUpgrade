@@ -1,0 +1,31 @@
+PbYAG
+dp = 0.35
+da = 0.2
+rho_p = 11.3
+rho_a = 4.57
+Zp = 82.
+Za = 23.06
+Ap = 207.2
+Aa = 51.3
+X0p = 6.36
+X0a = 16.11
+RMp = 1.63
+RMa = 3.20
+Lambda_p = 18.3 
+Lambda_a = 25.1
+LumiYield_a = 1610E3
+LightCollection = 0.01
+nonUnif = 0.00
+stochasticResolution = 0.136
+
+
+----- Lead
+#Material:     Lead     density: 11.340 g/cm3   RadL:   5.617 mm   Nucl.Int.Length:  18.275 cm   Imean: 823.000 eV 
+#   --->  Element: Lead ( )   Z = 82.0   N = 207.2   A = 207.20 g/mole  ElmMassFraction: 100.00 %  ElmAbundance 100.00 %
+
+----- YAG: Y3_Al5_O12
+#Material:      YAG     density:  4.570 g/cm3   RadL:   3.525 cm   Nucl.Int.Length:  25.119 cm   Imean: 193.776 eV 
+#   --->  Element: Ytrium (Y)   Z = 39.0   N =  88.9   A =  88.91 g/mole  ElmMassFraction:  44.93 %  ElmAbundance  15.00 %
+#   --->  Element: Aliminum (Al)   Z = 13.0   N =  27.0   A =  26.98 g/mole  ElmMassFraction:  22.72 %  ElmAbundance  25.00 %
+#   --->  Element: Oxygen (O)   Z =  8.0   N =  16.0   A =  16.00 g/mole  ElmMassFraction:  32.34 %  ElmAbundance  60.00 %
+
