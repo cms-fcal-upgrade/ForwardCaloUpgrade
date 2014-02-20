@@ -70,6 +70,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                     
      const G4VPhysicalVolume* GetphysiWorld() {return physiWorld;};           
      const G4VPhysicalVolume* GetEcal()       {return phyEcalSens;};
+     const G4VPhysicalVolume* GetEcalZero()   {return phyEcalZero;};
      const G4VPhysicalVolume* GetHcal()       {return physiSens;};
      const G4VPhysicalVolume* GetZero()       {return phySensZero;};
      const G4VPhysicalVolume* GetAbsEcal()    {return phyEcalAbs;};
@@ -107,7 +108,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4double           middleEcal;
      G4double		middleCables;
      G4int              NbOfEcalCells;
-     G4double           SqrtNbOfEcalCells;
      G4double           EcalCellSize;
      G4int              NbOfHcalCells;
      G4double           HcalCellSize;
@@ -126,7 +126,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4int              NbOfHcalLayers;
      G4double           CalorSizeXY;
      G4double           CalorThickness;
-     G4double           BeamHoleRadius;
+     G4double           BeamHoleRadius1;
+     G4double           BeamHoleRadius2;
      G4double           BeamHoleLength;
      
      G4Material*        defaultMaterial;
@@ -225,6 +226,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Box*             solEcalSens;     //pointer to ECAL sensitive
      G4LogicalVolume*   logEcalSens;
      G4VPhysicalVolume* phyEcalSens;
+
+     G4Box*             solEcalZero;     //pointer to ECAL zero layer
+     G4LogicalVolume*   logEcalZero;
+     G4VPhysicalVolume* phyEcalZero;
 
      G4Box*             solidSupport;      //pointer to Al support
      G4LogicalVolume*   logicSupport;      //pointer to Al support

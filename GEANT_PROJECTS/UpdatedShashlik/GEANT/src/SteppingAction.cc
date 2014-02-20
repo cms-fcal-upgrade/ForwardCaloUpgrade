@@ -73,7 +73,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 
 // collect information for Ecal sensitive media
 //--------------------------------------------- 
-   if( volume == detector->GetEcal()) 
+   if( (volume == detector->GetEcal()) || (volume == detector->GetEcalZero()))
    {
      G4int nEcalLayer = touch->GetCopyNumber(1);
      if( edep > 0. ) {
@@ -110,8 +110,11 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        G4double DxCell  = detector->GetEcalCellSize();
        G4double maxSize = 0.5*DxCell*IndCell;
          // project hit to front face of ECAL
-       G4double origr = sqrt(aPoint.x()*aPoint.x() + aPoint.y()*aPoint.y());
-       G4ThreeVector newPoint = (detector->GetEcalOffset()/aPoint.z())*aPoint;
+//       G4double origr = sqrt(aPoint.x()*aPoint.x() + aPoint.y()*aPoint.y());
+//       std::cout << " EcalOffset = " << detector->GetEcalOffset();
+       G4ThreeVector newfocalpt(0.0,0.0,-300.0);  // z=-300 mm
+       G4ThreeVector shiftPoint = aPoint - newfocalpt;
+       G4ThreeVector newPoint = (detector->GetEcalOffset()/shiftPoint.z())*shiftPoint;
 //       G4double xpos = aPoint.x()-detector->GetECalXOffset();
 //       G4double ypos = aPoint.y()-detector->GetECalYOffset();
        G4double xpos = newPoint.x()-detector->GetECalXOffset();

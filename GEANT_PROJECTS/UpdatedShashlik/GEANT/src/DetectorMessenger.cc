@@ -97,14 +97,14 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   NbCellEcalCmd->SetGuidance("set number and transverse size Ecal cell");
   NbCellEcalCmd->SetGuidance("nb of cells; transverse cell size [mm]");
   NbCellEcalCmd->SetParameterName("nCells","dxCell"," ",true);
-  NbCellEcalCmd->SetRange("nCells>=1 && nCells < 2501 && dxCell>0");
+  NbCellEcalCmd->SetRange("nCells>=1 && nCells < 10001 && dxCell>0");
   NbCellEcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   NbCellHcalCmd = new G4UIcmdWith3Vector("/hcal/det/setHcalCells",this);
   NbCellHcalCmd->SetGuidance("set number and transverse size Hcal cell");
   NbCellHcalCmd->SetGuidance("nb of cells; transverse cell size [mm]");
   NbCellHcalCmd->SetParameterName("nHCells","dxHCell"," ",true);
-  NbCellHcalCmd->SetRange("nHCells>=1 && nHCells < 2501 && dxHCell>0");
+  NbCellHcalCmd->SetRange("nHCells>=1 && nHCells < 10001 && dxHCell>0");
   NbCellHcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   BirksConsHcalCmd = new G4UIcmdWith3Vector("/ecal/det/setHcalBirks",this);
@@ -129,7 +129,7 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   BirkL3ConsEcalCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   BeamholeCmd = new G4UIcmdWithAnInteger("/ecal/det/setBeamhole",this);
-  BeamholeCmd->SetGuidance("set BeamholeOption (0=no,1=yes)");
+  BeamholeCmd->SetGuidance("set BeamholeOption (0=no,1=yes(eta<3),2=yes(eta<4))");
   BeamholeCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
 

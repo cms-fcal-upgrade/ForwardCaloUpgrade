@@ -125,11 +125,11 @@ class HistoManager : public G4UserEventAction
     G4double  e_vec[17];
 
     G4int     n_cells;
-    G4double  e_dep[2500], e_phot[2500], e_unif[2500], e_eff[2500];
+    G4double  e_dep[10000], e_phot[10000], e_unif[10000], e_eff[10000];
     G4double  LightYield, LightCollEff, LightCollUnif, CellNoise;
 
     G4int     n_hcells;
-    G4double  e_hdep[2500];
+    G4double  e_hdep[10000];
 
     G4int    nLtot,  nRtot,  nLtotAbs,  nRtotAbs,  nRtotHcal;       
     G4double dLbin,  dRbin,  dLbinAbs,  dRbinAbs,  dRbinHcal;      
