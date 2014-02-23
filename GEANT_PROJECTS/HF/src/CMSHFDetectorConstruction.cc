@@ -100,10 +100,14 @@ CMSHFDetectorConstruction::CMSHFDetectorConstruction()
 
   // radii to descrie the doped quartz fibers to caputre the scintillation signal
   // (doped core, undoped jacket, clad, buffer)
-  m_rSCore = 0.03*mm;
+  /*m_rSCore = 0.03*mm;
   m_rSFib = 0.0625*mm;
   m_rSClad = 0.0725*mm;
-  m_rSBuff = 0.125*mm;
+  m_rSBuff = 0.125*mm;*/
+  m_rSCore = 0.167*mm;
+  m_rSFib = 0.333*mm;
+  m_rSClad = 0.366*mm;
+  m_rSBuff = 0.4*mm;
 
 
   m_NfibSeg = 32U;

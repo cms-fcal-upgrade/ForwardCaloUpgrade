@@ -68,12 +68,12 @@
 #/vis/geometry/set/colour WRodLog 0 1 1 0 0.5
 /vis/geometry/set/colour glassLog 1 0 0 0.75
 /vis/geometry/set/colour DeadMaterial 0 0 1 0.75
-/vis/geometry/set/colour quartzFibreLog 0 0 1 1
+/vis/geometry/set/colour quartzFibreLog 1 0 0 1
 /vis/geometry/set/colour claddingCher 0 0 1 1
 /vis/geometry/set/colour bufferCher 0 1 0 1
-/vis/geometry/set/colour scinCoreLog 1 0 0 1
-/vis/geometry/set/colour scinJacketLog 0 1 0 0.75
-/vis/geometry/set/colour claddingScin 0.5 0.5 0 0.75
+/vis/geometry/set/colour scinCoreLog 1 0 0.5 1
+/vis/geometry/set/colour scinJacketLog 1 0 0 0.75
+/vis/geometry/set/colour claddingScin 0 0 1 0.75
 /vis/geometry/set/colour bufferScin 0 1 0 0.75
 
 #
