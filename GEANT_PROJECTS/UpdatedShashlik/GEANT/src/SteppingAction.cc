@@ -114,16 +114,21 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
 //       std::cout << " EcalOffset = " << detector->GetEcalOffset();
        G4ThreeVector newfocalpt(0.0,0.0,-300.0);  // z=-300 mm
        G4ThreeVector shiftPoint = aPoint - newfocalpt;
-       G4ThreeVector newPoint = (detector->GetEcalOffset()/shiftPoint.z())*shiftPoint;
+       G4double tanthetax = shiftPoint.x()/shiftPoint.z();
+       G4double tanthetay = shiftPoint.y()/shiftPoint.z();
+       G4double xpos = ((detector->GetEcalOffset())-newfocalpt.z())*tanthetax - detector->GetECalXOffset();
+       G4double ypos = ((detector->GetEcalOffset())-newfocalpt.z())*tanthetay - detector->GetECalYOffset();
+//TA       G4ThreeVector newPoint = (detector->GetEcalOffset()/shiftPoint.z())*shiftPoint;
 //       G4double xpos = aPoint.x()-detector->GetECalXOffset();
 //       G4double ypos = aPoint.y()-detector->GetECalYOffset();
-       G4double xpos = newPoint.x()-detector->GetECalXOffset();
-       G4double ypos = newPoint.y()-detector->GetECalYOffset();
+//       G4double xpos = newPoint.x()-detector->GetECalXOffset();
+//       G4double ypos = newPoint.y()-detector->GetECalYOffset();
        if( fabs(xpos)<=maxSize && fabs(ypos)<=maxSize) {
          G4int ix_Ind = int( fabs(-maxSize-xpos) / DxCell );
          G4int iy_Ind = int( fabs(-maxSize-ypos) / DxCell );
          G4int cell_Ind = ix_Ind + iy_Ind*IndCell;
          eventaction->fillEcalCell(cell_Ind,response);
+	 //std::cout << "Energy deposited in -> E = " << response << " Cell = " << cell_Ind << " x = " << xpos << " y = " << ypos << std::endl;
        }
 
 // hit point (Y vs Z) of first point in Ecal  
@@ -133,6 +138,19 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
          G4int    IndHit = histo->GetnRtot();
          G4double DxHits = histo->GetdRbin();
          G4double maxHit = 0.5*DxHits*IndHit;
+     G4int ix_Ind = int( fabs(-maxSize-xpos) / DxCell );
+     G4int iy_Ind = int( fabs(-maxSize-ypos) / DxCell );
+     G4int cell_Ind = ix_Ind + iy_Ind*IndCell;
+     std::cout << " Hit point of ECAL: x = " << aPoint.x() << " y = " << aPoint.y() << " z = " << aPoint.z() << std::endl;
+     std::cout << " Cell id = " << cell_Ind << " x = " << ix_Ind << " y = " << iy_Ind << std::endl;
+     std::cout << " ECAL Offset = " << detector->GetEcalOffset() << std::endl;
+//     std::cout << " newpoint of ECAL: x = " << newPoint.x() << " y = " << newPoint.y() << " z = " << newPoint.z() << std::endl;
+     std::cout << " newpoint of ECAL: x = " << xpos+detector->GetECalXOffset() << " y = " << ypos+detector->GetECalYOffset() << std::endl;
+     std::cout << " xpos = " << xpos << " ypos = " << ypos << std::endl;
+
+     std::cout << "maxSize = " << maxSize << std::endl;
+     std::cout << "IndCell = " << IndCell << std::endl;
+
          if( fabs(aPoint.x())<=maxHit && fabs(aPoint.y())<=maxHit ) {
            G4int ix_Hit = int( fabs(-maxHit-aPoint.x()) / DxHits );
            G4int iy_Hit = int( fabs(-maxHit-aPoint.y()) / DxHits );
