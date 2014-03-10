@@ -7,8 +7,9 @@ name := testBeam
 G4TARGET := $(name)
 G4EXLIB := true
 
-CPPFLAGS := `root-config --cflags` -I/uscms/home/c0wd3n/nobackup/softwares/HepMC-2.06.09
-LDFLAGS := `root-config --libs`  -L/uscms/home/c0wd3n/nobackup/softwares/HepMC-build/lib -lHepMC -L${G4WORKDIR}/lib -lmyVecDict_h
+#CPPFLAGS := `root-config --cflags` -I/uscms/home/c0wd3n/nobackup/softwares/HepMC-2.06.09
+#LDFLAGS := `root-config --libs`  -L/uscms/home/c0wd3n/nobackup/softwares/HepMC-build/lib -lHepMC -L${G4WORKDIR}/lib -lmyVecDict_h
+LDFLAGS := -L${G4WORKDIR}/lib -lShowLibDict_C
 
 ifndef G4INSTALL
   G4INSTALL = ../../..
